@@ -2769,13 +2769,14 @@ function renderMainIllustration() {
   
   const theme = appState.theme;
   
-  // If custom AI prompt active, render prominent AI Poster Banner
+  // If custom AI prompt active, render prominent 3D Motion AI Poster Banner
   if (appState.customThemePrompt) {
-    const aiImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(appState.customThemePrompt + ', 3d cinematic unreal engine 5 render, highly detailed, beautiful lighting, invitation card poster')}&width=800&height=500&nologo=true&seed=88`;
+    const aiImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(appState.customThemePrompt + ', 3d cinematic unreal engine 5 render, 60fps animation, highly detailed, beautiful lighting, invitation card poster')}&width=800&height=500&nologo=true&seed=88`;
     
     container.innerHTML = `
       <div class="ai-poster-banner-wrapper">
-        <img src="${aiImageUrl}" class="ai-poster-img" alt="${escapeHtml(appState.customThemePrompt)}" loading="lazy">
+        <img src="${aiImageUrl}" class="ai-poster-img animated-motion" alt="${escapeHtml(appState.customThemePrompt)}" loading="lazy">
+        <div class="sparkler-flame-overlay"></div>
         <div class="ai-poster-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 3D ${escapeHtml(appState.customThemePrompt)}</div>
       </div>
     `;

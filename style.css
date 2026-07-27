@@ -2036,59 +2036,70 @@ textarea.form-control {
   line-height: 1.4;
 }
 
-/* AI Poster Banner & Cover Styles */
+/* 3D Animated Motion Keyframes & Sparkler Lighting */
 .ai-poster-banner-wrapper {
   position: relative;
   width: 100%;
   margin: 0.5rem 0 1rem 0;
-  border-radius: 14px;
+  border-radius: 20px;
   overflow: hidden;
-  border: 1.5px solid var(--card-border);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(var(--card-accent-rgb), 0.3);
+  border: 2px solid var(--card-accent);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(var(--card-accent-rgb), 0.4);
+  animation: cardContainerPulse 4s infinite ease-in-out alternate;
 }
 
 .ai-poster-img {
   width: 100%;
-  height: 180px;
+  height: 240px;
   object-fit: cover;
   display: block;
-  transition: transform 0.4s ease;
+  animation: motorcycleIdle 3s ease-in-out infinite alternate;
 }
 
-.ai-poster-banner-wrapper:hover .ai-poster-img {
-  transform: scale(1.04);
+@keyframes motorcycleIdle {
+  0% { transform: translateY(0px) scale(1.0); }
+  50% { transform: translateY(-4px) scale(1.02); }
+  100% { transform: translateY(2px) scale(1.01); }
 }
 
-.ai-poster-badge {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--card-accent);
-  color: var(--card-accent);
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+@keyframes cardContainerPulse {
+  0% { box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(var(--card-accent-rgb), 0.3); }
+  100% { box-shadow: 0 15px 45px rgba(0, 0, 0, 0.85), 0 0 35px rgba(var(--card-accent-rgb), 0.65); }
 }
 
 .ai-cover-banner {
+  position: relative;
   width: 100%;
   margin: 0.5rem 0 1rem 0;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  border: 1.5px solid var(--card-accent);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
 }
 
 .ai-cover-img {
   width: 100%;
-  height: 140px;
+  height: 180px;
   object-fit: cover;
   display: block;
+  animation: motorcycleIdle 3s ease-in-out infinite alternate;
+}
+
+.sparkler-flame-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(circle at 20% 80%, rgba(253, 224, 71, 0.4) 0%, transparent 40%),
+              radial-gradient(circle at 80% 80%, rgba(244, 63, 94, 0.35) 0%, transparent 40%);
+  animation: sparklerFlicker 0.4s infinite ease-in-out alternate;
+}
+
+@keyframes sparklerFlicker {
+  0% { opacity: 0.6; transform: scale(1.0); }
+  100% { opacity: 1.0; transform: scale(1.05); }
 }
 
 .card-section {
