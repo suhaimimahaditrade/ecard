@@ -2502,7 +2502,44 @@ function applyCustomTheme() {
   const colors = appState.customThemeColors;
   const fonts = appState.customThemeFonts;
 
-  // CCO Master Background Image & Gradient Blend
+  // Select 1080p 60FPS Motion Video Background URL
+  let videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-glowing-gold-particles-moving-in-a-loop-41589-large.mp4';
+  const promptLower = (appState.customThemePrompt || '').toLowerCase();
+  
+  if (appState.theme === 'jurassic' || promptLower.includes('jungle') || promptLower.includes('dino') || promptLower.includes('jurassic')) {
+    videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-dramatic-mysterious-forest-in-a-foggy-day-42868-large.mp4';
+  } else if (appState.theme === 'duck-birthday' || promptLower.includes('birthday') || promptLower.includes('sparkler') || promptLower.includes('cake')) {
+    videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-sparkler-fireworks-burning-in-the-dark-41584-large.mp4';
+  } else if (appState.theme === 'cyberpunk' || promptLower.includes('cyberpunk') || promptLower.includes('neon')) {
+    videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-neon-lights-in-a-dark-tunnel-41588-large.mp4';
+  } else if (appState.theme === 'rose-gold' || promptLower.includes('rose') || promptLower.includes('sakura') || promptLower.includes('flower')) {
+    videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-pink-petals-falling-slowly-in-the-wind-41587-large.mp4';
+  }
+
+  // Inject Video Background Element into Card Containers
+  const injectVideo = (containerId) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    let videoEl = container.querySelector('.bg-motion-video');
+    if (!videoEl) {
+      videoEl = document.createElement('video');
+      videoEl.className = 'bg-motion-video';
+      videoEl.autoplay = true;
+      videoEl.loop = true;
+      videoEl.muted = true;
+      videoEl.playsInline = true;
+      container.insertBefore(videoEl, container.firstChild);
+    }
+    if (videoEl.src !== videoUrl) {
+      videoEl.src = videoUrl;
+      videoEl.load();
+      videoEl.play().catch(e => {});
+    }
+  };
+
+  try { injectVideo('envelopeCover'); } catch(e) {}
+  try { injectVideo('cardContainer'); } catch(e) {}
+
   let bgStyle = colors.bgGradient || 'linear-gradient(135deg, #051408 0%, #1a3d1f 100%)';
   if (appState.customThemePrompt) {
     const enrichedPrompt = appState.customThemePrompt + ', cinematic 8k unreal engine 5 render, epic atmospheric lighting, fantasy masterpiece, photorealistic';
