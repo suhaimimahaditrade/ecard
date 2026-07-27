@@ -1896,7 +1896,101 @@ function generateCustomTheme(promptText) {
     `;
     customClass = 'theme-barbie';
     
-  } else if (prompt.includes('magic') || prompt.includes('harry') || prompt.includes('potter') || prompt.includes('wizard') || prompt.includes('sihir') || prompt.includes('fantasi')) {
+  } else if (prompt.includes('fantasy') || prompt.includes('khayalan') || prompt.includes('fairytale') || prompt.includes('enchanted') || prompt.includes('realm')) {
+    themeName = 'fantasy';
+    colors = {
+      bg: '#0f0a1c',
+      bgGradient: 'linear-gradient(135deg, #0f0a1c 0%, #1c1038 50%, #2e1654 100%)',
+      text: '#f8fafc',
+      textMuted: '#cbd5e1',
+      accent: '#fbbf24',
+      accentRgb: '251, 191, 36',
+      border: '2px solid #fbbf24',
+      softBg: 'rgba(251, 191, 36, 0.12)',
+      particleColor: 'rgba(192, 132, 252, 0.6)'
+    };
+    fonts = {
+      script: 'Great Vibes, cursive',
+      title: 'Playfair Display, serif',
+      transform: 'none',
+      letterSpacing: '1px'
+    };
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 65px;">
+        <svg viewBox="0 0 100 100" style="width: 55px; height: 55px; fill: none; stroke: #fbbf24; stroke-width: 2;">
+          <!-- Fantasy Castle SVG -->
+          <path d="M20,80 L20,40 L30,40 L30,80 M40,80 L40,25 L50,15 L60,25 L60,80 M70,80 L70,40 L80,40 L80,80 M15,80 L85,80" />
+          <path d="M45,55 L55,55 L55,80 L45,80 Z" fill="#fbbf24" opacity="0.3" />
+          <circle cx="50" cy="15" r="4" fill="#c084fc" />
+          <circle cx="20" cy="20" r="2" fill="#fff" />
+          <circle cx="80" cy="25" r="2.5" fill="#fff" />
+        </svg>
+      </div>
+    `;
+    interactiveHtml = `
+      <div id="pinkHeartPulse" class="heart-pulse-overlay" style="background-color: rgba(192,132,252,0.4)"></div>
+    `;
+    customClass = 'theme-fantasy';
+
+  } else if (prompt.includes('cyberpunk') || prompt.includes('neon') || prompt.includes('futuristic') || prompt.includes('tech')) {
+    themeName = 'cyberpunk';
+    colors = {
+      bg: '#050814',
+      bgGradient: 'linear-gradient(135deg, #050814 0%, #0c122c 50%, #1a0b2e 100%)',
+      text: '#ffffff',
+      textMuted: '#94a3b8',
+      accent: '#00f0ff',
+      accentRgb: '0, 240, 255',
+      border: '2px solid #00f0ff',
+      softBg: 'rgba(0, 240, 255, 0.12)',
+      particleColor: 'rgba(255, 0, 127, 0.6)'
+    };
+    fonts = {
+      script: '"Courier New", monospace',
+      title: 'Montserrat, sans-serif',
+      transform: 'uppercase',
+      letterSpacing: '2px'
+    };
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 60px;">
+        <svg viewBox="0 0 100 100" style="width: 50px; height: 50px; fill: none; stroke: #00f0ff; stroke-width: 2.5;">
+          <polygon points="50,10 90,32 90,78 50,100 10,78 10,32" />
+          <circle cx="50" cy="55" r="15" stroke="#ff007f" stroke-width="2" />
+        </svg>
+      </div>
+    `;
+    customClass = 'theme-cyberpunk';
+
+  } else if (prompt.includes('galaxy') || prompt.includes('space') || prompt.includes('cosmic') || prompt.includes('star') || prompt.includes('bintang')) {
+    themeName = 'galaxy';
+    colors = {
+      bg: '#02020a',
+      bgGradient: 'linear-gradient(135deg, #02020a 0%, #090924 50%, #161238 100%)',
+      text: '#f8fafc',
+      textMuted: '#94a3b8',
+      accent: '#fcd34d',
+      accentRgb: '252, 211, 77',
+      border: '1.5px solid #fcd34d',
+      softBg: 'rgba(252, 211, 77, 0.1)',
+      particleColor: 'rgba(56, 189, 248, 0.6)'
+    };
+    fonts = {
+      script: 'Great Vibes, cursive',
+      title: 'Playfair Display, serif',
+      transform: 'none',
+      letterSpacing: '1px'
+    };
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 60px;">
+        <svg viewBox="0 0 100 100" style="width: 50px; height: 50px; fill: none;">
+          <ellipse cx="50" cy="50" rx="35" ry="12" stroke="#38bdf8" stroke-width="2" transform="rotate(-20, 50, 50)" />
+          <circle cx="50" cy="50" r="16" fill="#fcd34d" />
+        </svg>
+      </div>
+    `;
+    customClass = 'theme-galaxy';
+
+  } else if (prompt.includes('magic') || prompt.includes('harry') || prompt.includes('potter') || prompt.includes('wizard') || prompt.includes('sihir')) {
     themeName = 'magic';
     colors = {
       bg: '#0a0813',
@@ -2445,6 +2539,48 @@ function renderMainIllustration() {
             <div class="snitch-wing left"></div>
             <div class="snitch-wing right"></div>
           </div>
+        </div>
+      </div>
+    `;
+  } else if (theme === 'fantasy') {
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center; position: relative;">
+          <svg viewBox="0 0 100 100" style="width: 70px; height: 70px; fill: none; stroke: ${appState.customThemeColors ? appState.customThemeColors.accent : '#fbbf24'}; stroke-width: 2.5; filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.8));">
+            <path d="M20,80 L20,40 L30,40 L30,80 M40,80 L40,25 L50,15 L60,25 L60,80 M70,80 L70,40 L80,40 L80,80 M15,80 L85,80" />
+            <path d="M45,55 L55,55 L55,80 L45,80 Z" fill="#fbbf24" opacity="0.4" />
+            <circle cx="50" cy="15" r="4" fill="#c084fc" />
+          </svg>
+        </div>
+      </div>
+    `;
+  } else if (theme === 'cyberpunk') {
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 100 100" style="width: 60px; height: 60px; fill: none; stroke: #00f0ff; stroke-width: 3; filter: drop-shadow(0 0 10px #ff007f);">
+            <polygon points="50,10 90,32 90,78 50,100 10,78 10,32" />
+            <circle cx="50" cy="55" r="15" stroke="#ff007f" stroke-width="2.5" />
+          </svg>
+        </div>
+      </div>
+    `;
+  } else if (theme === 'galaxy') {
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 100 100" style="width: 65px; height: 65px; fill: none; filter: drop-shadow(0 0 12px #38bdf8);">
+            <ellipse cx="50" cy="50" rx="38" ry="14" stroke="#38bdf8" stroke-width="2.5" transform="rotate(-20, 50, 50)" />
+            <circle cx="50" cy="50" r="18" fill="#fcd34d" />
+          </svg>
+        </div>
+      </div>
+    `;
+  } else if (appState.customThemeActive && appState.customThemeCoverSvg) {
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+          ${appState.customThemeCoverSvg}
         </div>
       </div>
     `;
