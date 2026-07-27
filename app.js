@@ -2252,16 +2252,16 @@ Output ONLY valid JSON matching this exact structure:
       }
       
       const parsed = JSON.parse(rawText);
-      const fallback = generateCustomTheme(promptText);
+      const semantic = generateCustomTheme(promptText);
       
       return {
-        themeName: parsed.themeName || fallback.themeName,
-        colors: parsed.colors || fallback.colors,
-        fonts: parsed.fonts || fallback.fonts,
-        particleType: parsed.particleType || fallback.particleType,
-        coverSvg: fallback.coverSvg,
-        interactiveHtml: fallback.interactiveHtml,
-        customClass: fallback.customClass
+        themeName: semantic.themeName !== 'custom' ? semantic.themeName : (parsed.themeName || 'custom'),
+        colors: semantic.themeName !== 'custom' ? semantic.colors : (parsed.colors || semantic.colors),
+        fonts: semantic.themeName !== 'custom' ? semantic.fonts : (parsed.fonts || semantic.fonts),
+        particleType: semantic.particleType || parsed.particleType || 'spark',
+        coverSvg: semantic.coverSvg,
+        interactiveHtml: semantic.interactiveHtml,
+        customClass: semantic.customClass
       };
     }
   } catch (e) {
@@ -2478,8 +2478,7 @@ function applyCustomTheme() {
   if (appState.customThemePrompt) {
     const enrichedPrompt = appState.customThemePrompt + ', cinematic 8k unreal engine 5 render, epic atmospheric lighting, fantasy masterpiece, photorealistic';
     const aiImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enrichedPrompt)}&width=800&height=1400&nologo=true&seed=88`;
-    const themeRgb = colors.accentRgb || '5, 20, 8';
-    bgStyle = `linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(${themeRgb}, 0.85) 50%, rgba(${themeRgb}, 0.96) 100%), url('${aiImageUrl}')`;
+    bgStyle = `linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(5,20,8,0.7) 40%, rgba(5,20,8,0.95) 100%), url('${aiImageUrl}'), ${colors.bgGradient}`;
   }
 
   // ✅ NUCLEAR OPTION: Inject a <style> tag with !important rules
