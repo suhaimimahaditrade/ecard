@@ -195,7 +195,26 @@ class PianoSynth {
 // App State Management
 const appState = {
   eventType: 'perkahwinan',
-  theme: 'emerald',
+  theme: 'duck-birthday',
+  customThemeActive: true,
+  customThemePrompt: 'duck chef riding motorcycle carrying birthday cake in enchanted forest with sparklers',
+  customThemeColors: {
+    bg: '#0f1a10',
+    bgGradient: 'linear-gradient(135deg, #0f1a10 0%, #1c2e1b 50%, #3b1d1b 100%)',
+    text: '#ffffff',
+    textMuted: '#fde047',
+    accent: '#fde047',
+    accentRgb: '253, 224, 71',
+    border: '2px solid #fde047',
+    softBg: 'rgba(253, 224, 71, 0.15)',
+    particleColor: 'rgba(253, 224, 71, 0.7)'
+  },
+  customThemeFonts: {
+    script: 'Pinyon Script, Great Vibes, cursive',
+    title: 'Outfit, sans-serif',
+    transform: 'none',
+    letterSpacing: '1px'
+  },
   title: 'Walimatulurus',
   tagline: 'UNDANGAN KAMI',
   shortNames: 'Aiman & Sarah',
@@ -3374,6 +3393,8 @@ window.addEventListener('DOMContentLoaded', () => {
   initBindings();
   initThemePicker();
   initCustomThemeGenerator(); // Setup AI Theme Generator
+  applyCustomTheme();
+  renderMainIllustration();
   updatePreview();
   startCountdown();
   createParticles('coverParticles', 10);
