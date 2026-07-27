@@ -1010,20 +1010,22 @@ function initMobileViewSwitcher() {
 // Core Envelope Opening Action trigger
 function initEnvelopeOpener() {
   const btn = document.getElementById('btnOpenCard');
+  const waxSeal = document.getElementById('envelopeWaxSeal');
   const cover = document.getElementById('envelopeCover');
   const content = document.getElementById('mainCardContent');
   
-  if (!btn || !cover || !content) return;
-  
-  btn.addEventListener('click', () => {
+  if (!cover || !content) return;
+
+  const openCardAction = () => {
     // 1. Fade/slide envelope cover out
     cover.classList.add('opened');
     
-    // 2. Play background music automatically
+    // 2. Play background music automatically & sync vinyl player
     setTimeout(() => {
-      // Start music play
       if (!musicState.isPlaying) {
         playMusic();
+        const vinylWidget = document.getElementById('cardVinylPlayer');
+        if (vinylWidget) vinylWidget.classList.add('playing');
       }
     }, 500);
     
@@ -1045,7 +1047,28 @@ function initEnvelopeOpener() {
       // Recalculate particle falling zones
       createParticles('mainParticles', 16);
     }, 1200);
-  });
+  };
+  
+  if (btn) btn.addEventListener('click', openCardAction);
+  if (waxSeal) waxSeal.addEventListener('click', openCardAction);
+
+  // Sync initials on wax seal
+  const syncWaxSeal = () => {
+    const waxInitialsEl = document.getElementById('waxSealInitials');
+    if (waxInitialsEl && appState.shortNames) {
+      const names = appState.shortNames.split(/&|\+|\s+/).filter(n => n.length > 0);
+      if (names.length >= 2) {
+        waxInitialsEl.textContent = `${names[0].charAt(0).toUpperCase()} & ${names[1].charAt(0).toUpperCase()}`;
+      } else {
+        waxInitialsEl.textContent = appState.shortNames.substring(0, 3).toUpperCase();
+      }
+    }
+  };
+  syncWaxSeal();
+
+  // Re-sync wax seal when shortNames changes
+  const shortNamesInput = document.getElementById('inputShortNames');
+  if (shortNamesInput) shortNamesInput.addEventListener('input', syncWaxSeal);
 }
 
 // Generate the fully single-page self-contained standalone HTML E-card file
