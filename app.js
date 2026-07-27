@@ -1,0 +1,2474 @@
+/**
+ * E-Card Studio JavaScript Logic
+ * Includes Live Databinding, Countdown Timer, Web Audio Synth, RSVP local persistence,
+ * and standalone self-contained HTML exporter.
+ */
+
+// Web Audio API Synth Piano for Canon in D theme
+class PianoSynth {
+  constructor() {
+    this.ctx = null;
+    this.timer = null;
+    this.isPlaying = false;
+    this.tempo = 110; // BPM
+    this.step = 0;
+    this.delayNode = null;
+    this.gainNode = null;
+    
+    // Musical frequencies
+    this.notes = {
+      'C2': 65.41, 'D2': 73.42, 'E2': 82.41, 'F2': 87.31, 'G2': 98.00, 'A2': 110.00, 'B2': 123.47,
+      'C3': 130.81, 'D3': 146.83, 'E3': 164.81, 'F3': 174.61, 'G3': 196.00, 'A3': 220.00, 'B3': 246.94,
+      'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23, 'G4': 392.00, 'A4': 440.00, 'B4': 493.88,
+      'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'F5': 698.46, 'G5': 783.99, 'A5': 880.00, 'B5': 987.77,
+      '0': 0
+    };
+    
+    // Canon in D chord progression arpeggios
+    this.sequenceDefault = [
+      ['C3', 'G3', 'C4', 'E4'],
+      ['G2', 'D3', 'G3', 'B3'],
+      ['A2', 'E3', 'A3', 'C4'],
+      ['E2', 'B2', 'E3', 'G3'],
+      ['F2', 'C3', 'F3', 'A3'],
+      ['C2', 'G3', 'C3', 'E3'],
+      ['F2', 'C3', 'F3', 'A3'],
+      ['G2', 'D3', 'G3', 'B3']
+    ];
+
+    // Retro Mario theme riff
+    this.sequenceMario = ['E5', 'E5', '0', 'E5', '0', 'C5', 'E5', '0', 'G5', '0', '0', '0', 'G4', '0', '0', '0'];
+
+    // Cinematic Avengers theme minor progression
+    this.sequenceMarvel = ['A2', 'E3', 'A3', 'C4', 'D4', 'E4', 'D4', 'C4', 'G2', 'D3', 'G3', 'B3', 'C4', 'D4', 'C4', 'B3'];
+  }
+  
+  init() {
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.gainNode = this.ctx.createGain();
+    this.gainNode.gain.value = 0.2; // Keep volume soft
+    
+    // Delay effect node
+    this.delayNode = this.ctx.createDelay(1.0);
+    this.delayNode.delayTime.value = 0.4;
+    
+    const feedback = this.ctx.createGain();
+    feedback.gain.value = 0.35;
+    
+    this.delayNode.connect(feedback);
+    feedback.connect(this.delayNode);
+    
+    // Connections
+    this.gainNode.connect(this.ctx.destination);
+    this.gainNode.connect(this.delayNode);
+    this.delayNode.connect(this.ctx.destination);
+  }
+  
+  playNote(noteName, time) {
+    if (noteName === '0' || !this.notes[noteName]) return;
+    
+    const freq = this.notes[noteName];
+    
+    // Choose wave oscillator type based on theme
+    let type = 'triangle';
+    if (appState.theme === 'mario') {
+      type = 'square';
+    } else if (appState.theme === 'marvel') {
+      type = 'sawtooth';
+    }
+    
+    const osc = this.ctx.createOscillator();
+    osc.type = type;
+    osc.frequency.value = freq;
+    
+    // Gain/Volume envelope
+    const env = this.ctx.createGain();
+    
+    if (appState.theme === 'mario') {
+      // 8-bit flat envelope (chunky retro sound)
+      env.gain.setValueAtTime(0, time);
+      env.gain.linearRampToValueAtTime(0.12, time + 0.005);
+      env.gain.exponentialRampToValueAtTime(0.001, time + 0.22);
+      
+      osc.connect(env);
+      env.connect(this.gainNode);
+      osc.start(time);
+      osc.stop(time + 0.25);
+    } else if (appState.theme === 'marvel') {
+      // Brassy slow swell
+      env.gain.setValueAtTime(0, time);
+      env.gain.linearRampToValueAtTime(0.1, time + 0.06); 
+      env.gain.exponentialRampToValueAtTime(0.001, time + 0.75);
+      
+      osc.connect(env);
+      env.connect(this.gainNode);
+      osc.start(time);
+      osc.stop(time + 0.8);
+    } else {
+      // Default: Triangle + Sine hammer pluck
+      const pluck = this.ctx.createOscillator();
+      pluck.type = 'sine';
+      pluck.frequency.value = freq * 3.0;
+      
+      env.gain.setValueAtTime(0, time);
+      env.gain.linearRampToValueAtTime(0.3, time + 0.015);
+      env.gain.exponentialRampToValueAtTime(0.001, time + 1.0);
+      
+      const pluckEnv = this.ctx.createGain();
+      pluckEnv.gain.setValueAtTime(0, time);
+      pluckEnv.gain.linearRampToValueAtTime(0.15, time + 0.005);
+      pluckEnv.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
+      
+      osc.connect(env);
+      env.connect(this.gainNode);
+      
+      pluck.connect(pluckEnv);
+      pluckEnv.connect(this.gainNode);
+      
+      osc.start(time);
+      osc.stop(time + 1.1);
+      
+      pluck.start(time);
+      pluck.stop(time + 0.08);
+    }
+  }
+  
+  start() {
+    if (this.isPlaying) return;
+    if (!this.ctx) this.init();
+    
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    
+    this.isPlaying = true;
+    this.step = 0;
+    
+    // Choose tempo and note duration based on theme
+    let tempo = this.tempo;
+    let stepDuration;
+    
+    if (appState.theme === 'mario') {
+      tempo = 145; // Faster retro beat
+      stepDuration = 60 / tempo / 2; // Eighth notes (approx 200ms)
+    } else if (appState.theme === 'marvel') {
+      tempo = 90; // Cinematic slower dramatic beat
+      stepDuration = 60 / tempo / 2; // 333ms
+    } else {
+      stepDuration = 60 / tempo / 2; // Default Canon
+    }
+    
+    let nextStepTime = this.ctx.currentTime + 0.05;
+    
+    const scheduler = () => {
+      while (nextStepTime < this.ctx.currentTime + 0.1) {
+        let note = '0';
+        
+        if (appState.theme === 'mario') {
+          note = this.sequenceMario[this.step % this.sequenceMario.length];
+        } else if (appState.theme === 'marvel') {
+          note = this.sequenceMarvel[this.step % this.sequenceMarvel.length];
+        } else {
+          const chordIndex = Math.floor(this.step / 4) % this.sequenceDefault.length;
+          const noteIndex = this.step % 4;
+          note = this.sequenceDefault[chordIndex][noteIndex];
+        }
+        
+        this.playNote(note, nextStepTime);
+        
+        nextStepTime += stepDuration;
+        this.step++;
+      }
+      this.timer = setTimeout(scheduler, 25);
+    };
+    
+    scheduler();
+  }
+  
+  stop() {
+    if (!this.isPlaying) return;
+    clearTimeout(this.timer);
+    this.isPlaying = false;
+  }
+}
+
+// App State Management
+const appState = {
+  eventType: 'perkahwinan',
+  theme: 'emerald',
+  title: 'Walimatulurus',
+  tagline: 'UNDANGAN KAMI',
+  shortNames: 'Aiman & Sarah',
+  targetDate: '2026-12-12T11:00',
+  brideName: 'Siti Sarah Binti Ahmad',
+  groomName: 'Ahmad Aiman Bin Md Yusuf',
+  parents: 'Hj. Ahmad Bin Razali & Hjh. Fatimah Binti Ismail',
+  eventDate: 'Sabtu, 12 Disember 2026',
+  eventTime: '11:00 Pagi - 4:00 Petang',
+  venueName: 'Dewan Serbaguna Putrajaya',
+  venueAddress: 'Presint 9, 62250 Wilayah Persekutuan Putrajaya',
+  gmaps: 'https://maps.google.com/?q=Dewan+Serbaguna+Putrajaya',
+  waze: 'https://waze.com/ul?q=Dewan+Serbaguna+Putrajaya',
+  musicUrl: '',
+  useSynth: true,
+  contacts: [
+    { name: 'Hj. Ahmad (Bapa)', phone: '0123456789' },
+    { name: 'Aiman (Pengantin)', phone: '0198765432' }
+  ],
+  wishes: [],
+  bridePhoto: '',
+  groomPhoto: '',
+  galleryPhotos: []
+};
+
+// Event Type Default Configurations
+const eventDefaults = {
+  'perkahwinan': {
+    title: 'Walimatulurus',
+    tagline: 'UNDANGAN KAMI',
+    brideLabel: 'Nama Pengantin Perempuan',
+    groomLabel: 'Nama Pengantin Lelaki',
+    brideName: 'Siti Sarah Binti Ahmad',
+    groomName: 'Ahmad Aiman Bin Md Yusuf',
+    parentsLabel: 'Nama Ibu Bapa (Penganjur)',
+    parents: 'Hj. Ahmad Bin Razali & Hjh. Fatimah Binti Ismail',
+    quote: '"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang."',
+    quoteAuthor: '(Surah Ar-Rum: 21)',
+    layout: 'couple'
+  },
+  'hari-jadi': {
+    title: 'Selamat Hari Lahir',
+    tagline: 'MAJLIS HARI JADI',
+    brideLabel: 'Nama Penerima/Hari Lahir',
+    groomLabel: '',
+    brideName: 'Muhammad Harith',
+    groomName: '',
+    parentsLabel: 'Penganjur / Ibu Bapa',
+    parents: 'Dianjurkan oleh Keluarga Encik Haron',
+    quote: '"Semoga dipanjangkan umur, dimurahkan rezeki, dikurniakan kesihatan yang baik, dan sentiasa dalam perlindungan serta rahmat Allah SWT di dunia dan di akhirat. Amin."',
+    quoteAuthor: '- Doa & Restu Keluarga -',
+    layout: 'single'
+  },
+  'aqiqah': {
+    title: 'Majlis Kesyukuran & Aqiqah',
+    tagline: 'MAJLIS AQIQAH',
+    brideLabel: 'Nama Anak',
+    groomLabel: '',
+    brideName: 'Ahmad Rayyan Bin Aiman',
+    groomName: '',
+    parentsLabel: 'Nama Ibu Bapa',
+    parents: 'Ahmad Aiman & Siti Sarah',
+    quote: '"Ya Allah, jadikanlah anak kami ini anak yang soleh, berbakti kepada kedua orang tuanya, berguna bagi agama, bangsa dan negaranya, serta hiasilah akhlaknya dengan budi pekerti yang mulia."',
+    quoteAuthor: '- Doa Ibu & Bapa -',
+    layout: 'single'
+  },
+  'rumah-terbuka': {
+    title: 'Rumah Terbuka',
+    tagline: 'JEMPUTAN MESRA',
+    brideLabel: 'Nama Keluarga / Tuan Rumah',
+    groomLabel: '',
+    brideName: 'Keluarga Encik Yusuf',
+    groomName: '',
+    parentsLabel: 'Kata Aluan',
+    parents: 'Kami sekeluarga dengan segala hormatnya menjemput anda',
+    quote: '"Kehadiran tuan-tuan dan puan-puan sekalian amatlah kami hargai bagi memeriahkan lagi majlis silaturahim rumah terbuka kami. Semoga diberkati Allah SWT."',
+    quoteAuthor: '- Tuan Rumah -',
+    layout: 'single'
+  }
+};
+
+// Synth Audio and Audio Player references
+const synthPiano = new PianoSynth();
+const customAudio = new Audio();
+customAudio.loop = true;
+
+let countdownInterval = null;
+let currentActiveView = 'editor'; // For mobile layout ('editor' or 'preview')
+
+// Seed default wishes if localStorage is empty
+function seedWishes() {
+  const stored = localStorage.getItem('ecard_wishes');
+  if (stored) {
+    appState.wishes = JSON.parse(stored);
+  } else {
+    appState.wishes = [
+      { name: 'Khairul Azman', status: 'hadir', message: 'Selamat pengantin baru Aiman & Sarah! Semoga berkekalan hingga ke anak cucu.', timestamp: Date.now() - 36000000 },
+      { name: 'Fatin Nadiah', status: 'hadir', message: 'Tahniah Sarah! Cantik sangat kad digital korang. InsyaAllah kami datang nanti.', timestamp: Date.now() - 18000000 },
+      { name: 'Ahmad Daniel', status: 'tidak', message: 'Tahniah bro! Maaf tak dapat hadir sebab outstation. Semoga dipermudahkan urusan majlis.', timestamp: Date.now() - 5000000 }
+    ];
+    localStorage.setItem('ecard_wishes', JSON.stringify(appState.wishes));
+  }
+}
+
+// Extract Name Initials (e.g. "Siti Sarah" -> "S", "Ahmad Aiman" -> "A")
+function getInitials(fullname) {
+  if (!fullname) return '';
+  // Skip titles like Siti, Hj, Hjh, Ahmad (if used as title)
+  let cleanName = fullname.replace(/(Siti|Hj|Hjh|Ahmad|Bin|Binti)\.?\s+/gi, '');
+  if (!cleanName) cleanName = fullname; // Fallback
+  
+  const words = cleanName.trim().split(/\s+/);
+  return words[0] ? words[0].charAt(0).toUpperCase() : fullname.charAt(0).toUpperCase();
+}
+
+// Set up Databinding Inputs -> State -> UI elements
+function initBindings() {
+  const bindInput = (inputId, stateKey, callback) => {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    
+    // Init value from state
+    if (input.type === 'datetime-local') {
+      input.value = appState[stateKey];
+    } else if (input.tagName === 'TEXTAREA') {
+      input.value = appState[stateKey];
+    } else {
+      input.value = appState[stateKey];
+    }
+
+    input.addEventListener('input', (e) => {
+      appState[stateKey] = e.target.value;
+      if (callback) callback(e.target.value);
+      updatePreview();
+    });
+  };
+
+  // Bindings setup
+  bindInput('inputTitle', 'title', (val) => {
+    document.getElementById('coverTitle').textContent = val;
+  });
+  bindInput('inputTagline', 'tagline');
+  bindInput('inputShortNames', 'shortNames', (val) => {
+    document.getElementById('coverShortNames').textContent = val;
+  });
+  bindInput('inputTargetDate', 'targetDate', () => {
+    startCountdown();
+  });
+  bindInput('inputBrideName', 'brideName');
+  bindInput('inputGroomName', 'groomName');
+  bindInput('inputParents', 'parents');
+  bindInput('inputEventDate', 'eventDate');
+  bindInput('inputEventTime', 'eventTime');
+  bindInput('inputVenueName', 'venueName');
+  bindInput('inputVenueAddress', 'venueAddress');
+  bindInput('inputGmaps', 'gmaps');
+  bindInput('inputWaze', 'waze');
+
+  // Event Type Select Binding
+  const eventTypeSelect = document.getElementById('inputEventType');
+  if (eventTypeSelect) {
+    eventTypeSelect.value = appState.eventType;
+    eventTypeSelect.addEventListener('change', (e) => {
+      const type = e.target.value;
+      appState.eventType = type;
+      
+      const defaults = eventDefaults[type];
+      if (defaults) {
+        // Update state
+        appState.title = defaults.title;
+        appState.tagline = defaults.tagline;
+        appState.brideName = defaults.brideName;
+        appState.groomName = defaults.groomName;
+        appState.parents = defaults.parents;
+        
+        // Update input element values in editor
+        document.getElementById('inputTitle').value = defaults.title;
+        document.getElementById('inputTagline').value = defaults.tagline;
+        document.getElementById('inputBrideName').value = defaults.brideName;
+        document.getElementById('inputGroomName').value = defaults.groomName;
+        document.getElementById('inputParents').value = defaults.parents;
+        
+        // Update labels
+        document.getElementById('lblBrideName').textContent = defaults.brideLabel;
+        document.getElementById('lblGroomName').textContent = defaults.groomLabel;
+        document.getElementById('lblParents').textContent = defaults.parentsLabel;
+        
+        // Update quotes text automatically on layout change
+        document.getElementById('previewQuote').textContent = defaults.quote;
+        document.getElementById('previewQuoteAuthor').textContent = defaults.quoteAuthor;
+
+        // Toggle groom input visibility
+        const groomGroup = document.getElementById('groomFormGroup');
+        const cardContainer = document.getElementById('cardContainer');
+        
+        if (defaults.layout === 'single') {
+          groomGroup.style.display = 'none';
+          cardContainer.classList.add('single-host-layout');
+        } else {
+          groomGroup.style.display = 'block';
+          cardContainer.classList.remove('single-host-layout');
+        }
+        
+        updatePreview();
+      }
+    });
+    
+    // Trigger initial settings layout configuration
+    setTimeout(() => {
+      eventTypeSelect.dispatchEvent(new Event('change'));
+    }, 10);
+  }
+
+  // Contact inputs binding
+  const bindContact = (num) => {
+    const nameInput = document.getElementById(`contactName${num}`);
+    const phoneInput = document.getElementById(`contactPhone${num}`);
+    
+    const updateState = () => {
+      appState.contacts[num-1].name = nameInput.value;
+      appState.contacts[num-1].phone = phoneInput.value;
+      updatePreview();
+    };
+    
+    nameInput.addEventListener('input', updateState);
+    phoneInput.addEventListener('input', updateState);
+  };
+  bindContact(1);
+  bindContact(2);
+
+  // Custom audio input
+  const musicInput = document.getElementById('inputMusicUrl');
+  musicInput.addEventListener('input', (e) => {
+    appState.musicUrl = e.target.value;
+    appState.useSynth = (e.target.value.trim() === '');
+    
+    // Toggle active class on synth button
+    const synthBtn = document.getElementById('btnToggleSynthMusic');
+    if (appState.useSynth) {
+      synthBtn.classList.add('active');
+    } else {
+      synthBtn.classList.remove('active');
+    }
+    
+    // Apply musical adjustments immediately if already playing
+    if (musicState.isPlaying) {
+      playMusic(true); // Restart audio with new configuration
+    }
+  });
+
+  // Built-in Synth Piano button click toggle
+  document.getElementById('btnToggleSynthMusic').addEventListener('click', () => {
+    appState.useSynth = true;
+    appState.musicUrl = '';
+    document.getElementById('inputMusicUrl').value = '';
+    document.getElementById('btnToggleSynthMusic').classList.add('active');
+    
+    if (musicState.isPlaying) {
+      playMusic(true);
+    }
+  });
+
+  // Bride Photo Upload
+  const bridePhotoInput = document.getElementById('uploadBridePhoto');
+  if (bridePhotoInput) {
+    bridePhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          appState.bridePhoto = event.target.result;
+          updatePreview();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // Groom Photo Upload
+  const groomPhotoInput = document.getElementById('uploadGroomPhoto');
+  if (groomPhotoInput) {
+    groomPhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          appState.groomPhoto = event.target.result;
+          updatePreview();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // Gallery Photos Upload
+  const galleryPhotosInput = document.getElementById('uploadGalleryPhotos');
+  if (galleryPhotosInput) {
+    galleryPhotosInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files).slice(0, 4); // Max 4
+      if (files.length > 0) {
+        const promises = files.map(file => {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (event) => resolve(event.target.result);
+            reader.readAsDataURL(file);
+          });
+        });
+        
+        Promise.all(promises).then(results => {
+          appState.galleryPhotos = results;
+          updatePreview();
+        });
+      }
+    });
+  }
+}
+
+// Update all preview display elements with state values
+function updatePreview() {
+  // Titles & taglines
+  document.getElementById('coverTitle').textContent = appState.title;
+  document.getElementById('coverShortNames').textContent = appState.shortNames;
+  
+  document.getElementById('previewTagline').textContent = appState.tagline;
+  document.getElementById('previewShortNames').textContent = appState.shortNames;
+  document.getElementById('previewEventDate').textContent = appState.eventDate;
+  
+  // Parents & Couples
+  document.getElementById('previewParents').innerHTML = appState.parents.replace(/\n/g, '<br>');
+  document.getElementById('previewBrideName').textContent = appState.brideName;
+  document.getElementById('previewGroomName').textContent = appState.groomName;
+  
+  // Avatar initials or photos/SVGs update
+  const avatars = document.querySelectorAll('.avatar-circle');
+  if (avatars.length >= 2) {
+    // 1. Bride Avatar
+    if (appState.bridePhoto) {
+      avatars[0].innerHTML = `<img src="${appState.bridePhoto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    } else {
+      if (appState.theme === 'mario') {
+        avatars[0].innerHTML = `
+          <svg viewBox="0 0 100 100" style="width: 75%; height: 75%; fill: #e52521;">
+            <path d="M 50 15 C 30 15 20 30 20 50 C 20 60 25 65 30 65 C 35 65 38 60 40 55 C 43 55 45 60 45 65 C 45 75 35 85 50 85 C 65 85 55 75 55 65 C 55 60 57 55 60 55 C 62 60 65 65 70 65 C 75 65 80 60 80 50 C 80 30 70 15 50 15 Z" />
+            <circle cx="35" cy="35" r="8" fill="white" />
+            <circle cx="65" cy="35" r="8" fill="white" />
+            <circle cx="50" cy="50" r="7" fill="white" />
+          </svg>
+        `;
+      } else if (appState.theme === 'spiderman') {
+        avatars[0].innerHTML = `
+          <svg viewBox="0 0 100 100" style="width: 80%; height: 80%; fill: #e53e3e;">
+            <path d="M50,15 C30,15 22,35 22,55 C22,75 38,90 50,90 C62,90 78,75 78,55 C78,35 70,15 50,15 Z" />
+            <path d="M50,15 L50,90 M22,55 L78,55 M28,30 L72,70 M28,70 L72,30" stroke="black" stroke-width="1.5" />
+            <path d="M28,45 C28,45 35,62 50,55 C45,52 35,45 28,45 Z" fill="white" stroke="black" stroke-width="3" />
+            <path d="M72,45 C72,45 65,62 50,55 C55,52 65,45 72,45 Z" fill="white" stroke="black" stroke-width="3" />
+          </svg>
+        `;
+      } else if (appState.theme === 'barbie') {
+        avatars[0].innerHTML = `
+          <svg viewBox="0 0 100 100" style="width: 80%; height: 80%; fill: #e91e63;">
+            <path d="M15,75 L85,75 L90,35 L70,50 L50,20 L30,50 L10,35 Z" />
+            <circle cx="50" cy="20" r="4" fill="#ffeb3b" />
+            <circle cx="10" cy="35" r="4" fill="#ffeb3b" />
+            <circle cx="90" cy="35" r="4" fill="#ffeb3b" />
+            <rect x="25" y="70" width="50" height="5" fill="#f48fb1" />
+          </svg>
+        `;
+      } else {
+        avatars[0].textContent = getInitials(appState.brideName);
+      }
+    }
+    
+    // 2. Groom Avatar
+    if (appState.groomPhoto) {
+      avatars[1].innerHTML = `<img src="${appState.groomPhoto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    } else {
+      if (appState.theme === 'mario') {
+        avatars[1].innerHTML = `
+          <svg viewBox="0 0 100 100" style="width: 75%; height: 75%; fill: #4caf50;">
+            <path d="M 50 15 C 30 15 20 30 20 50 C 20 60 25 65 30 65 C 35 65 38 60 40 55 C 43 55 45 60 45 65 C 45 75 35 85 50 85 C 65 85 55 75 55 65 C 55 60 57 55 60 55 C 62 60 65 65 70 65 C 75 65 80 60 80 50 C 80 30 70 15 50 15 Z" />
+            <circle cx="35" cy="35" r="8" fill="white" />
+            <circle cx="65" cy="35" r="8" fill="white" />
+            <circle cx="50" cy="50" r="7" fill="white" />
+          </svg>
+        `;
+      } else if (appState.theme === 'spiderman') {
+        avatars[1].innerHTML = `
+          <svg viewBox="0 0 100 100" style="width: 70%; height: 70%; stroke: #1e3a8a; stroke-width: 5; fill: none;">
+            <circle cx="50" cy="50" r="10" fill="#1e3a8a" />
+            <path d="M 50 35 L 50 65 M 35 25 Q 40 45 50 45 M 65 25 Q 60 45 50 45 M 30 50 L 50 50 M 70 50 L 50 50 M 35 75 Q 40 55 50 55 M 65 75 Q 60 55 50 55" />
+          </svg>
+        `;
+      } else if (appState.theme === 'barbie') {
+        avatars[1].innerHTML = `
+          <svg viewBox="0 0 100 100" style="width: 80%; height: 80%; fill: #e91e63;">
+            <path d="M12,25 C1,12 18,-2 35,11 C52,-2 69,12 58,25 L35,46 Z" transform="translate(15,18) scale(1.1)"/>
+          </svg>
+        `;
+      } else {
+        avatars[1].textContent = getInitials(appState.groomName);
+      }
+    }
+  }
+
+  // Photo Gallery Slider update
+  const gallerySection = document.getElementById('previewGallerySection');
+  const gallerySlider = document.getElementById('previewGallerySlider');
+  if (gallerySection && gallerySlider) {
+    if (appState.galleryPhotos && appState.galleryPhotos.length > 0) {
+      gallerySection.style.display = 'block';
+      gallerySlider.innerHTML = '';
+      appState.galleryPhotos.forEach(photo => {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('gallery-img-wrapper');
+        wrapper.innerHTML = `<img src="${photo}">`;
+        gallerySlider.appendChild(wrapper);
+      });
+    } else {
+      gallerySection.style.display = 'none';
+      gallerySlider.innerHTML = '';
+    }
+  }
+  
+  // Handle single vs couple layout classes on container
+  const cardContainer = document.getElementById('cardContainer');
+  const defaults = eventDefaults[appState.eventType];
+  if (defaults && defaults.layout === 'single') {
+    cardContainer.classList.add('single-host-layout');
+  } else {
+    cardContainer.classList.remove('single-host-layout');
+  }
+
+  // Detail card
+  document.getElementById('previewEventDateCard').textContent = appState.eventDate;
+  document.getElementById('previewEventTimeCard').textContent = appState.eventTime;
+  document.getElementById('previewVenueNameCard').textContent = appState.venueName;
+  document.getElementById('previewVenueAddressCard').textContent = appState.venueAddress;
+  
+  // Map Anchors
+  document.getElementById('btnGmaps').href = appState.gmaps;
+  document.getElementById('btnWaze').href = appState.waze;
+  
+  // Contact section
+  document.getElementById('previewContactName1').textContent = appState.contacts[0].name;
+  document.getElementById('callLink1').href = `tel:${appState.contacts[0].phone}`;
+  document.getElementById('waLink1').href = `https://wa.me/60${appState.contacts[0].phone.replace(/^60|^0/, '')}`;
+  
+  document.getElementById('previewContactName2').textContent = appState.contacts[1].name;
+  document.getElementById('callLink2').href = `tel:${appState.contacts[1].phone}`;
+  document.getElementById('waLink2').href = `https://wa.me/60${appState.contacts[1].phone.replace(/^60|^0/, '')}`;
+  
+  // Render animated dynamic main illustrations
+  renderMainIllustration();
+  if (appState.customThemeActive) {
+    applyCustomTheme();
+  }
+}
+
+// Countdown timer execution
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  
+  const updateTimer = () => {
+    const target = new Date(appState.targetDate).getTime();
+    const now = new Date().getTime();
+    const difference = target - now;
+    
+    if (difference <= 0) {
+      document.getElementById('daysBox').textContent = '00';
+      document.getElementById('hoursBox').textContent = '00';
+      document.getElementById('minsBox').textContent = '00';
+      document.getElementById('secsBox').textContent = '00';
+      clearInterval(countdownInterval);
+      return;
+    }
+    
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    
+    const pad = (num) => String(num).padStart(2, '0');
+    
+    document.getElementById('daysBox').textContent = pad(days);
+    document.getElementById('hoursBox').textContent = pad(hours);
+    document.getElementById('minsBox').textContent = pad(minutes);
+    document.getElementById('secsBox').textContent = pad(seconds);
+  };
+  
+  updateTimer();
+  countdownInterval = setInterval(updateTimer, 1000);
+}
+
+// Floating Particle Generator (Leaf/Gold dust effects)
+function createParticles(containerId, count = 12) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    
+    // Randomized positions, timings and dimensions
+    const size = Math.random() * 8 + 4; // 4px to 12px
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.left = `${Math.random() * 100}%`;
+    particle.style.animationDelay = `${Math.random() * 8}s`;
+    particle.style.animationDuration = `${Math.random() * 6 + 7}s`; // 7s to 13s
+    
+    // Theme-based overrides
+    if (appState.theme === 'mario') {
+      particle.style.backgroundColor = '#f8d818';
+      particle.style.borderRadius = '50%';
+      particle.style.border = '1px solid #000';
+      particle.style.boxShadow = 'inset -1.5px -1.5px 0px rgba(0,0,0,0.5)';
+      particle.style.animationName = 'mario-coin';
+    } else if (appState.theme === 'marvel') {
+      particle.style.backgroundColor = '#f97316'; // orange ember spark
+      particle.style.borderRadius = '2px';
+      particle.style.boxShadow = '0 0 6px #ef4444';
+      particle.style.animationName = 'marvel-ember';
+    } else if (appState.theme === 'rose-gold') {
+      particle.style.backgroundColor = '#f472b6'; // rose pink petal
+      particle.style.borderRadius = '50% 0 50% 50%';
+      particle.style.animationName = 'fall';
+    } else {
+      // Default: Emerald gold dust
+      particle.style.backgroundColor = 'var(--particle-color)';
+      particle.style.borderRadius = '50%';
+      particle.style.animationName = 'fall';
+    }
+    
+    container.appendChild(particle);
+  }
+}
+
+// Theme controller picker
+function initThemePicker() {
+  const buttons = document.querySelectorAll('.theme-picker .theme-btn');
+  const cardContainer = document.getElementById('cardContainer');
+  const defaultWreath = document.getElementById('defaultCoverWreath');
+  const customWreath = document.getElementById('customCoverWreath');
+  const interactiveContainer = document.getElementById('customThemeInteractiveContainer');
+  
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Toggle active states on controls
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const newTheme = btn.dataset.theme;
+      
+      if (newTheme === 'mario' || newTheme === 'marvel') {
+        const promptInput = document.getElementById('inputCustomTheme');
+        if (promptInput) promptInput.value = (newTheme === 'marvel') ? 'spiderman' : 'mario';
+        
+        const theme = generateCustomTheme((newTheme === 'marvel') ? 'spiderman' : 'mario');
+        appState.theme = theme.themeName;
+        appState.customThemeActive = true;
+        appState.customThemeColors = theme.colors;
+        appState.customThemeFonts = theme.fonts;
+        appState.customThemeClass = theme.customClass;
+        appState.customThemeCoverSvg = theme.coverSvg;
+        appState.customThemeInteractiveHtml = theme.interactiveHtml;
+        appState.customThemeParticleType = theme.particleType;
+        
+        applyCustomTheme();
+      } else {
+        appState.theme = newTheme;
+        appState.customThemeActive = false;
+        cardContainer.removeAttribute('style'); // Clear all inline style variables
+        defaultWreath.style.display = 'block';
+        customWreath.style.display = 'none';
+        customWreath.innerHTML = '';
+        interactiveContainer.innerHTML = '';
+        
+        cardContainer.setAttribute('data-card-theme', newTheme);
+        renderMainIllustration();
+        updatePreview();
+      }
+      
+      // Refresh particles
+      createParticles('coverParticles', 10);
+    });
+  });
+}
+
+// Background Music Toggle Controllers
+const musicState = {
+  isPlaying: false
+};
+
+function playMusic(forcePlay = false) {
+  if (forcePlay) {
+    musicState.isPlaying = false;
+  }
+  
+  const floatingBtn = document.getElementById('cardFloatingMusic');
+  
+  if (!musicState.isPlaying) {
+    // Start playback
+    if (appState.useSynth) {
+      customAudio.pause();
+      synthPiano.start();
+    } else {
+      synthPiano.stop();
+      if (customAudio.src !== appState.musicUrl) {
+        customAudio.src = appState.musicUrl;
+      }
+      customAudio.play().catch(err => {
+        console.warn('Audio playback failed: ', err);
+      });
+    }
+    musicState.isPlaying = true;
+    floatingBtn.classList.add('playing');
+    floatingBtn.innerHTML = '<i class="fa-solid fa-compact-disc"></i>';
+  } else {
+    // Stop playback
+    synthPiano.stop();
+    customAudio.pause();
+    musicState.isPlaying = false;
+    floatingBtn.classList.remove('playing');
+    floatingBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+  }
+}
+
+// Set up Guest Name from URL parameter (?to=Nama+Tetamu)
+function initGuestName() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const guestName = urlParams.get('to');
+  const guestBox = document.getElementById('coverGuestName');
+  const rsvpName = document.getElementById('rsvpName');
+  
+  if (guestName) {
+    const formattedName = decodeURIComponent(guestName.replace(/\+/g, ' '));
+    guestBox.textContent = formattedName;
+    rsvpName.value = formattedName;
+  } else {
+    guestBox.textContent = 'Tetamu Kehormat';
+  }
+}
+
+// Render wishes guestbook wall list
+function renderWishes() {
+  const container = document.getElementById('wishesList');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  // Sort descending by timestamp
+  const sortedWishes = [...appState.wishes].sort((a, b) => b.timestamp - a.timestamp);
+  
+  if (sortedWishes.length === 0) {
+    container.innerHTML = '<div style="text-align: center; font-size: 0.8rem; color: var(--card-text-muted); font-style: italic; padding: 1rem;">Tiada ucapan lagi. Jadilah yang pertama!</div>';
+    return;
+  }
+  
+  sortedWishes.forEach(wish => {
+    const item = document.createElement('div');
+    item.classList.add('wish-item');
+    
+    const isAttending = wish.status === 'hadir';
+    const statusText = isAttending ? 'Hadir' : 'Tidak Hadir';
+    const statusClass = isAttending ? 'status-attending' : 'status-declined';
+    
+    item.innerHTML = `
+      <div class="wish-header">
+        <span class="wish-name">${escapeHtml(wish.name)}</span>
+        <span class="wish-status ${statusClass}">${statusText}</span>
+      </div>
+      <p class="wish-message">"${escapeHtml(wish.message || 'Hadir meriahkan majlis!')}"</p>
+    `;
+    container.appendChild(item);
+  });
+}
+
+// Helper to escape HTML to prevent XSS
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+}
+
+// Initialize RSVP Form submission listener
+function initRsvpForm() {
+  const form = document.getElementById('rsvpForm');
+  if (!form) return;
+
+  // Toggle Pax selection depending on attending status
+  const attendanceRadios = form.querySelectorAll('input[name="attendance"]');
+  const paxGroup = document.getElementById('paxGroup');
+  
+  attendanceRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.value === 'hadir') {
+        paxGroup.style.display = 'block';
+      } else {
+        paxGroup.style.display = 'none';
+      }
+    });
+  });
+  
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('rsvpName').value.trim();
+    const attendance = form.querySelector('input[name="attendance"]:checked').value;
+    const pax = attendance === 'hadir' ? parseInt(document.getElementById('rsvpPax').value) : 0;
+    const message = document.getElementById('rsvpMessage').value.trim();
+    
+    if (!name) return;
+    
+    const newWish = {
+      name,
+      status: attendance,
+      pax,
+      message,
+      timestamp: Date.now()
+    };
+    
+    appState.wishes.push(newWish);
+    localStorage.setItem('ecard_wishes', JSON.stringify(appState.wishes));
+    
+    renderWishes();
+    
+    // Reset RSVP form details but keep name if URL supplied
+    form.reset();
+    initGuestName();
+    
+    alert(`Terima kasih ${name}! Pengesahan RSVP anda telah berjaya disimpan.`);
+  });
+}
+
+// Setup Add to Google Calendar generator Link
+function initCalendarGenerator() {
+  const btn = document.getElementById('btnAddCalendar');
+  if (!btn) return;
+  
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    
+    // Parse target Date
+    const startDateObj = new Date(appState.targetDate);
+    const endDateObj = new Date(startDateObj.getTime() + 5 * 60 * 60 * 1000); // Default duration 5 hours
+    
+    const formatCalDate = (date) => {
+      return date.toISOString().replace(/-|:|\.\d\d\d/g, '');
+    };
+    
+    const startStr = formatCalDate(startDateObj);
+    const endStr = formatCalDate(endDateObj);
+    
+    const calTitle = encodeURIComponent(`Majlis Kesyukuran & Perkahwinan ${appState.shortNames}`);
+    const calDetails = encodeURIComponent(`Anda dijemput ke majlis kami!\nVenue: ${appState.venueName}\nAlamat: ${appState.venueAddress}`);
+    const calLocation = encodeURIComponent(`${appState.venueName}, ${appState.venueAddress}`);
+    
+    const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calTitle}&dates=${startStr}/${endStr}&details=${calDetails}&location=${calLocation}`;
+    
+    window.open(gCalUrl, '_blank');
+  });
+}
+
+// Reset settings to default values
+function initResetButton() {
+  const btn = document.getElementById('btnResetSettings');
+  if (!btn) return;
+  
+  btn.addEventListener('click', () => {
+    if (confirm('Adakah anda mahu mengembalikan maklumat e-kad kepada butiran asal?')) {
+      localStorage.removeItem('ecard_wishes');
+      window.location.reload();
+    }
+  });
+}
+
+// Mobile view switcher (toggle between Editor inputs and Mobile preview mock screen)
+function initMobileViewSwitcher() {
+  const btn = document.getElementById('btnMobileViewToggle');
+  const editor = document.getElementById('editorPanel');
+  const preview = document.getElementById('previewPanel');
+  
+  if (!btn || !editor || !preview) return;
+  
+  btn.addEventListener('click', () => {
+    if (currentActiveView === 'editor') {
+      editor.classList.remove('active-view');
+      preview.classList.add('active-view');
+      btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Edit Maklumat';
+      btn.style.backgroundColor = '#3b82f6'; // Change color to blue for edit mode
+      currentActiveView = 'preview';
+    } else {
+      preview.classList.remove('active-view');
+      editor.classList.add('active-view');
+      btn.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Preview Kad';
+      btn.style.backgroundColor = '#10b981'; // Back to green
+      currentActiveView = 'editor';
+    }
+  });
+}
+
+// Core Envelope Opening Action trigger
+function initEnvelopeOpener() {
+  const btn = document.getElementById('btnOpenCard');
+  const cover = document.getElementById('envelopeCover');
+  const content = document.getElementById('mainCardContent');
+  
+  if (!btn || !cover || !content) return;
+  
+  btn.addEventListener('click', () => {
+    // 1. Fade/slide envelope cover out
+    cover.classList.add('opened');
+    
+    // 2. Play background music automatically
+    setTimeout(() => {
+      // Start music play
+      if (!musicState.isPlaying) {
+        playMusic();
+      }
+    }, 500);
+    
+    // 3. Trigger custom theme open-effects!
+    if (appState.customThemeActive) {
+      if (appState.theme === 'spiderman') {
+        triggerSpiderwebShoot();
+      } else if (appState.theme === 'barbie') {
+        triggerBarbiePulse();
+      } else if (appState.theme === 'mario') {
+        setTimeout(triggerMarioJump, 300);
+      }
+    }
+    
+    // 4. Render content block and start scroll reveal checks
+    setTimeout(() => {
+      cover.style.display = 'none';
+      content.style.display = 'block';
+      // Recalculate particle falling zones
+      createParticles('mainParticles', 16);
+    }, 1200);
+  });
+}
+
+// Generate the fully single-page self-contained standalone HTML E-card file
+function initHtmlExporter() {
+  const btn = document.getElementById('btnDownloadHtml');
+  if (!btn) return;
+  
+  btn.addEventListener('click', () => {
+    // Fetch style.css and this app.js files content dynamically via AJAX,
+    // merge them inline inside templates, pre-config state variables, and output index.html
+    
+    // Set fallback files in case running on local file system (CORS block on fetch)
+    const exportFile = () => {
+      // Let's build a clean standalone HTML content
+      const standaloneHtml = `<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kad Undangan Digital - ${escapeHtml(appState.shortNames)}</title>
+  <meta name="description" content="Kad Jemputan Digital ${escapeHtml(appState.title)} ${escapeHtml(appState.shortNames)}. Sila sahkan kehadiran anda.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Inlined CSS Style */
+    ${inlinedCss}
+    
+    /* Reset app framework wrapper for standalone viewing */
+    body {
+      overflow: auto;
+      background-color: #0c0f17;
+    }
+    .phone-frame {
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      min-height: 100vh;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0 auto;
+    }
+    .phone-notch {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="phone-frame">
+    <div class="phone-screen" id="cardContainer" data-card-theme="${appState.theme}">
+      
+      <!-- Floating Music Player -->
+      <div class="floating-music" id="cardFloatingMusic" title="Main/Senyap Lagu">
+        <i class="fa-solid fa-music"></i>
+      </div>
+      
+      <!-- Envelope Cover -->
+      <div class="envelope-cover" id="envelopeCover">
+        <div class="particles-container" id="coverParticles"></div>
+        <div class="envelope-card">
+          <svg class="wreath-icon" viewBox="0 0 100 100">
+            <path d="M 50 15 C 30 15 15 35 15 55 C 15 70 25 82 40 85 M 50 15 C 70 15 85 35 85 55 C 85 70 75 82 60 85" />
+            <path d="M 30 25 L 35 23 M 22 38 L 28 35 M 18 52 L 25 50 M 22 66 L 28 62 M 32 78 L 36 72" />
+            <path d="M 70 25 L 65 23 M 78 38 L 72 35 M 82 52 L 75 50 M 78 66 L 72 62 M 72 78 L 68 72" />
+            <path d="M 46 22 L 54 22 M 48 83 L 52 83" />
+          </svg>
+          <div class="font-script couple-names" id="coverShortNames">${escapeHtml(appState.shortNames)}</div>
+          <div class="wedding-tagline" id="coverTitle">${escapeHtml(appState.title)}</div>
+          <div class="invitation-to">Undangan Khas Ke Majlis:</div>
+          <div class="guest-name-box" id="coverGuestName">Tetamu Kehormat</div>
+          <button class="btn-open-card" id="btnOpenCard">
+            <i class="fa-solid fa-envelope-open"></i> Buka Undangan
+          </button>
+        </div>
+      </div>
+      
+      <!-- Main Content -->
+      <div class="card-content" style="display: none;" id="mainCardContent">
+        <div class="particles-container" id="mainParticles"></div>
+        
+        <section class="card-section hero-section">
+          <span class="wedding-tagline">${escapeHtml(appState.tagline)}</span>
+          <h2 class="font-script hero-names">${escapeHtml(appState.shortNames)}</h2>
+          <svg class="divider-ornament" viewBox="0 0 100 10">
+            <path d="M 0 5 Q 25 1 50 5 T 100 5" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="50" cy="5" r="3" fill="currentColor" />
+          </svg>
+          <p class="hero-date">${escapeHtml(appState.eventDate)}</p>
+        </section>
+        
+        <section class="card-section quote-section">
+          <p class="quote-text">"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang."</p>
+          <p class="quote-author">(Surah Ar-Rum: 21)</p>
+        </section>
+        
+        <section class="card-section profile-section">
+          <span class="profile-title">Dengan penuh kesyukuran menjemput ke majlis</span>
+          <div class="parent-intro">${appState.parents.replace(/\n/g, '<br>')}</div>
+          <div class="and-divider">Untuk menghadiri majlis perkahwinan anakanda kesayangan kami:</div>
+          <div class="couple-avatars">
+            <div class="avatar-wrapper">
+              <div class="avatar-circle">${getInitials(appState.brideName)}</div>
+              <div class="avatar-name">${escapeHtml(appState.brideName)}</div>
+            </div>
+            <div class="and-divider">&</div>
+            <div class="avatar-wrapper">
+              <div class="avatar-circle">${getInitials(appState.groomName)}</div>
+              <div class="avatar-name">${escapeHtml(appState.groomName)}</div>
+            </div>
+          </div>
+        </section>
+        
+        <section class="card-section countdown-section">
+          <span class="detail-title">KAUNTER UNDUR MAJLIS</span>
+          <div class="countdown-grid">
+            <div class="countdown-box"><span class="countdown-num" id="daysBox">00</span><span class="countdown-label">Hari</span></div>
+            <div class="countdown-box"><span class="countdown-num" id="hoursBox">00</span><span class="countdown-label">Jam</span></div>
+            <div class="countdown-box"><span class="countdown-num" id="minsBox">00</span><span class="countdown-label">Minit</span></div>
+            <div class="countdown-box"><span class="countdown-num" id="secsBox">00</span><span class="countdown-label">Saat</span></div>
+          </div>
+        </section>
+        
+        <section class="card-section details-section">
+          <div class="event-card">
+            <div class="detail-row">
+              <i class="fa-regular fa-calendar detail-icon"></i>
+              <span class="detail-title">Tarikh Majlis</span>
+              <span class="detail-value-large">${escapeHtml(appState.eventDate)}</span>
+            </div>
+            <div class="detail-row">
+              <i class="fa-regular fa-clock detail-icon"></i>
+              <span class="detail-title">Masa Majlis</span>
+              <span class="detail-value">${escapeHtml(appState.eventTime)}</span>
+            </div>
+            <div class="detail-row">
+              <i class="fa-solid fa-location-dot detail-icon"></i>
+              <span class="detail-title">Tempat</span>
+              <span class="detail-value" style="font-weight: 700;">${escapeHtml(appState.venueName)}</span>
+              <span class="detail-value" style="font-size: 0.8rem; text-align: center; color: var(--card-text-muted);">${escapeHtml(appState.venueAddress)}</span>
+            </div>
+            <div class="button-group">
+              <a href="${escapeHtml(appState.gmaps)}" class="btn-card btn-card-outline" target="_blank"><i class="fa-solid fa-map-location-dot"></i> Google Maps</a>
+              <a href="${escapeHtml(appState.waze)}" class="btn-card btn-card-outline" target="_blank"><i class="fa-solid fa-car-side"></i> Waze</a>
+            </div>
+            <button class="btn-card btn-card-solid" id="btnAddCalendar" style="margin-top: 0.75rem; width: 100%;"><i class="fa-regular fa-calendar-plus"></i> Simpan Tarikh (Calendar)</button>
+          </div>
+        </section>
+        
+        <section class="card-section contact-section">
+          <span class="detail-title">HUBUNGI KAMI</span>
+          <div class="contact-row">
+            <div class="contact-info">
+              <div class="contact-name">${escapeHtml(appState.contacts[0].name)}</div>
+              <div class="contact-relation">Hubungi untuk pertanyaan</div>
+            </div>
+            <div class="contact-actions">
+              <a href="tel:${escapeHtml(appState.contacts[0].phone)}" class="btn-icon"><i class="fa-solid fa-phone"></i></a>
+              <a href="https://wa.me/60${escapeHtml(appState.contacts[0].phone.replace(/^60|^0/, ''))}" class="btn-icon" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-info">
+              <div class="contact-name">${escapeHtml(appState.contacts[1].name)}</div>
+              <div class="contact-relation">Hubungi untuk pertanyaan</div>
+            </div>
+            <div class="contact-actions">
+              <a href="tel:${escapeHtml(appState.contacts[1].phone)}" class="btn-icon"><i class="fa-solid fa-phone"></i></a>
+              <a href="https://wa.me/60${escapeHtml(appState.contacts[1].phone.replace(/^60|^0/, ''))}" class="btn-icon" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+          </div>
+        </section>
+        
+        <section class="card-section rsvp-section">
+          <span class="detail-title">RSVP & UCAPAN KASIH</span>
+          <form class="rsvp-form" id="rsvpForm">
+            <div>
+              <label for="rsvpName">Nama Tetamu</label>
+              <input type="text" id="rsvpName" class="rsvp-input" required placeholder="Sila masukkan nama anda">
+            </div>
+            <div>
+              <label>Kehadiran</label>
+              <div class="rsvp-radio-group">
+                <label class="rsvp-radio-label"><input type="radio" name="attendance" value="hadir" checked> Hadir</label>
+                <label class="rsvp-radio-label"><input type="radio" name="attendance" value="tidak"> Tidak Hadir</label>
+              </div>
+            </div>
+            <div id="paxGroup">
+              <label for="rsvpPax">Jumlah Tetamu (Termasuk Anda)</label>
+              <select id="rsvpPax" class="rsvp-input">
+                <option value="1">1 Orang</option>
+                <option value="2" selected>2 Orang</option>
+                <option value="3">3 Orang</option>
+                <option value="4">4 Orang</option>
+                <option value="5">5 Orang</option>
+              </select>
+            </div>
+            <div>
+              <label for="rsvpMessage">Ucapan / Doa Restu</label>
+              <textarea id="rsvpMessage" class="rsvp-input" placeholder="Tuliskan ucapan tahniah atau doa anda di sini..." style="min-height: 70px; resize: none;"></textarea>
+            </div>
+            <button type="submit" class="btn-card btn-card-solid" style="width: 100%; border: none;">Hantar Pengesahan</button>
+          </form>
+          
+          <div class="wishes-wall">
+            <h4 class="wishes-title">Ucapan Tetamu</h4>
+            <div class="wishes-container" id="wishesList"></div>
+          </div>
+        </section>
+        
+        <section class="card-section footer-section">
+          <span class="watermark">E-Kad Jemputan Digital &copy; 2026. <br>Hubungi tuan rumah untuk maklumat lanjut.</span>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Inlined JS Script */
+    const appState = ${JSON.stringify(appState)};
+    ${inlinedJsStandalone}
+  </script>
+</body>
+</html>`;
+
+      const blob = new Blob([standaloneHtml], { type: 'text/html;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `kad-undangan-${appState.shortNames.toLowerCase().replace(/\s+&\s+/g, '-').replace(/\s+/g, '_')}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    // Attempt to dynamically fetch css and js content, or fallback to bundling
+    Promise.all([
+      fetch('style.css').then(r => r.text()).catch(() => ''),
+      fetch('app.js').then(r => r.text()).catch(() => '')
+    ]).then(([cssText, jsText]) => {
+      // If fetching fails or empty, use static fallback strings
+      if (cssText) inlinedCss = cssText;
+      
+      // Inject correct JS logic for standalone client (without studio bindings)
+      inlinedJsStandalone = `
+        // Inlined variables
+        const synthPiano = new (${PianoSynth.toString()})();
+        const customAudio = new Audio();
+        customAudio.loop = true;
+        let countdownInterval = null;
+
+        // Sound effects synthesizers inside standalone exported card
+        function playJumpSound() {
+          try {
+            const ctx = synthPiano.ctx || new (window.AudioContext || window.webkitAudioContext)();
+            if (!synthPiano.ctx) synthPiano.ctx = ctx;
+            if (ctx.state === 'suspended') ctx.resume();
+            const time = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, time);
+            osc.frequency.exponentialRampToValueAtTime(750, time + 0.18);
+            gain.gain.setValueAtTime(0.15, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.18);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(time);
+            osc.stop(time + 0.2);
+          } catch(e) {}
+        }
+
+        function playWebSound() {
+          try {
+            const ctx = synthPiano.ctx || new (window.AudioContext || window.webkitAudioContext)();
+            if (!synthPiano.ctx) synthPiano.ctx = ctx;
+            if (ctx.state === 'suspended') ctx.resume();
+            const time = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(3000, time);
+            osc.frequency.exponentialRampToValueAtTime(120, time + 0.12);
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(800, time);
+            gain.gain.setValueAtTime(0.18, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(time);
+            osc.stop(time + 0.14);
+          } catch(e) {}
+        }
+
+        function playSweetBellSound() {
+          try {
+            const ctx = synthPiano.ctx || new (window.AudioContext || window.webkitAudioContext)();
+            if (!synthPiano.ctx) synthPiano.ctx = ctx;
+            if (ctx.state === 'suspended') ctx.resume();
+            const time = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, time);
+            gain.gain.setValueAtTime(0.2, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.6);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(time);
+            osc.stop(time + 0.62);
+          } catch(e) {}
+        }
+
+        // Apply Custom Theme details dynamically
+        function applyCustomTheme() {
+          if (!appState.customThemeActive) return;
+          const cardContainer = document.getElementById('cardContainer');
+          const defaultWreath = document.getElementById('defaultCoverWreath');
+          const customWreath = document.getElementById('customCoverWreath');
+          const interactiveContainer = document.getElementById('customThemeInteractiveContainer');
+          
+          cardContainer.setAttribute('data-card-theme', appState.theme);
+          
+          const colors = appState.customThemeColors;
+          cardContainer.style.setProperty('--card-bg', colors.bg);
+          cardContainer.style.setProperty('--card-bg-gradient', colors.bgGradient);
+          cardContainer.style.setProperty('--card-text', colors.text);
+          cardContainer.style.setProperty('--card-text-muted', colors.textMuted);
+          cardContainer.style.setProperty('--card-accent', colors.accent);
+          cardContainer.style.setProperty('--card-accent-rgb', colors.accentRgb);
+          cardContainer.style.setProperty('--card-border', colors.border);
+          cardContainer.style.setProperty('--card-soft-bg', colors.softBg);
+          cardContainer.style.setProperty('--particle-color', colors.particleColor);
+
+          const fonts = appState.customThemeFonts;
+          cardContainer.style.setProperty('--theme-script-font', fonts.script);
+          cardContainer.style.setProperty('--theme-title-font', fonts.title);
+          cardContainer.style.setProperty('--theme-text-transform', fonts.transform);
+          cardContainer.style.setProperty('--theme-letter-spacing', fonts.letterSpacing);
+          
+          if (appState.customThemeCoverSvg) {
+            defaultWreath.style.display = 'none';
+            customWreath.style.display = 'block';
+            customWreath.innerHTML = appState.customThemeCoverSvg;
+          }
+          if (appState.customThemeInteractiveHtml) {
+            interactiveContainer.innerHTML = appState.customThemeInteractiveHtml;
+            
+            // Re-bind interactive Mario jumping click handler
+            const mario = document.getElementById('marioCharacter');
+            if (mario) {
+              mario.addEventListener('click', () => {
+                if (!mario.classList.contains('jump')) {
+                  mario.classList.add('jump');
+                  playJumpSound();
+                  setTimeout(() => mario.classList.remove('jump'), 500);
+                }
+              });
+            }
+          }
+          
+          renderMainIllustration();
+        }
+
+        // Dynamic Main Illustration inside standalone exported card
+        function renderMainIllustration() {
+          const container = document.getElementById('customThemeMainIllustration');
+          if (!container) return;
+          const theme = appState.theme;
+          if (theme === 'mario') {
+            container.innerHTML =
+              '<div class="theme-illustration-container">' +
+                '<div class="mario-scene-box">' +
+                  '<svg viewBox="0 0 100 100" style="position: absolute; top: 10px; left: 10px; width: 40px; fill: white; opacity: 0.8;">' +
+                    '<path d="M20,50 C20,40 30,35 40,40 C45,30 65,30 70,40 C80,40 85,50 80,60 C75,65 25,65 20,50 Z"/>' +
+                  '</svg>' +
+                  '<div class="mario-scene-lawn"></div>' +
+                  '<div class="mario-scene-pipe">' +
+                    '<svg viewBox="0 0 100 100" style="position: absolute; top: -16px; left: 2px; width: 25px; fill: #e52521; animation: plantPeek 2.5s infinite ease-in-out;">' +
+                      '<path d="M50,10 C30,10 20,25 20,45 L80,45 C80,25 70,10 50,10 Z" />' +
+                      '<path d="M20,45 L80,45 L50,75 Z" fill="#ffffff" />' +
+                    '</svg>' +
+                  '</div>' +
+                  '<div class="mario-scene-block">' +
+                    '<svg viewBox="0 0 100 100" style="fill: #f8d818; stroke: #000; stroke-width: 6;">' +
+                      '<rect x="5" y="5" width="90" height="90"/>' +
+                      '<text x="30" y="70" font-family="Courier New" font-size="70" font-weight="900" fill="#000">?</text>' +
+                    '</svg>' +
+                  '</div>' +
+                '</div>' +
+              '</div>';
+          } else if (theme === 'spiderman') {
+            container.innerHTML =
+              '<div class="theme-illustration-container">' +
+                '<div class="spiderman-scene-box">' +
+                  '<div style="position: absolute; top: 0; left: 50%; width: 1.5px; height: 50px; background-color: #fff; opacity: 0.7;"></div>' +
+                  '<div class="spiderman-hanging">' +
+                    '<svg viewBox="0 0 100 150" style="width: 100%; height: 100%;">' +
+                      '<circle cx="50" cy="55" r="14" fill="#1e3a8a" />' +
+                      '<circle cx="50" cy="30" r="12" fill="#e53e3e" />' +
+                      '<path d="M50,10 C38,10 32,22 32,32 C32,45 42,50 50,50 C58,50 68,45 68,32 C68,22 62,10 50,10 Z" fill="#e53e3e" transform="rotate(180, 50, 30)" />' +
+                      '<path d="M40,32 C40,32 45,22 50,26 C48,28 42,32 40,32 Z M60,32 C60,32 55,22 50,26 C52,28 58,32 60,32 Z" fill="white" stroke="black" stroke-width="1.5" />' +
+                      '<path d="M36,65 L25,40 L45,45 M64,65 L75,40 L55,45" stroke="#e53e3e" stroke-width="4" fill="none" />' +
+                    '</svg>' +
+                  '</div>' +
+                '</div>' +
+              '</div>';
+          } else if (theme === 'barbie') {
+            container.innerHTML =
+              '<div class="theme-illustration-container">' +
+                '<div class="barbie-scene-box">' +
+                  '<svg class="barbie-diamond" viewBox="0 0 100 100">' +
+                    '<path d="M50,10 L85,40 L50,90 L15,40 Z M25,40 L50,80 L75,40 L50,20 Z" />' +
+                  '</svg>' +
+                '</div>' +
+              '</div>';
+          } else if (theme === 'magic') {
+            container.innerHTML =
+              '<div class="theme-illustration-container">' +
+                '<div class="magic-scene-box">' +
+                  '<div class="golden-snitch">' +
+                    '<div class="snitch-wing left"></div>' +
+                    '<div class="snitch-wing right"></div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>';
+          } else {
+            container.innerHTML =
+              '<div class="theme-illustration-container">' +
+                '<div class="heartbeat-scene-box">' +
+                  '<svg class="beating-heart" viewBox="0 0 100 100">' +
+                    '<path d="M12,30 C1,15 22,-5 50,25 C78,-5 99,15 88,30 L50,85 Z" />' +
+                  '</svg>' +
+                  '<svg class="beating-heart" viewBox="0 0 100 100">' +
+                    '<path d="M12,30 C1,15 22,-5 50,25 C78,-5 99,15 88,30 L50,85 Z" />' +
+                  '</svg>' +
+                '</div>' +
+              '</div>';
+          }
+        }
+
+        // Extract initials
+        function getInitials(fullname) {
+          if (!fullname) return '';
+          let cleanName = fullname.replace(/(Siti|Hj|Hjh|Ahmad|Bin|Binti)\.?\\s+/gi, '');
+          if (!cleanName) cleanName = fullname;
+          const words = cleanName.trim().split(/\\s+/);
+          return words[0] ? words[0].charAt(0).toUpperCase() : fullname.charAt(0).toUpperCase();
+        }
+        
+        // Escape HTML
+        function escapeHtml(str) {
+          if (!str) return '';
+          return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        // Music player logic
+        const musicState = { isPlaying: false };
+        function playMusic(forcePlay = false) {
+          if (forcePlay) musicState.isPlaying = false;
+          const floatingBtn = document.getElementById('cardFloatingMusic');
+          if (!musicState.isPlaying) {
+            if (appState.useSynth) {
+              customAudio.pause();
+              synthPiano.start();
+            } else {
+              synthPiano.stop();
+              customAudio.src = appState.musicUrl;
+              customAudio.play().catch(e => console.log(e));
+            }
+            musicState.isPlaying = true;
+            floatingBtn.classList.add('playing');
+            floatingBtn.innerHTML = '<i class="fa-solid fa-compact-disc"></i>';
+          } else {
+            synthPiano.stop();
+            customAudio.pause();
+            musicState.isPlaying = false;
+            floatingBtn.classList.remove('playing');
+            floatingBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+          }
+        }
+        
+        // Timer countdown
+        function startCountdown() {
+          const updateTimer = () => {
+            const target = new Date(appState.targetDate).getTime();
+            const now = new Date().getTime();
+            const difference = target - now;
+            if (difference <= 0) {
+              document.getElementById('daysBox').textContent = '00';
+              document.getElementById('hoursBox').textContent = '00';
+              document.getElementById('minsBox').textContent = '00';
+              document.getElementById('secsBox').textContent = '00';
+              clearInterval(countdownInterval);
+              return;
+            }
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            const pad = (num) => String(num).padStart(2, '0');
+            document.getElementById('daysBox').textContent = pad(days);
+            document.getElementById('hoursBox').textContent = pad(hours);
+            document.getElementById('minsBox').textContent = pad(minutes);
+            document.getElementById('secsBox').textContent = pad(seconds);
+          };
+          updateTimer();
+          countdownInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Particle generator
+        function createParticles(containerId, count = 12) {
+          const container = document.getElementById(containerId);
+          if (!container) return;
+          for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * 8 + 4;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = (Math.random() * 100) + '%';
+            particle.style.animationDelay = (Math.random() * 8) + 's';
+            particle.style.animationDuration = (Math.random() * 6 + 7) + 's';
+            
+            if (appState.theme === 'mario') {
+              particle.style.backgroundColor = '#f8d818';
+              particle.style.borderRadius = '50%';
+              particle.style.border = '1px solid #000';
+              particle.style.boxShadow = 'inset -1.5px -1.5px 0px rgba(0,0,0,0.5)';
+              particle.style.animationName = 'mario-coin';
+            } else if (appState.theme === 'marvel') {
+              particle.style.backgroundColor = '#f97316';
+              particle.style.borderRadius = '2px';
+              particle.style.boxShadow = '0 0 6px #ef4444';
+              particle.style.animationName = 'marvel-ember';
+            } else if (appState.theme === 'rose-gold') {
+              particle.style.backgroundColor = '#f472b6';
+              particle.style.borderRadius = '50% 0 50% 50%';
+              particle.style.animationName = 'fall';
+            } else {
+              particle.style.backgroundColor = 'var(--particle-color)';
+              particle.style.borderRadius = '50%';
+              particle.style.animationName = 'fall';
+            }
+            container.appendChild(particle);
+          }
+        }
+
+        // Guest name check
+        function initGuestName() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const guestName = urlParams.get('to');
+          const guestBox = document.getElementById('coverGuestName');
+          const rsvpName = document.getElementById('rsvpName');
+          if (guestName) {
+            const formattedName = decodeURIComponent(guestName.replace(/\\+/g, ' '));
+            guestBox.textContent = formattedName;
+            if (rsvpName) rsvpName.value = formattedName;
+          }
+        }
+
+        // Wishes guestbook
+        function renderWishes() {
+          const container = document.getElementById('wishesList');
+          if (!container) return;
+          container.innerHTML = '';
+          const sorted = [...appState.wishes].sort((a,b) => b.timestamp - a.timestamp);
+          if (sorted.length === 0) {
+            container.innerHTML = '<div style="text-align: center; font-size: 0.8rem; color: var(--card-text-muted); font-style: italic; padding: 1rem;">Tiada ucapan lagi.</div>';
+            return;
+          }
+          sorted.forEach(w => {
+            const item = document.createElement('div');
+            item.classList.add('wish-item');
+            const isAttending = w.status === 'hadir';
+            item.innerHTML = \`
+              <div class="wish-header">
+                <span class="wish-name">\${escapeHtml(w.name)}</span>
+                <span class="wish-status \${isAttending ? 'status-attending' : 'status-declined'}">\${isAttending ? 'Hadir' : 'Tidak Hadir'}</span>
+              </div>
+              <p class="wish-message">"\${escapeHtml(w.message || 'Hadir meriahkan majlis!')}"</p>
+            \`;
+            container.appendChild(item);
+          });
+        }
+
+        // Load initialization
+        window.addEventListener('DOMContentLoaded', () => {
+          applyCustomTheme();
+          renderMainIllustration();
+          initGuestName();
+          startCountdown();
+          createParticles('coverParticles', 10);
+          
+          // Seed local state wishes
+          const stored = localStorage.getItem('standalone_wishes_' + appState.shortNames.replace(/\\s+/g, ''));
+          if (stored) {
+            appState.wishes = JSON.parse(stored);
+          } else {
+            appState.wishes = \${JSON.stringify(appState.wishes)};
+          }
+          renderWishes();
+
+          // Envelope action
+          document.getElementById('btnOpenCard').addEventListener('click', () => {
+            document.getElementById('envelopeCover').classList.add('opened');
+            setTimeout(() => { playMusic(); }, 500);
+            
+            // Custom theme animation triggers
+            if (appState.customThemeActive) {
+              if (appState.theme === 'spiderman') {
+                const web = document.getElementById('spiderWebAnimation');
+                if (web) { web.classList.add('shoot'); playWebSound(); setTimeout(() => web.classList.remove('shoot'), 1200); }
+              } else if (appState.theme === 'barbie') {
+                const heart = document.getElementById('pinkHeartPulse');
+                if (heart) { heart.classList.add('pulse'); playSweetBellSound(); setTimeout(() => heart.classList.remove('pulse'), 1100); }
+              } else if (appState.theme === 'mario') {
+                const mario = document.getElementById('marioCharacter');
+                if (mario) { setTimeout(() => { mario.classList.add('jump'); playJumpSound(); setTimeout(() => mario.classList.remove('jump'), 500); }, 300); }
+              }
+            }
+
+            setTimeout(() => {
+              document.getElementById('envelopeCover').style.display = 'none';
+              document.getElementById('mainCardContent').style.display = 'block';
+              createParticles('mainParticles', 16);
+            }, 1200);
+          });
+
+          // Music toggle
+          document.getElementById('cardFloatingMusic').addEventListener('click', () => playMusic());
+
+          // RSVP handler
+          const form = document.getElementById('rsvpForm');
+          const pGroup = document.getElementById('paxGroup');
+          if (form) {
+            form.querySelectorAll('input[name="attendance"]').forEach(r => {
+              r.addEventListener('change', () => {
+                pGroup.style.display = r.value === 'hadir' ? 'block' : 'none';
+              });
+            });
+            
+            form.addEventListener('submit', (e) => {
+              e.preventDefault();
+              const name = document.getElementById('rsvpName').value.trim();
+              const attendance = form.querySelector('input[name="attendance"]:checked').value;
+              const pax = attendance === 'hadir' ? parseInt(document.getElementById('rsvpPax').value) : 0;
+              const message = document.getElementById('rsvpMessage').value.trim();
+              if (!name) return;
+              
+              const newWish = { name, status: attendance, pax, message, timestamp: Date.now() };
+              appState.wishes.push(newWish);
+              localStorage.setItem('standalone_wishes_' + appState.shortNames.replace(/\\s+/g, ''), JSON.stringify(appState.wishes));
+              renderWishes();
+              form.reset();
+              initGuestName();
+              alert('Terima kasih! RSVP anda telah dihantar.');
+            });
+          }
+
+          // Calendar
+          const calBtn = document.getElementById('btnAddCalendar');
+          if (calBtn) {
+            calBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              const start = new Date(appState.targetDate);
+              const end = new Date(start.getTime() + 5*60*60*1000);
+              const format = (d) => d.toISOString().replace(/-|:|\\.\\d\\d\\d/g, '');
+              const title = encodeURIComponent('Majlis Perkahwinan ' + appState.shortNames);
+              const detail = encodeURIComponent('Venue: ' + appState.venueName + '\\nAlamat: ' + appState.venueAddress);
+              const loc = encodeURIComponent(appState.venueName + ', ' + appState.venueAddress);
+              const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + title + '&dates=' + format(start) + '/' + format(end) + '&details=' + detail + '&location=' + loc;
+              window.open(url, '_blank');
+            });
+          }
+        });
+      `;
+      exportFile();
+    });
+  });
+}
+
+// Dynamic Procedural Theme Generator (Natural Language Parser)
+function generateCustomTheme(promptText) {
+  const prompt = promptText.toLowerCase().trim();
+  
+  let themeName = 'custom';
+  let colors = {
+    bg: '#0f172a',
+    bgGradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+    text: '#ffffff',
+    textMuted: '#94a3b8',
+    accent: '#10b981',
+    accentRgb: '16, 185, 129',
+    border: '1.5px solid rgba(16, 185, 129, 0.3)',
+    softBg: 'rgba(16, 185, 129, 0.08)',
+    particleColor: 'rgba(16, 185, 129, 0.4)'
+  };
+  let fonts = {
+    script: 'Great Vibes, cursive',
+    title: 'Playfair Display, serif',
+    transform: 'none',
+    letterSpacing: 'normal'
+  };
+  let customClass = '';
+  let particleType = 'fall';
+  let coverSvg = '';
+  let interactiveHtml = '';
+
+  if (prompt.includes('spiderman') || prompt.includes('spider-man') || prompt.includes('spider') || prompt.includes('marvel') || prompt.includes('avengers') || prompt.includes('hero') || prompt.includes('superhero')) {
+    themeName = 'spiderman';
+    colors = {
+      bg: '#090d16',
+      bgGradient: 'linear-gradient(135deg, #060910 0%, #0e1e38 100%)',
+      text: '#ffffff',
+      textMuted: '#8da2bb',
+      accent: '#e53e3e',
+      accentRgb: '229, 62, 62',
+      border: '2px solid #e53e3e',
+      softBg: 'rgba(229, 62, 62, 0.12)',
+      particleColor: 'rgba(229, 62, 62, 0.5)'
+    };
+    fonts = {
+      script: 'Impact, sans-serif',
+      title: 'Impact, sans-serif',
+      transform: 'uppercase',
+      letterSpacing: '1.5px'
+    };
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 70px;">
+        <div class="spiderman-scene-box" style="height: 70px;">
+          <div style="position: absolute; top: 0; left: 50%; width: 1.5px; height: 25px; background-color: #fff; opacity: 0.7;"></div>
+          <div class="spiderman-hanging" style="height: 50px;">
+            <svg viewBox="0 0 100 150" style="width: 100%; height: 100%;">
+              <circle cx="50" cy="55" r="14" fill="#1e3a8a" />
+              <circle cx="50" cy="30" r="12" fill="#e53e3e" />
+              <path d="M50,10 C38,10 32,22 32,32 C32,45 42,50 50,50 C58,50 68,45 68,32 C68,22 62,10 50,10 Z" fill="#e53e3e" transform="rotate(180, 50, 30)" />
+              <path d="M40,32 C40,32 45,22 50,26 C48,28 42,32 40,32 Z M60,32 C60,32 55,22 50,26 C52,28 58,32 60,32 Z" fill="white" stroke="black" stroke-width="1.5" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    `;
+    interactiveHtml = `
+      <div id="spiderWebAnimation" class="spider-web-overlay"></div>
+    `;
+    customClass = 'theme-spiderman';
+    
+  } else if (prompt.includes('mario') || prompt.includes('nintendo') || prompt.includes('luigi') || prompt.includes('game') || prompt.includes('arcade')) {
+    themeName = 'mario';
+    colors = {
+      bg: '#5c94fc',
+      bgGradient: 'linear-gradient(135deg, #5c94fc 0%, #2040c0 100%)',
+      text: '#ffffff',
+      textMuted: '#fef08a',
+      accent: '#f8d818',
+      accentRgb: '248, 216, 24',
+      border: '4px solid #f8d818',
+      softBg: 'rgba(0, 0, 0, 0.25)',
+      particleColor: 'rgba(253, 224, 71, 0.8)'
+    };
+    fonts = {
+      script: '"Courier New", monospace',
+      title: '"Courier New", monospace',
+      transform: 'uppercase',
+      letterSpacing: 'normal'
+    };
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 60px;">
+        <div class="mario-scene-block" style="position: relative; top: 0; left: 0; transform: none; animation: blockBump 1.5s infinite ease-in-out;">
+          <svg viewBox="0 0 100 100" style="fill: #f8d818; stroke: #000; stroke-width: 6; width: 45px; height: 45px;">
+            <rect x="5" y="5" width="90" height="90"/>
+            <text x="30" y="70" font-family="Courier New" font-size="70" font-weight="900" fill="#000">?</text>
+          </svg>
+        </div>
+      </div>
+    `;
+    interactiveHtml = `
+      <div id="marioCharacter" class="mario-character" title="Klik saya!">
+        <div class="mario-coin-pop"></div>
+        <div class="mario-sprite"></div>
+      </div>
+    `;
+    customClass = 'theme-mario';
+    
+  } else if (prompt.includes('barbie') || prompt.includes('pink') || prompt.includes('princess') || prompt.includes('bunga') || prompt.includes('puteri') || prompt.includes('cute')) {
+    themeName = 'barbie';
+    colors = {
+      bg: '#fff0f6',
+      bgGradient: 'linear-gradient(135deg, #fff0f6 0%, #ffdeeb 100%)',
+      text: '#c2185b',
+      textMuted: '#f06292',
+      accent: '#e91e63',
+      accentRgb: '233, 30, 99',
+      border: '2px solid #e91e63',
+      softBg: 'rgba(233, 30, 99, 0.08)',
+      particleColor: 'rgba(244, 114, 182, 0.6)'
+    };
+    fonts = {
+      script: 'Great Vibes, cursive',
+      title: 'Montserrat, sans-serif',
+      transform: 'none',
+      letterSpacing: '0.5px'
+    };
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 60px;">
+        <svg class="barbie-diamond" viewBox="0 0 100 100" style="width: 45px; height: 45px;">
+          <path d="M50,10 L85,40 L50,90 L15,40 Z M25,40 L50,80 L75,40 L50,20 Z" />
+        </svg>
+      </div>
+    `;
+    interactiveHtml = `
+      <div id="pinkHeartPulse" class="heart-pulse-overlay"></div>
+    `;
+    customClass = 'theme-barbie';
+    
+  } else if (prompt.includes('magic') || prompt.includes('harry') || prompt.includes('potter') || prompt.includes('wizard') || prompt.includes('sihir') || prompt.includes('fantasi')) {
+    themeName = 'magic';
+    colors = {
+      bg: '#0a0813',
+      bgGradient: 'linear-gradient(135deg, #0a0813 0%, #1a1527 100%)',
+      text: '#e2e8f0',
+      textMuted: '#a78bfa',
+      accent: '#c084fc',
+      accentRgb: '192, 132, 252',
+      border: '1.5px double #c084fc',
+      softBg: 'rgba(192, 132, 252, 0.1)',
+      particleColor: 'rgba(192, 132, 252, 0.5)'
+    };
+    fonts = {
+      script: 'Great Vibes, cursive',
+      title: 'Playfair Display, serif',
+      transform: 'none',
+      letterSpacing: '1px'
+    };
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 60px;">
+        <div class="magic-scene-box" style="height: 60px;">
+          <div class="golden-snitch">
+            <div class="snitch-wing left"></div>
+            <div class="snitch-wing right"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    interactiveHtml = `
+      <div id="pinkHeartPulse" class="heart-pulse-overlay" style="background-color: var(--card-accent)"></div>
+    `;
+    customClass = 'theme-magic';
+    
+  } else {
+    // Dynamic Procedural Theme (HSL)
+    let hue = 160;
+    let sat = 65;
+    let light = 10;
+    let isDark = true;
+    
+    if (prompt.includes('biru') || prompt.includes('blue') || prompt.includes('laut') || prompt.includes('ocean')) {
+      hue = 210;
+    } else if (prompt.includes('merah') || prompt.includes('red') || prompt.includes('api') || prompt.includes('fire')) {
+      hue = 0;
+    } else if (prompt.includes('hijau') || prompt.includes('green') || prompt.includes('forest') || prompt.includes('daun') || prompt.includes('hutan')) {
+      hue = 120;
+    } else if (prompt.includes('kuning') || prompt.includes('yellow') || prompt.includes('emas') || prompt.includes('gold') || prompt.includes('mewah')) {
+      hue = 45;
+    } else if (prompt.includes('purple') || prompt.includes('ungu') || prompt.includes('galaxy') || prompt.includes('gelap') || prompt.includes('batman') || prompt.includes('dark')) {
+      hue = 275;
+    } else if (prompt.includes('putih') || prompt.includes('white') || prompt.includes('minimal')) {
+      hue = 200;
+      sat = 5;
+      isDark = false;
+    }
+    
+    if (isDark) {
+      colors.bg = `hsl(${hue}, ${sat}%, 8%)`;
+      colors.bgGradient = `linear-gradient(135deg, hsl(${hue}, ${sat}%, 8%) 0%, hsl(${hue}, ${sat}%, 16%) 100%)`;
+      colors.text = '#ffffff';
+      colors.textMuted = `hsl(${hue}, 15%, 75%)`;
+      colors.accent = `hsl(${hue}, 80%, 60%)`;
+      colors.accentRgb = hexToRgb(hslToHex(hue, 80, 60));
+      colors.border = `1.5px solid rgba(${colors.accentRgb}, 0.35)`;
+      colors.softBg = `rgba(${colors.accentRgb}, 0.08)`;
+      colors.particleColor = `rgba(${colors.accentRgb}, 0.45)`;
+    } else {
+      colors.bg = `hsl(${hue}, ${sat}%, 97%)`;
+      colors.bgGradient = `linear-gradient(135deg, hsl(${hue}, ${sat}%, 97%) 0%, hsl(${hue}, ${sat}%, 91%) 100%)`;
+      colors.text = '#1e293b';
+      colors.textMuted = `hsl(${hue}, 15%, 45%)`;
+      colors.accent = `hsl(${hue}, 70%, 42%)`;
+      colors.accentRgb = hexToRgb(hslToHex(hue, 70, 42));
+      colors.border = `1.5px solid rgba(${colors.accentRgb}, 0.25)`;
+      colors.softBg = `rgba(${colors.accentRgb}, 0.06)`;
+      colors.particleColor = `rgba(${colors.accentRgb}, 0.3)`;
+    }
+
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 60px;">
+        <svg viewBox="0 0 100 100" style="width: 55px; height: 55px; fill: none; stroke: ${colors.accent}; stroke-width: 2;">
+          <polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" fill="${colors.softBg}" />
+          <circle cx="50" cy="50" r="10" fill="${colors.accent}" />
+        </svg>
+      </div>
+    `;
+  }
+
+  return { themeName, colors, fonts, customClass, particleType, coverSvg, interactiveHtml };
+}
+
+function hslToHex(h, s, l) {
+  l /= 100;
+  const a = s * Math.min(l, 1 - l) / 100;
+  const f = n => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '16, 185, 129';
+}
+
+// Sound effects synthesizers
+function playJumpSound() {
+  try {
+    const ctx = synthPiano.ctx || new (window.AudioContext || window.webkitAudioContext)();
+    if (!synthPiano.ctx) synthPiano.ctx = ctx;
+    if (ctx.state === 'suspended') ctx.resume();
+    const time = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(150, time);
+    osc.frequency.exponentialRampToValueAtTime(750, time + 0.18);
+    
+    gain.gain.setValueAtTime(0.15, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.18);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(time);
+    osc.stop(time + 0.2);
+  } catch(e) {}
+}
+
+function playWebSound() {
+  try {
+    const ctx = synthPiano.ctx || new (window.AudioContext || window.webkitAudioContext)();
+    if (!synthPiano.ctx) synthPiano.ctx = ctx;
+    if (ctx.state === 'suspended') ctx.resume();
+    const time = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(3000, time);
+    osc.frequency.exponentialRampToValueAtTime(120, time + 0.12);
+    
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(800, time);
+    
+    gain.gain.setValueAtTime(0.18, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+    
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start(time);
+    osc.stop(time + 0.14);
+  } catch(e) {}
+}
+
+function playSweetBellSound() {
+  try {
+    const ctx = synthPiano.ctx || new (window.AudioContext || window.webkitAudioContext)();
+    if (!synthPiano.ctx) synthPiano.ctx = ctx;
+    if (ctx.state === 'suspended') ctx.resume();
+    const time = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, time);
+    
+    gain.gain.setValueAtTime(0.2, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.6);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start(time);
+    osc.stop(time + 0.62);
+  } catch(e) {}
+}
+
+// Custom Theme Generator Controller
+function initCustomThemeGenerator() {
+  const btn = document.getElementById('btnGenerateTheme');
+  const promptInput = document.getElementById('inputCustomTheme');
+  
+  if (!btn || !promptInput) return;
+  
+  const triggerGeneration = () => {
+    const promptText = promptInput.value.trim();
+    if (!promptText) return;
+
+    console.log('[THEME] Trigger called with:', promptText);
+
+    // Show visual feedback
+    btn.textContent = '⏳ Generating...';
+    btn.style.background = 'orange';
+
+    // Deactivate standard theme buttons active state
+    const themeButtons = document.querySelectorAll('.theme-picker .theme-btn');
+    themeButtons.forEach(b => b.classList.remove('active'));
+
+    // Generate theme details
+    const theme = generateCustomTheme(promptText);
+    console.log('[THEME] Generated theme:', theme.themeName, theme.colors);
+
+    // Save to state
+    appState.theme = theme.themeName;
+    appState.customThemeActive = true;
+    appState.customThemePrompt = promptText;
+    appState.customThemeColors = theme.colors;
+    appState.customThemeFonts = theme.fonts;
+    appState.customThemeClass = theme.customClass;
+    appState.customThemeCoverSvg = theme.coverSvg;
+    appState.customThemeInteractiveHtml = theme.interactiveHtml;
+    appState.customThemeParticleType = theme.particleType;
+
+    console.log('[THEME] appState updated. Calling applyCustomTheme...');
+
+    // Apply theme
+    try {
+      applyCustomTheme();
+      console.log('[THEME] applyCustomTheme() completed successfully!');
+      btn.textContent = '✅ Tema ' + theme.themeName + ' diterapkan!';
+      btn.style.background = '#10b981';
+      setTimeout(() => {
+        btn.innerHTML = '🤖 Jana Tema Pintar';
+        btn.style.background = '';
+      }, 2000);
+    } catch(e) {
+      console.error('[THEME] ERROR in applyCustomTheme:', e);
+      btn.textContent = '❌ Error: ' + e.message;
+      btn.style.background = '#ef4444';
+    }
+  };
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    triggerGeneration();
+  });
+
+  // Auto-trigger on Enter keypress
+  promptInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      triggerGeneration();
+    }
+  });
+
+  // Instant trigger on input, change, keyup, paste
+  ['input', 'change', 'keyup', 'paste'].forEach(evt => {
+    promptInput.addEventListener(evt, triggerGeneration);
+  });
+}
+
+function applyCustomTheme() {
+  if (!appState.customThemeActive) return;
+
+  const colors = appState.customThemeColors;
+  const fonts = appState.customThemeFonts;
+
+  // ✅ NUCLEAR OPTION: Inject a <style> tag with !important rules
+  // This bypasses ALL CSS specificity, inline style conflicts, and inheritance issues
+  let styleTag = document.getElementById('customThemeStyleTag');
+  if (!styleTag) {
+    styleTag = document.createElement('style');
+    styleTag.id = 'customThemeStyleTag';
+    document.head.appendChild(styleTag);
+  }
+
+  styleTag.textContent = `
+    /* === CUSTOM AI THEME OVERRIDE (v${Date.now()}) === */
+    #envelopeCover {
+      background: ${colors.bgGradient} !important;
+      color: ${colors.text} !important;
+    }
+    #cardContainer, .phone-screen {
+      background: ${colors.bgGradient} !important;
+      color: ${colors.text} !important;
+    }
+    .envelope-card {
+      border-color: ${colors.accent} !important;
+      background-color: ${colors.softBg || 'rgba(0,0,0,0.3)'} !important;
+      box-shadow: 0 10px 30px rgba(${colors.accentRgb}, 0.35) !important;
+    }
+    .envelope-card::before {
+      border-color: rgba(${colors.accentRgb}, 0.3) !important;
+    }
+    #btnOpenCard {
+      background-color: ${colors.accent} !important;
+      color: ${colors.bg.startsWith('linear') ? '#ffffff' : colors.text} !important;
+      font-family: ${fonts.title || 'Montserrat, sans-serif'} !important;
+    }
+    #coverShortNames, .font-script, .hero-names {
+      color: ${colors.accent} !important;
+      font-family: ${fonts.script || 'Great Vibes, cursive'} !important;
+    }
+    #coverTitle, .wedding-tagline, #previewTagline {
+      color: ${colors.textMuted} !important;
+      font-family: ${fonts.title || 'Montserrat, sans-serif'} !important;
+      text-transform: ${fonts.transform || 'uppercase'} !important;
+      letter-spacing: ${fonts.letterSpacing || '2px'} !important;
+    }
+    .card-content {
+      background: ${colors.bgGradient} !important;
+      color: ${colors.text} !important;
+    }
+    .card-section {
+      color: ${colors.text} !important;
+    }
+    .hero-date, .card-text, p {
+      color: ${colors.textMuted} !important;
+    }
+    .divider-ornament {
+      color: ${colors.accent} !important;
+    }
+    .event-card {
+      border-color: rgba(${colors.accentRgb}, 0.35) !important;
+      background-color: ${colors.softBg} !important;
+    }
+    .event-info .event-label {
+      color: ${colors.accent} !important;
+    }
+    .avatar-circle {
+      border-color: ${colors.accent} !important;
+      background: rgba(${colors.accentRgb}, 0.15) !important;
+    }
+    .avatar-name {
+      color: ${colors.accent} !important;
+    }
+    .couple-section .couple-connector {
+      color: ${colors.accent} !important;
+    }
+    .guest-name-box {
+      color: ${colors.accent} !important;
+      background-color: rgba(${colors.accentRgb}, 0.1) !important;
+      border-color: rgba(${colors.accentRgb}, 0.25) !important;
+    }
+    .particle {
+      background-color: ${colors.particleColor} !important;
+    }
+    .btn-nav {
+      background: rgba(${colors.accentRgb}, 0.15) !important;
+      border-color: rgba(${colors.accentRgb}, 0.3) !important;
+      color: ${colors.accent} !important;
+    }
+    .countdown-box {
+      background: rgba(${colors.accentRgb}, 0.1) !important;
+      border-color: rgba(${colors.accentRgb}, 0.25) !important;
+    }
+    .countdown-box .count-num {
+      color: ${colors.accent} !important;
+    }
+    .countdown-box .count-label {
+      color: ${colors.textMuted} !important;
+    }
+  `;
+
+  // Set data-card-theme attribute
+  const cardContainer = document.getElementById('cardContainer');
+  if (cardContainer) cardContainer.setAttribute('data-card-theme', appState.theme);
+
+  // Set CSS variables too (belt AND suspenders approach)
+  if (cardContainer) {
+    cardContainer.style.setProperty('--card-bg', colors.bg);
+    cardContainer.style.setProperty('--card-bg-gradient', colors.bgGradient);
+    cardContainer.style.setProperty('--card-text', colors.text);
+    cardContainer.style.setProperty('--card-text-muted', colors.textMuted);
+    cardContainer.style.setProperty('--card-accent', colors.accent);
+    cardContainer.style.setProperty('--card-accent-rgb', colors.accentRgb);
+    cardContainer.style.setProperty('--card-border', colors.border);
+    cardContainer.style.setProperty('--card-soft-bg', colors.softBg);
+    cardContainer.style.setProperty('--particle-color', colors.particleColor);
+    cardContainer.style.setProperty('--theme-script-font', fonts.script);
+    cardContainer.style.setProperty('--theme-title-font', fonts.title);
+    cardContainer.style.setProperty('--theme-text-transform', fonts.transform);
+    cardContainer.style.setProperty('--theme-letter-spacing', fonts.letterSpacing);
+  }
+
+  // Inject cover illustration
+  const defaultWreath = document.getElementById('defaultCoverWreath');
+  const customWreath = document.getElementById('customCoverWreath');
+  if (appState.customThemeCoverSvg) {
+    if (defaultWreath) defaultWreath.style.display = 'none';
+    if (customWreath) { customWreath.style.display = 'block'; customWreath.innerHTML = appState.customThemeCoverSvg; }
+  } else {
+    if (defaultWreath) defaultWreath.style.display = 'block';
+    if (customWreath) { customWreath.style.display = 'none'; customWreath.innerHTML = ''; }
+  }
+
+  // Inject interactive HTML
+  const interactiveContainer = document.getElementById('customThemeInteractiveContainer');
+  if (interactiveContainer) {
+    if (appState.customThemeInteractiveHtml) {
+      interactiveContainer.innerHTML = appState.customThemeInteractiveHtml;
+      initThemeInteractions();
+    } else {
+      interactiveContainer.innerHTML = '';
+    }
+  }
+
+  // Inject animated illustration scene (wrapped in try-catch to prevent crashes)
+  try { renderMainIllustration(); } catch(e) { console.warn('renderMainIllustration error:', e); }
+  try { createParticles('coverParticles', 10); } catch(e) { console.warn('createParticles error:', e); }
+
+  // Also update avatars to match theme
+  const avatars = document.querySelectorAll('.avatar-circle');
+  if (avatars.length >= 2) {
+    if (!appState.bridePhoto) {
+      if (appState.theme === 'mario') {
+        avatars[0].innerHTML = `<svg viewBox="0 0 100 100" style="width: 75%; height: 75%; fill: #e52521;"><path d="M 50 15 C 30 15 20 30 20 50 C 20 60 25 65 30 65 C 35 65 38 60 40 55 C 43 55 45 60 45 65 C 45 75 35 85 50 85 C 65 85 55 75 55 65 C 55 60 57 55 60 55 C 62 60 65 65 70 65 C 75 65 80 60 80 50 C 80 30 70 15 50 15 Z" /><circle cx="35" cy="35" r="8" fill="white" /><circle cx="65" cy="35" r="8" fill="white" /><circle cx="50" cy="50" r="7" fill="white" /></svg>`;
+      } else if (appState.theme === 'spiderman') {
+        avatars[0].innerHTML = `<svg viewBox="0 0 100 100" style="width: 80%; height: 80%; fill: #e53e3e;"><path d="M50,15 C30,15 22,35 22,55 C22,75 38,90 50,90 C62,90 78,75 78,55 C78,35 70,15 50,15 Z" /><path d="M50,15 L50,90 M22,55 L78,55 M28,30 L72,70 M28,70 L72,30" stroke="black" stroke-width="1.5" /><path d="M28,45 C28,45 35,62 50,55 C45,52 35,45 28,45 Z" fill="white" stroke="black" stroke-width="3" /><path d="M72,45 C72,45 65,62 50,55 C55,52 65,45 72,45 Z" fill="white" stroke="black" stroke-width="3" /></svg>`;
+      } else if (appState.theme === 'barbie') {
+        avatars[0].innerHTML = `<svg viewBox="0 0 100 100" style="width: 80%; height: 80%; fill: #e91e63;"><path d="M15,75 L85,75 L90,35 L70,50 L50,20 L30,50 L10,35 Z" /><circle cx="50" cy="20" r="4" fill="#ffeb3b" /><circle cx="10" cy="35" r="4" fill="#ffeb3b" /><circle cx="90" cy="35" r="4" fill="#ffeb3b" /><rect x="25" y="70" width="50" height="5" fill="#f48fb1" /></svg>`;
+      }
+    }
+    if (!appState.groomPhoto) {
+      if (appState.theme === 'mario') {
+        avatars[1].innerHTML = `<svg viewBox="0 0 100 100" style="width: 75%; height: 75%; fill: #4caf50;"><path d="M 50 15 C 30 15 20 30 20 50 C 20 60 25 65 30 65 C 35 65 38 60 40 55 C 43 55 45 60 45 65 C 45 75 35 85 50 85 C 65 85 55 75 55 65 C 55 60 57 55 60 55 C 62 60 65 65 70 65 C 75 65 80 60 80 50 C 80 30 70 15 50 15 Z" /><circle cx="35" cy="35" r="8" fill="white" /><circle cx="65" cy="35" r="8" fill="white" /><circle cx="50" cy="50" r="7" fill="white" /></svg>`;
+      } else if (appState.theme === 'spiderman') {
+        avatars[1].innerHTML = `<svg viewBox="0 0 100 100" style="width: 70%; height: 70%; stroke: #1e3a8a; stroke-width: 5; fill: none;"><circle cx="50" cy="50" r="10" fill="#1e3a8a" /><path d="M 50 35 L 50 65 M 35 25 Q 40 45 50 45 M 65 25 Q 60 45 50 45 M 30 50 L 50 50 M 70 50 L 50 50 M 35 75 Q 40 55 50 55 M 65 75 Q 60 55 50 55" /></svg>`;
+      } else if (appState.theme === 'barbie') {
+        avatars[1].innerHTML = `<svg viewBox="0 0 100 100" style="width: 80%; height: 80%; fill: #e91e63;"><path d="M12,25 C1,12 18,-2 35,11 C52,-2 69,12 58,25 L35,46 Z" transform="translate(15,18) scale(1.1)"/></svg>`;
+      }
+    }
+  }
+}
+
+
+function initThemeInteractions() {
+  const mario = document.getElementById('marioCharacter');
+  if (mario) {
+    mario.addEventListener('click', () => {
+      triggerMarioJump();
+    });
+  }
+}
+
+function triggerMarioJump() {
+  const mario = document.getElementById('marioCharacter');
+  if (!mario || mario.classList.contains('jump')) return;
+  
+  mario.classList.add('jump');
+  playJumpSound();
+  
+  setTimeout(() => {
+    mario.classList.remove('jump');
+  }, 500);
+}
+
+function triggerSpiderwebShoot() {
+  const web = document.getElementById('spiderWebAnimation');
+  if (!web) return;
+  
+  web.classList.add('shoot');
+  playWebSound();
+  
+  setTimeout(() => {
+    web.classList.remove('shoot');
+  }, 1200);
+}
+
+function triggerBarbiePulse() {
+  const heart = document.getElementById('pinkHeartPulse');
+  if (!heart) return;
+  
+  heart.classList.add('pulse');
+  playSweetBellSound();
+  
+  setTimeout(() => {
+    heart.classList.remove('pulse');
+  }, 1100);
+}
+
+// Dynamic Main Illustration Renderer
+function renderMainIllustration() {
+  const container = document.getElementById('customThemeMainIllustration');
+  if (!container) return;
+  
+  const theme = appState.theme;
+  
+  if (theme === 'mario') {
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div class="mario-scene-box">
+          <svg viewBox="0 0 100 100" style="position: absolute; top: 10px; left: 10px; width: 40px; fill: white; opacity: 0.8;">
+            <path d="M20,50 C20,40 30,35 40,40 C45,30 65,30 70,40 C80,40 85,50 80,60 C75,65 25,65 20,50 Z"/>
+          </svg>
+          <div class="mario-scene-lawn"></div>
+          <div class="mario-scene-pipe">
+            <svg viewBox="0 0 100 100" style="position: absolute; top: -16px; left: 2px; width: 25px; fill: #e52521; animation: plantPeek 2.5s infinite ease-in-out;">
+              <path d="M50,10 C30,10 20,25 20,45 L80,45 C80,25 70,10 50,10 Z" />
+              <path d="M20,45 L80,45 L50,75 Z" fill="#ffffff" />
+            </svg>
+            <style>
+              @keyframes plantPeek {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(12px); }
+              }
+            </style>
+          </div>
+          <div class="mario-scene-block">
+            <svg viewBox="0 0 100 100" style="fill: #f8d818; stroke: #000; stroke-width: 6;">
+              <rect x="5" y="5" width="90" height="90"/>
+              <text x="30" y="70" font-family="Courier New" font-size="70" font-weight="900" fill="#000">?</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (theme === 'spiderman') {
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div class="spiderman-scene-box">
+          <div style="position: absolute; top: 0; left: 50%; width: 1.5px; height: 50px; background-color: #fff; opacity: 0.7;"></div>
+          <div class="spiderman-hanging">
+            <svg viewBox="0 0 100 150" style="width: 100%; height: 100%;">
+              <circle cx="50" cy="55" r="14" fill="#1e3a8a" />
+              <circle cx="50" cy="30" r="12" fill="#e53e3e" />
+              <path d="M50,10 C38,10 32,22 32,32 C32,45 42,50 50,50 C58,50 68,45 68,32 C68,22 62,10 50,10 Z" fill="#e53e3e" transform="rotate(180, 50, 30)" />
+              <path d="M40,32 C40,32 45,22 50,26 C48,28 42,32 40,32 Z M60,32 C60,32 55,22 50,26 C52,28 58,32 60,32 Z" fill="white" stroke="black" stroke-width="1.5" />
+              <path d="M36,65 L25,40 L45,45 M64,65 L75,40 L55,45" stroke="#e53e3e" stroke-width="4" fill="none" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (theme === 'barbie') {
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div class="barbie-scene-box">
+          <svg class="barbie-diamond" viewBox="0 0 100 100">
+            <path d="M50,10 L85,40 L50,90 L15,40 Z M25,40 L50,80 L75,40 L50,20 Z" />
+          </svg>
+        </div>
+      </div>
+    `;
+  } else if (theme === 'magic') {
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div class="magic-scene-box">
+          <div class="golden-snitch">
+            <div class="snitch-wing left"></div>
+            <div class="snitch-wing right"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    // Default heartbeat scene for weddings
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div class="heartbeat-scene-box">
+          <svg class="beating-heart" viewBox="0 0 100 100">
+            <path d="M12,30 C1,15 22,-5 50,25 C78,-5 99,15 88,30 L50,85 Z" />
+          </svg>
+          <svg class="beating-heart" viewBox="0 0 100 100">
+            <path d="M12,30 C1,15 22,-5 50,25 C78,-5 99,15 88,30 L50,85 Z" />
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Global holding variables for compiler export files
+let inlinedCss = '';
+let inlinedJsStandalone = '';
+
+// Load fallback CSS in script directly in case AJAX fails (offline file protocol)
+function loadCssFallbacks() {
+  inlinedCss = `
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Montserrat', sans-serif; height: 100vh; overflow-x: hidden; }
+  `;
+}
+
+// App Initialization entrypoint
+window.addEventListener('DOMContentLoaded', () => {
+  seedWishes();
+  initBindings();
+  initThemePicker();
+  initCustomThemeGenerator(); // Setup AI Theme Generator
+  updatePreview();
+  startCountdown();
+  createParticles('coverParticles', 10);
+  initGuestName();
+  renderWishes();
+  initRsvpForm();
+  initCalendarGenerator();
+  initResetButton();
+  initMobileViewSwitcher();
+  initEnvelopeOpener();
+  initHtmlExporter();
+  loadCssFallbacks();
+  
+  // Floating Music Click listener
+  document.getElementById('cardFloatingMusic').addEventListener('click', () => {
+    playMusic();
+  });
+  
+  // Back to Studio click listener (useful on exported cards preview)
+  document.getElementById('backToStudio').addEventListener('click', (e) => {
+    e.preventDefault();
+    // Smooth scroll to top of editor panel
+    document.getElementById('editorPanel').scrollIntoView({ behavior: 'smooth' });
+  });
+});

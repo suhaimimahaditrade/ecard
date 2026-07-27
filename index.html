@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembuat E-Kad Jemputan Interaktif | Kad Kahwin Digital</title>
+  <!-- SEO Tags -->
+  <meta name="description" content="Cipta dan ubah suai kad kahwin digital / e-kad jemputan interaktif dengan rekaan premium secara langsung. Lengkap dengan lagu, RSVP, dan peta lokasi.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✉️</text></svg>">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css?v=3000">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Editor Settings Panel (Left) -->
+    <div class="editor-panel" id="editorPanel">
+      <div class="editor-header">
+        <h1><i class="fa-solid fa-wand-magic-sparkles"></i> E-Card Studio</h1>
+        <p>Ubah maklumat di bawah untuk melihat kemaskini secara langsung pada e-kad anda.</p>
+      </div>
+      
+      <div class="editor-body">
+        
+        <!-- Theme Selection -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Pilihan Tema</span>
+            <i class="fa-solid fa-palette"></i>
+          </div>
+          <div class="theme-picker">
+            <button class="theme-btn active" data-theme="emerald">
+              <span class="theme-color-dot dot-emerald"></span>
+              Emerald Gold
+            </button>
+            <button class="theme-btn" data-theme="rose-gold">
+              <span class="theme-color-dot dot-rose"></span>
+              Rose Blossom
+            </button>
+            <button class="theme-btn" data-theme="royal-blue">
+              <span class="theme-color-dot dot-blue"></span>
+              Royal Blue
+            </button>
+            <button class="theme-btn" data-theme="classic-white">
+              <span class="theme-color-dot dot-white"></span>
+              Classic Slate
+            </button>
+            <button class="theme-btn" data-theme="marvel">
+              <span class="theme-color-dot dot-marvel"></span>
+              Marvel Neon
+            </button>
+            <button class="theme-btn" data-theme="mario">
+              <span class="theme-color-dot dot-mario"></span>
+              Super Mario
+            </button>
+          </div>
+        </div>
+
+        <!-- Custom Theme Prompt Builder -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Cipta Tema AI Anda</span>
+            <i class="fa-solid fa-microchip"></i>
+          </div>
+          <div class="form-group">
+            <label for="inputCustomTheme">Terangkan Tema Anda (BM/BI)</label>
+            <textarea id="inputCustomTheme" class="form-control" placeholder="Contoh: Tema Spiderman, Tema Barbie, Harry Potter, warna hutan hijau gold..."></textarea>
+          </div>
+          <button class="btn-action btn-primary" id="btnGenerateTheme" style="width: 100%;">
+            <i class="fa-solid fa-microchip"></i> Jana Tema Pintar
+          </button>
+        </div>
+
+        <!-- General Settings -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Maklumat Utama</span>
+            <i class="fa-solid fa-file-signature"></i>
+          </div>
+          <div class="form-group">
+            <label for="inputEventType">Jenis Majlis</label>
+            <select id="inputEventType" class="form-control">
+              <option value="perkahwinan">Walimatulurus / Perkahwinan</option>
+              <option value="hari-jadi">Ulang Tahun Hari Lahir</option>
+              <option value="aqiqah">Majlis Kesyukuran & Aqiqah</option>
+              <option value="rumah-terbuka">Rumah Terbuka</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="inputTitle">Tajuk Jemputan</label>
+            <input type="text" id="inputTitle" class="form-control" value="Walimatulurus">
+          </div>
+          <div class="form-group">
+            <label for="inputTagline">Slogan Ringkas</label>
+            <input type="text" id="inputTagline" class="form-control" value="UNDANGAN KAMI">
+          </div>
+          <div class="row-grid">
+            <div class="form-group">
+              <label for="inputShortNames">Singkatan Nama</label>
+              <input type="text" id="inputShortNames" class="form-control" value="Aiman & Sarah">
+            </div>
+            <div class="form-group">
+              <label for="inputTargetDate">Tarikh Undur (RSVP)</label>
+              <input type="datetime-local" id="inputTargetDate" class="form-control" value="2026-12-12T11:00">
+            </div>
+          </div>
+        </div>
+
+        <!-- Bride & Groom Settings -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Butiran Pasangan / Hos</span>
+            <i class="fa-solid fa-heart"></i>
+          </div>
+          <div class="form-group">
+            <label for="inputBrideName" id="lblBrideName">Nama Pengantin Perempuan</label>
+            <input type="text" id="inputBrideName" class="form-control" value="Siti Sarah Binti Ahmad">
+            <input type="file" id="uploadBridePhoto" accept="image/*" class="form-control" style="margin-top: 0.4rem;">
+          </div>
+          <div class="form-group" id="groomFormGroup">
+            <label for="inputGroomName" id="lblGroomName">Nama Pengantin Lelaki</label>
+            <input type="text" id="inputGroomName" class="form-control" value="Aiman">
+            <input type="file" id="uploadGroomPhoto" accept="image/*" class="form-control" style="margin-top: 0.4rem;">
+          </div>
+          <div class="form-group">
+            <label for="inputParents" id="lblParents">Nama Ibu Bapa (Penganjur)</label>
+            <textarea id="inputParents" class="form-control">Hj. Ahmad Bin Razali & Hjh. Fatimah Binti Ismail</textarea>
+          </div>
+        </div>
+
+        <!-- Gallery Settings -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Galeri Foto Majlis</span>
+            <i class="fa-solid fa-images"></i>
+          </div>
+          <div class="form-group">
+            <label for="uploadGalleryPhotos">Muat Naik Gambar Galeri (Maksimum 4 keping)</label>
+            <input type="file" id="uploadGalleryPhotos" accept="image/*" multiple class="form-control">
+          </div>
+        </div>
+
+        <!-- Date, Time, Venue Settings -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Tarikh, Masa & Tempat</span>
+            <i class="fa-solid fa-calendar-day"></i>
+          </div>
+          <div class="form-group">
+            <label for="inputEventDate">Tarikh Majlis (Paparan)</label>
+            <input type="text" id="inputEventDate" class="form-control" value="Sabtu, 12 Disember 2026">
+          </div>
+          <div class="form-group">
+            <label for="inputEventTime">Masa Majlis</label>
+            <input type="text" id="inputEventTime" class="form-control" value="11:00 Pagi - 4:00 Petang">
+          </div>
+          <div class="form-group">
+            <label for="inputVenueName">Nama Tempat</label>
+            <input type="text" id="inputVenueName" class="form-control" value="Dewan Serbaguna Putrajaya">
+          </div>
+          <div class="form-group">
+            <label for="inputVenueAddress">Alamat Penuh</label>
+            <textarea id="inputVenueAddress" class="form-control">Presint 9, 62250 Wilayah Persekutuan Putrajaya</textarea>
+          </div>
+        </div>
+
+        <!-- Maps & Navigation -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Navigasi & Peta</span>
+            <i class="fa-solid fa-map-location-dot"></i>
+          </div>
+          <div class="form-group">
+            <label for="inputGmaps">Pautan Google Maps</label>
+            <input type="text" id="inputGmaps" class="form-control" value="https://maps.google.com/?q=Dewan+Serbaguna+Putrajaya">
+          </div>
+          <div class="form-group">
+            <label for="inputWaze">Pautan Waze</label>
+            <input type="text" id="inputWaze" class="form-control" value="https://waze.com/ul?q=Dewan+Serbaguna+Putrajaya">
+          </div>
+        </div>
+
+        <!-- Background Music -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Muzik Latar</span>
+            <i class="fa-solid fa-music"></i>
+          </div>
+          <button class="music-btn active" id="btnToggleSynthMusic">
+            <i class="fa-solid fa-wave-square"></i> Built-in Synth Piano (Melodi Canon)
+          </button>
+          <div class="form-group" style="margin-top: 1rem;">
+            <label for="inputMusicUrl">Atau URL MP3 Anda Sendiri</label>
+            <input type="text" id="inputMusicUrl" class="form-control" placeholder="https://contoh.com/lagu.mp3" value="">
+          </div>
+        </div>
+
+        <!-- Contact Hosts -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Hubungi Tuan Rumah</span>
+            <i class="fa-solid fa-phone"></i>
+          </div>
+          <div class="form-group">
+            <label>Kenalan 1 (Nama & No Telefon)</label>
+            <div class="row-grid">
+              <input type="text" id="contactName1" class="form-control" value="Hj. Ahmad (Bapa)">
+              <input type="text" id="contactPhone1" class="form-control" value="0123456789">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Kenalan 2 (Nama & No Telefon)</label>
+            <div class="row-grid">
+              <input type="text" id="contactName2" class="form-control" value="Aiman (Pengantin)">
+              <input type="text" id="contactPhone2" class="form-control" value="0198765432">
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+      <!-- Export Options -->
+      <div class="editor-footer">
+        <button class="btn-action btn-secondary" id="btnResetSettings">
+          <i class="fa-solid fa-rotate-left"></i> Reset
+        </button>
+        <button class="btn-action btn-primary" id="btnDownloadHtml">
+          <i class="fa-solid fa-download"></i> Simpan Kad
+        </button>
+      </div>
+    </div>
+    
+    <!-- Live Preview Display Panel (Right) -->
+    <div class="preview-panel" id="previewPanel">
+      
+      <!-- Smartphone Simulator Container -->
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        
+        <!-- Live Invitation E-Card inside Screen -->
+        <div class="phone-screen" id="cardContainer">
+          <div id="customThemeInteractiveContainer"></div>
+          
+          <!-- Floating Background Music Player control -->
+          <div class="floating-music" id="cardFloatingMusic" title="Main/Senyap Lagu">
+            <i class="fa-solid fa-music"></i>
+          </div>
+          
+          <!-- Envelope Cover Overlay -->
+          <div class="envelope-cover" id="envelopeCover">
+            <div class="particles-container" id="coverParticles"></div>
+            
+            <div class="envelope-card">
+              <!-- Wreath SVG -->
+              <svg class="wreath-icon" viewBox="0 0 100 100" id="defaultCoverWreath">
+                <path d="M 50 15 C 30 15 15 35 15 55 C 15 70 25 82 40 85 M 50 15 C 70 15 85 35 85 55 C 85 70 75 82 60 85" />
+                <path d="M 30 25 L 35 23 M 22 38 L 28 35 M 18 52 L 25 50 M 22 66 L 28 62 M 32 78 L 36 72" />
+                <path d="M 70 25 L 65 23 M 78 38 L 72 35 M 82 52 L 75 50 M 78 66 L 72 62 M 72 78 L 68 72" />
+                <path d="M 46 22 L 54 22 M 48 83 L 52 83" />
+              </svg>
+              <div id="customCoverWreath"></div>
+              
+              <div class="font-script couple-names" id="coverShortNames">Aiman & Sarah</div>
+              <div class="wedding-tagline" id="coverTitle">Walimatulurus</div>
+              
+              <div class="invitation-to">Undangan Khas Ke Majlis:</div>
+              <div class="guest-name-box" id="coverGuestName">Nama Tetamu</div>
+              
+              <button class="btn-open-card" id="btnOpenCard">
+                <i class="fa-solid fa-envelope-open"></i> Buka Undangan
+              </button>
+            </div>
+          </div>
+          
+          <!-- Main Card Content Details (Visible after opening) -->
+          <div class="card-content" style="display: none;" id="mainCardContent">
+            <div class="particles-container" id="mainParticles"></div>
+            
+            <!-- Dynamic Custom Theme Main Illustration (TOP VISIBLE SCENE) -->
+            <div id="customThemeMainIllustration"></div>
+
+            <!-- Hero Introduction -->
+            <section class="card-section hero-section">
+              <span class="wedding-tagline" id="previewTagline">UNDANGAN KAMI</span>
+              <h2 class="font-script hero-names" id="previewShortNames">Aiman & Sarah</h2>
+              
+              <svg class="divider-ornament" viewBox="0 0 100 10">
+                <path d="M 0 5 Q 25 1 50 5 T 100 5" fill="none" stroke="currentColor" stroke-width="1.5" />
+                <circle cx="50" cy="5" r="3" fill="currentColor" />
+              </svg>
+              
+              <p class="hero-date" id="previewEventDate">Sabtu, 12 Disember 2026</p>
+            </section>
+            
+            <!-- Beautiful Verse / Quote -->
+            <section class="card-section quote-section">
+              <p class="quote-text" id="previewQuote">"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang."</p>
+              <p class="quote-author" id="previewQuoteAuthor">(Surah Ar-Rum: 21)</p>
+            </section>
+            
+            <!-- Host and Bride/Groom Profiles -->
+            <section class="card-section profile-section">
+              <span class="profile-title">Dengan penuh kesyukuran menjemput ke majlis</span>
+              
+              <div class="parent-intro" id="previewParents">
+                Hj. Ahmad Bin Razali & Hjh. Fatimah Binti Ismail
+              </div>
+              
+              <div class="and-divider">Untuk menghadiri majlis perkahwinan anakanda kesayangan kami:</div>
+              
+              <div class="couple-avatars" id="coupleAvatarsContainer">
+                <div class="avatar-wrapper" id="brideAvatarWrapper">
+                  <div class="avatar-circle">P</div>
+                  <div class="avatar-name" id="previewBrideName">Siti Sarah Binti Ahmad</div>
+                </div>
+                
+                <div class="and-divider" id="coupleAvatarDivider">&</div>
+                
+                <div class="avatar-wrapper" id="groomAvatarWrapper">
+                  <div class="avatar-circle">L</div>
+                  <div class="avatar-name" id="previewGroomName">Ahmad Aiman Bin Md Yusuf</div>
+                </div>
+              </div>
+            </section>
+            
+            <!-- Countdown Timer -->
+            <section class="card-section countdown-section">
+              <span class="detail-title">KAUNTER UNDUR MAJLIS</span>
+              <div class="countdown-grid">
+                <div class="countdown-box">
+                  <span class="countdown-num" id="daysBox">00</span>
+                  <span class="countdown-label">Hari</span>
+                </div>
+                <div class="countdown-box">
+                  <span class="countdown-num" id="hoursBox">00</span>
+                  <span class="countdown-label">Jam</span>
+                </div>
+                <div class="countdown-box">
+                  <span class="countdown-num" id="minsBox">00</span>
+                  <span class="countdown-label">Minit</span>
+                </div>
+                <div class="countdown-box">
+                  <span class="countdown-num" id="secsBox">00</span>
+                  <span class="countdown-label">Saat</span>
+                </div>
+              </div>
+            </section>
+            
+            <!-- Photo Gallery Slider -->
+            <section class="card-section gallery-section" id="previewGallerySection" style="display: none;">
+              <span class="detail-title">GALERI FOTO</span>
+              <div class="gallery-slider" id="previewGallerySlider">
+                <!-- Rendered dynamically in app.js -->
+              </div>
+            </section>
+            
+            <!-- Details Cards & Map Links -->
+            <section class="card-section details-section">
+              <div class="event-card">
+                <div class="detail-row">
+                  <i class="fa-regular fa-calendar detail-icon"></i>
+                  <span class="detail-title">Tarikh Majlis</span>
+                  <span class="detail-value-large" id="previewEventDateCard">12 Disember 2026</span>
+                </div>
+                
+                <div class="detail-row">
+                  <i class="fa-regular fa-clock detail-icon"></i>
+                  <span class="detail-title">Masa Majlis</span>
+                  <span class="detail-value" id="previewEventTimeCard">11:00 Pagi - 4:00 Petang</span>
+                </div>
+                
+                <div class="detail-row">
+                  <i class="fa-solid fa-location-dot detail-icon"></i>
+                  <span class="detail-title">Tempat</span>
+                  <span class="detail-value" id="previewVenueNameCard" style="font-weight: 700;">Dewan Serbaguna Putrajaya</span>
+                  <span class="detail-value" id="previewVenueAddressCard" style="font-size: 0.8rem; text-align: center; color: var(--card-text-muted);">Presint 9, 62250 Wilayah Persekutuan Putrajaya</span>
+                </div>
+                
+                <div class="button-group">
+                  <a href="#" class="btn-card btn-card-outline" id="btnGmaps" target="_blank">
+                    <i class="fa-solid fa-map-location-dot"></i> Google Maps
+                  </a>
+                  <a href="#" class="btn-card btn-card-outline" id="btnWaze" target="_blank">
+                    <i class="fa-solid fa-car-side"></i> Waze
+                  </a>
+                </div>
+                
+                <button class="btn-card btn-card-solid" id="btnAddCalendar" style="margin-top: 0.75rem; width: 100%;">
+                  <i class="fa-regular fa-calendar-plus"></i> Simpan Tarikh (Calendar)
+                </button>
+              </div>
+            </section>
+            
+            <!-- Contact section -->
+            <section class="card-section contact-section">
+              <span class="detail-title">HUBUNGI KAMI</span>
+              
+              <div class="contact-row" id="contactRow1">
+                <div class="contact-info">
+                  <div class="contact-name" id="previewContactName1">Hj. Ahmad (Bapa)</div>
+                  <div class="contact-relation">Hubungi untuk pertanyaan</div>
+                </div>
+                <div class="contact-actions">
+                  <a href="tel:0123456789" class="btn-icon" id="callLink1"><i class="fa-solid fa-phone"></i></a>
+                  <a href="https://wa.me/60123456789" class="btn-icon" id="waLink1" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+              </div>
+              
+              <div class="contact-row" id="contactRow2">
+                <div class="contact-info">
+                  <div class="contact-name" id="previewContactName2">Aiman (Pengantin)</div>
+                  <div class="contact-relation">Hubungi untuk pertanyaan</div>
+                </div>
+                <div class="contact-actions">
+                  <a href="tel:0198765432" class="btn-icon" id="callLink2"><i class="fa-solid fa-phone"></i></a>
+                  <a href="https://wa.me/60198765432" class="btn-icon" id="waLink2" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+              </div>
+            </section>
+            
+            <!-- Interactive RSVP Form & Guestbook Wishes -->
+            <section class="card-section rsvp-section">
+              <span class="detail-title">RSVP & UCAPAN KASIH</span>
+              
+              <form class="rsvp-form" id="rsvpForm">
+                <div>
+                  <label for="rsvpName">Nama Tetamu</label>
+                  <input type="text" id="rsvpName" class="rsvp-input" required placeholder="Sila masukkan nama anda">
+                </div>
+                
+                <div>
+                  <label>Kehadiran</label>
+                  <div class="rsvp-radio-group">
+                    <label class="rsvp-radio-label">
+                      <input type="radio" name="attendance" value="hadir" checked> Hadir
+                    </label>
+                    <label class="rsvp-radio-label">
+                      <input type="radio" name="attendance" value="tidak"> Tidak Hadir
+                    </label>
+                  </div>
+                </div>
+                
+                <div id="paxGroup">
+                  <label for="rsvpPax">Jumlah Tetamu (Termasuk Anda)</label>
+                  <select id="rsvpPax" class="rsvp-input">
+                    <option value="1">1 Orang</option>
+                    <option value="2" selected>2 Orang</option>
+                    <option value="3">3 Orang</option>
+                    <option value="4">4 Orang</option>
+                    <option value="5">5 Orang</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label for="rsvpMessage">Ucapan / Doa Restu</label>
+                  <textarea id="rsvpMessage" class="rsvp-input" placeholder="Tuliskan ucapan tahniah atau doa anda di sini..." style="min-height: 70px; resize: none;"></textarea>
+                </div>
+                
+                <button type="submit" class="btn-card btn-card-solid" style="width: 100%; border: none;">
+                  Hantar Pengesahan
+                </button>
+              </form>
+              
+              <!-- Guestbook wishes list -->
+              <div class="wishes-wall">
+                <h4 class="wishes-title">Ucapan Tetamu</h4>
+                <div class="wishes-container" id="wishesList">
+                  <!-- Rendered dynamically in app.js -->
+                </div>
+              </div>
+            </section>
+            
+            <!-- Footer -->
+            <section class="card-section footer-section">
+              <span class="watermark">
+                E-Kad Jemputan Interaktif &copy; 2026. <br>Cipta milik anda di <a href="#" id="backToStudio">E-Card Studio</a>
+              </span>
+            </section>
+            
+          </div>
+          
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  <!-- Mobile View Toggle Button -->
+  <button class="mobile-view-toggle" id="btnMobileViewToggle">
+    <i class="fa-solid fa-mobile-screen-button"></i> Preview Kad
+  </button>
+
+  <!-- Script logic -->
+  <script src="app.js?v=4000"></script>
+</body>
+</html>
