@@ -1029,7 +1029,8 @@ function initEnvelopeOpener() {
       }
     }, 500);
     
-    // 3. Trigger custom theme open-effects!
+    // 3. Trigger custom theme open-effects & audio soundscapes!
+    try { playThemeSoundscape(); } catch(e) {}
     if (appState.customThemeActive) {
       if (appState.theme === 'spiderman') {
         triggerSpiderwebShoot();
@@ -2127,57 +2128,49 @@ function hexToRgb(hex) {
   return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '16, 185, 129';
 }
 
-// Sound effects synthesizers
-function playJumpSound() {
+function playDinoRoarSound() {
   try {
     const ctx = synthPiano.ctx || new (window.AudioContext || window.webkitAudioContext)();
     if (!synthPiano.ctx) synthPiano.ctx = ctx;
     if (ctx.state === 'suspended') ctx.resume();
     const time = ctx.currentTime;
+    
+    // Low Frequency Roar Oscillator
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(150, time);
-    osc.frequency.exponentialRampToValueAtTime(750, time + 0.18);
-    
-    gain.gain.setValueAtTime(0.15, time);
-    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.18);
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(time);
-    osc.stop(time + 0.2);
-  } catch(e) {}
-}
-
-function playWebSound() {
-  try {
-    const ctx = synthPiano.ctx || new (window.AudioContext || window.webkitAudioContext)();
-    if (!synthPiano.ctx) synthPiano.ctx = ctx;
-    if (ctx.state === 'suspended') ctx.resume();
-    const time = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
     
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(3000, time);
-    osc.frequency.exponentialRampToValueAtTime(120, time + 0.12);
+    osc.frequency.setValueAtTime(80, time);
+    osc.frequency.exponentialRampToValueAtTime(35, time + 0.8);
     
-    const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(800, time);
+    filter.frequency.setValueAtTime(300, time);
+    filter.frequency.exponentialRampToValueAtTime(100, time + 0.8);
     
-    gain.gain.setValueAtTime(0.18, time);
-    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+    gain.gain.setValueAtTime(0.35, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.85);
     
     osc.connect(filter);
     filter.connect(gain);
     gain.connect(ctx.destination);
     
     osc.start(time);
-    osc.stop(time + 0.14);
+    osc.stop(time + 0.9);
   } catch(e) {}
+}
+
+function playThemeSoundscape() {
+  const theme = appState.theme;
+  if (theme === 'jurassic') {
+    playDinoRoarSound();
+  } else if (theme === 'spiderman') {
+    playWebSound();
+  } else if (theme === 'mario') {
+    playJumpSound();
+  } else if (theme === 'barbie' || theme === 'magic' || theme === 'fantasy') {
+    playSweetBellSound();
+  }
 }
 
 function playSweetBellSound() {
@@ -2462,6 +2455,15 @@ function applyCustomTheme() {
   const colors = appState.customThemeColors;
   const fonts = appState.customThemeFonts;
 
+  // Generate Pollinations 3D AI Poster Image URL based on prompt
+  let aiBgImageCss = '';
+  if (appState.customThemePrompt) {
+    const aiImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(appState.customThemePrompt + ', 3d cinematic unreal engine 5 render, highly detailed, beautiful lighting, invitation card background')}&width=800&height=1200&nologo=true&seed=88`;
+    aiBgImageCss = `linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.88) 100%), url('${aiImageUrl}')`;
+  }
+
+  const bgStyle = aiBgImageCss || colors.bgGradient;
+
   // ✅ NUCLEAR OPTION: Inject a <style> tag with !important rules
   // This bypasses ALL CSS specificity, inline style conflicts, and inheritance issues
   let styleTag = document.getElementById('customThemeStyleTag');
@@ -2474,11 +2476,21 @@ function applyCustomTheme() {
   styleTag.textContent = `
     /* === CUSTOM AI THEME OVERRIDE (v${Date.now()}) === */
     #envelopeCover {
-      background: ${colors.bgGradient} !important;
+      background: ${bgStyle} !important;
+      background-size: cover !important;
+      background-position: center !important;
       color: ${colors.text} !important;
     }
     #cardContainer, .phone-screen {
-      background: ${colors.bgGradient} !important;
+      background: ${bgStyle} !important;
+      background-size: cover !important;
+      background-position: center !important;
+      color: ${colors.text} !important;
+    }
+    .card-content {
+      background: ${bgStyle} !important;
+      background-size: cover !important;
+      background-position: center !important;
       color: ${colors.text} !important;
     }
     .envelope-card {
