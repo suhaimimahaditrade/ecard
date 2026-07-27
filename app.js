@@ -2357,6 +2357,27 @@ Return ONLY a valid JSON object without any markdown wrapping or formatting. The
   throw new Error('Respons Gemini API tidak sah.');
 }
 
+// Instant 0ms Theme Application for Prompt Chips
+window.applyPresetThemeDirectly = function(promptText) {
+  const promptInput = document.getElementById('inputCustomTheme');
+  if (promptInput) promptInput.value = promptText;
+
+  const theme = generateCustomTheme(promptText);
+  appState.theme = theme.themeName;
+  appState.customThemeActive = true;
+  appState.customThemePrompt = promptText;
+  appState.customThemeColors = theme.colors;
+  appState.customThemeFonts = theme.fonts;
+  appState.customThemeClass = theme.customClass || 'theme-custom';
+  appState.customThemeCoverSvg = theme.coverSvg;
+  appState.customThemeInteractiveHtml = theme.interactiveHtml || '';
+  appState.customThemeParticleType = theme.particleType || 'circle';
+
+  applyCustomTheme();
+  renderMainIllustration();
+  try { triggerCinematicStoryboard(); } catch(e) {}
+};
+
 // Custom Theme Generator Controller (Supports OpenRouter API, Gemini API & Semantic Local AI Engine)
 function initCustomThemeGenerator() {
   const btn = document.getElementById('btnGenerateTheme');
