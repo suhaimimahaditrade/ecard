@@ -1947,10 +1947,10 @@ function generateCustomTheme(promptText) {
       particleColor: 'rgba(132, 204, 22, 0.6)'
     };
     fonts = {
-      script: 'Impact, sans-serif',
+      script: 'Cinzel Decorative, Cormorant Garamond, serif',
       title: 'Montserrat, sans-serif',
       transform: 'uppercase',
-      letterSpacing: '1.5px'
+      letterSpacing: '3px'
     };
     coverSvg = `
       <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 65px;">
@@ -2531,14 +2531,24 @@ function applyCustomTheme() {
       font-family: ${fonts.title || 'Montserrat, sans-serif'} !important;
     }
     #coverShortNames, .font-script, .hero-names {
-      color: ${colors.accent} !important;
-      font-family: ${fonts.script || 'Great Vibes, cursive'} !important;
+      background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      color: transparent !important;
+      font-family: ${fonts.script || 'Cinzel Decorative, Pinyon Script, serif'} !important;
+      font-size: 2.8rem !important;
+      font-weight: 700 !important;
+      letter-spacing: ${fonts.letterSpacing || '2px'} !important;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.9)) !important;
+      padding: 0.2rem 0 !important;
     }
     #coverTitle, .wedding-tagline, #previewTagline {
-      color: ${colors.textMuted} !important;
+      color: ${colors.accent || '#fde047'} !important;
       font-family: ${fonts.title || 'Montserrat, sans-serif'} !important;
       text-transform: ${fonts.transform || 'uppercase'} !important;
-      letter-spacing: ${fonts.letterSpacing || '2px'} !important;
+      letter-spacing: ${fonts.letterSpacing || '3px'} !important;
+      font-size: 0.85rem !important;
+      font-weight: 700 !important;
     }
     .card-content {
       background: ${colors.bgGradient} !important;
