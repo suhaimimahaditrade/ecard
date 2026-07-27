@@ -2473,7 +2473,14 @@ function applyCustomTheme() {
   const colors = appState.customThemeColors;
   const fonts = appState.customThemeFonts;
 
-  const bgStyle = colors.bgGradient || 'linear-gradient(135deg, #051408 0%, #1a3d1f 100%)';
+  // CCO Master Background Image & Gradient Blend
+  let bgStyle = colors.bgGradient || 'linear-gradient(135deg, #051408 0%, #1a3d1f 100%)';
+  if (appState.customThemePrompt) {
+    const enrichedPrompt = appState.customThemePrompt + ', cinematic 8k unreal engine 5 render, epic atmospheric lighting, fantasy masterpiece, photorealistic';
+    const aiImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enrichedPrompt)}&width=800&height=1400&nologo=true&seed=88`;
+    const themeRgb = colors.accentRgb || '5, 20, 8';
+    bgStyle = `linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(${themeRgb}, 0.85) 50%, rgba(${themeRgb}, 0.96) 100%), url('${aiImageUrl}')`;
+  }
 
   // ✅ NUCLEAR OPTION: Inject a <style> tag with !important rules
   // This bypasses ALL CSS specificity, inline style conflicts, and inheritance issues
@@ -2485,7 +2492,7 @@ function applyCustomTheme() {
   }
 
   styleTag.textContent = `
-    /* === CUSTOM AI THEME OVERRIDE (v${Date.now()}) === */
+    /* === CCO MASTER AI THEME OVERRIDE (v${Date.now()}) === */
     #envelopeCover {
       background: ${bgStyle} !important;
       background-size: cover !important;
@@ -2503,6 +2510,13 @@ function applyCustomTheme() {
       background-size: cover !important;
       background-position: center !important;
       color: ${colors.text} !important;
+    }
+    .card-section, .event-card, .timeline-card {
+      background: rgba(0, 0, 0, 0.55) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      border: 1px solid rgba(${colors.accentRgb}, 0.35) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
     }
     .envelope-card {
       border-color: ${colors.accent} !important;
