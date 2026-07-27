@@ -1932,6 +1932,35 @@ function generateCustomTheme(promptText) {
     `;
     customClass = 'theme-fantasy';
 
+  } else if (prompt.includes('jurassic') || prompt.includes('dino') || prompt.includes('dinosaur') || prompt.includes('jungle') || prompt.includes('prehistoric')) {
+    themeName = 'jurassic';
+    colors = {
+      bg: '#051408',
+      bgGradient: 'linear-gradient(135deg, #051408 0%, #0d2814 50%, #1a3d1f 100%)',
+      text: '#f8fafc',
+      textMuted: '#a3e635',
+      accent: '#f59e0b',
+      accentRgb: '245, 158, 11',
+      border: '2px solid #f59e0b',
+      softBg: 'rgba(245, 158, 11, 0.12)',
+      particleColor: 'rgba(132, 204, 22, 0.6)'
+    };
+    fonts = {
+      script: 'Impact, sans-serif',
+      title: 'Montserrat, sans-serif',
+      transform: 'uppercase',
+      letterSpacing: '1.5px'
+    };
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 65px;">
+        <svg viewBox="0 0 100 100" style="width: 55px; height: 55px; fill: #f59e0b;">
+          <!-- T-Rex Dinosaur Footprint SVG -->
+          <path d="M50,15 C45,15 42,25 45,35 L40,55 C35,45 25,40 18,48 C12,54 18,65 25,65 L42,65 L50,90 L58,65 L75,65 C82,65 88,54 82,48 C75,40 65,45 60,55 L55,35 C58,25 55,15 50,15 Z" />
+        </svg>
+      </div>
+    `;
+    customClass = 'theme-jurassic';
+
   } else if (prompt.includes('cyberpunk') || prompt.includes('neon') || prompt.includes('futuristic') || prompt.includes('tech')) {
     themeName = 'cyberpunk';
     colors = {
@@ -2718,6 +2747,16 @@ function renderMainIllustration() {
             <div class="snitch-wing left"></div>
             <div class="snitch-wing right"></div>
           </div>
+        </div>
+      </div>
+    `;
+  } else if (theme === 'jurassic') {
+    container.innerHTML = `
+      <div class="theme-illustration-container">
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 100 100" style="width: 60px; height: 60px; fill: #f59e0b; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.6));">
+            <path d="M50,15 C45,15 42,25 45,35 L40,55 C35,45 25,40 18,48 C12,54 18,65 25,65 L42,65 L50,90 L58,65 L75,65 C82,65 88,54 82,48 C75,40 65,45 60,55 L55,35 C58,25 55,15 50,15 Z" />
+          </svg>
         </div>
       </div>
     `;
