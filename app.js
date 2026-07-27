@@ -2613,7 +2613,19 @@ function applyCustomTheme() {
   // Inject cover illustration
   const defaultWreath = document.getElementById('defaultCoverWreath');
   const customWreath = document.getElementById('customCoverWreath');
-  if (appState.customThemeCoverSvg) {
+  
+  if (appState.customThemePrompt) {
+    const aiCoverImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(appState.customThemePrompt + ', 3d cinematic unreal engine 5 render, highly detailed, beautiful lighting, invitation card poster')}&width=800&height=500&nologo=true&seed=88`;
+    if (defaultWreath) defaultWreath.style.display = 'none';
+    if (customWreath) {
+      customWreath.style.display = 'block';
+      customWreath.innerHTML = `
+        <div class="ai-cover-banner">
+          <img src="${aiCoverImageUrl}" class="ai-cover-img" alt="${escapeHtml(appState.customThemePrompt)}" loading="lazy">
+        </div>
+      `;
+    }
+  } else if (appState.customThemeCoverSvg) {
     if (defaultWreath) defaultWreath.style.display = 'none';
     if (customWreath) { customWreath.style.display = 'block'; customWreath.innerHTML = appState.customThemeCoverSvg; }
   } else {
@@ -2713,6 +2725,19 @@ function renderMainIllustration() {
   
   const theme = appState.theme;
   
+  // If custom AI prompt active, render prominent AI Poster Banner
+  if (appState.customThemePrompt) {
+    const aiImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(appState.customThemePrompt + ', 3d cinematic unreal engine 5 render, highly detailed, beautiful lighting, invitation card poster')}&width=800&height=500&nologo=true&seed=88`;
+    
+    container.innerHTML = `
+      <div class="ai-poster-banner-wrapper">
+        <img src="${aiImageUrl}" class="ai-poster-img" alt="${escapeHtml(appState.customThemePrompt)}" loading="lazy">
+        <div class="ai-poster-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 3D ${escapeHtml(appState.customThemePrompt)}</div>
+      </div>
+    `;
+    return;
+  }
+
   if (theme === 'mario') {
     container.innerHTML = `
       <div class="theme-illustration-container">
