@@ -2097,15 +2097,80 @@ textarea.form-control {
   animation: sparklerFlicker 0.4s infinite ease-in-out alternate;
 }
 
-@keyframes sparklerFlicker {
-  0% { opacity: 0.6; transform: scale(1.0); }
-  100% { opacity: 1.0; transform: scale(1.05); }
+/* Cinematic Storyboard Stage & Character Narrative Animations */
+.storyboard-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 95;
+  overflow: hidden;
 }
 
-.card-section {
-  backdrop-filter: blur(6px);
-  background: rgba(15, 23, 42, 0.45);
-  border-radius: 12px;
-  padding: 1.25rem 1rem;
+.storyboard-character {
+  position: absolute;
+  bottom: 120px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 96;
+}
+
+.storyboard-character.raptor-run {
+  animation: runRaptorAcross 4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.storyboard-character.trex-chase {
+  animation: chaseTrexAcross 4.5s cubic-bezier(0.25, 1, 0.5, 1) 2.5s forwards;
+}
+
+.storyboard-character.dino-cake {
+  animation: flyDinoCakeAcross 5s cubic-bezier(0.25, 1, 0.5, 1) 5.5s forwards;
+}
+
+.storyboard-signboard {
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(10px);
+  border: 2px solid #fde047;
+  color: #fde047;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-family: 'Cinzel Decorative', 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(253, 224, 71, 0.5);
+  white-space: nowrap;
+}
+
+@keyframes runRaptorAcross {
+  0% { left: -220px; transform: scaleX(1); }
+  60% { left: 55%; }
+  100% { left: 120%; }
+}
+
+@keyframes chaseTrexAcross {
+  0% { right: -250px; transform: scaleX(-1); }
+  60% { right: 45%; }
+  100% { right: 120%; }
+}
+
+@keyframes flyDinoCakeAcross {
+  0% { top: -100px; left: -150px; }
+  50% { top: 35%; left: 20%; }
+  100% { top: 120%; left: 110%; }
+}
+
+.screen-shake {
+  animation: cameraShake 0.4s infinite linear;
+}
+
+@keyframes cameraShake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-3px, 3px); }
+  50% { transform: translate(3px, -2px); }
+  75% { transform: translate(-2px, -3px); }
+  100% { transform: translate(0, 0); }
 }
 

@@ -1029,8 +1029,9 @@ function initEnvelopeOpener() {
       }
     }, 500);
     
-    // 3. Trigger custom theme open-effects & audio soundscapes!
+    // 3. Trigger custom theme open-effects & Cinematic Storyboard!
     try { playThemeSoundscape(); } catch(e) {}
+    try { triggerCinematicStoryboard(); } catch(e) {}
     if (appState.customThemeActive) {
       if (appState.theme === 'spiderman') {
         triggerSpiderwebShoot();
@@ -2717,13 +2718,84 @@ function applyCustomTheme() {
 }
 
 
-function initThemeInteractions() {
-  const mario = document.getElementById('marioCharacter');
-  if (mario) {
-    mario.addEventListener('click', () => {
-      triggerMarioJump();
-    });
+function triggerCinematicStoryboard() {
+  const phoneScreen = document.querySelector('.phone-screen');
+  if (!phoneScreen) return;
+
+  // Remove existing stage if any
+  const oldStage = document.getElementById('storyboardStage');
+  if (oldStage) oldStage.remove();
+
+  const stage = document.createElement('div');
+  stage.id = 'storyboardStage';
+  stage.className = 'storyboard-stage';
+
+  const namesText = appState.shortNames || 'Aiman & Sarah';
+  const dateText = appState.eventDate || '12 Disember 2026';
+
+  // Build Dinosaur Storyboard Narrative Stage
+  if (appState.theme === 'jurassic' || appState.customThemePrompt.toLowerCase().includes('dino') || appState.customThemePrompt.toLowerCase().includes('jurassic')) {
+    stage.innerHTML = `
+      <!-- Scene 1: Raptor Running with Couple Name Plaque -->
+      <div class="storyboard-character raptor-run">
+        <svg viewBox="0 0 100 100" style="width: 75px; height: 75px; fill: #a3e635; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));">
+          <path d="M50,20 C40,10 20,20 20,40 L35,40 C40,30 50,30 55,35 L40,65 C30,65 20,80 30,90 C40,90 50,75 55,70 L70,85 L80,85 L70,60 C80,50 90,30 75,20 Z" />
+        </svg>
+        <div class="storyboard-signboard"><i class="fa-solid fa-heart"></i> ${escapeHtml(namesText)}</div>
+      </div>
+
+      <!-- Scene 2: T-Rex Roaring Chase Sequence -->
+      <div class="storyboard-character trex-chase">
+        <svg viewBox="0 0 100 100" style="width: 105px; height: 105px; fill: #f59e0b; filter: drop-shadow(0 6px 15px rgba(0,0,0,0.9));">
+          <path d="M70,10 C50,5 30,20 25,45 C25,60 35,70 30,90 L45,90 C50,75 55,70 65,75 C75,80 85,75 90,60 L70,55 C80,45 85,30 70,10 Z M40,35 A5,5 0 1,1 40,35.1 Z" />
+        </svg>
+        <div class="storyboard-signboard" style="border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.2);"><i class="fa-solid fa-fire"></i> ROAAAR!</div>
+      </div>
+
+      <!-- Scene 3: Flying Pterodactyl Carrying Cake & Date Banner -->
+      <div class="storyboard-character dino-cake">
+        <svg viewBox="0 0 100 100" style="width: 80px; height: 80px; fill: #fde047; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));">
+          <path d="M10,50 Q50,10 90,50 Q50,40 10,50 Z M50,40 L50,70 L40,85 L60,85 Z" />
+        </svg>
+        <div class="storyboard-signboard" style="border-color: #fde047; color: #fde047;"><i class="fa-solid fa-cake-candles"></i> ${escapeHtml(dateText)}</div>
+      </div>
+    `;
+
+    // Trigger Screen Shake camera effect when T-Rex appears
+    setTimeout(() => {
+      phoneScreen.classList.add('screen-shake');
+      try { playDinoRoarSound(); } catch(e) {}
+    }, 2500);
+
+    setTimeout(() => {
+      phoneScreen.classList.remove('screen-shake');
+    }, 4500);
+
+  } else if (appState.theme === 'duck-birthday' || appState.customThemePrompt.toLowerCase().includes('duck')) {
+    // Duck Chef Motorcycle & Sparklers Narrative Stage
+    stage.innerHTML = `
+      <div class="storyboard-character raptor-run" style="bottom: 150px;">
+        <svg viewBox="0 0 100 100" style="width: 85px; height: 85px; fill: #fde047; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.8));">
+          <circle cx="50" cy="30" r="20" />
+          <path d="M30,50 L70,50 L80,80 L20,80 Z" fill="#ffffff" />
+          <circle cx="30" cy="85" r="12" fill="#333" />
+          <circle cx="70" cy="85" r="12" fill="#333" />
+        </svg>
+        <div class="storyboard-signboard" style="border-color: #fde047; color: #fde047;"><i class="fa-solid fa-motorcycle"></i> 🐥 ${escapeHtml(namesText)}</div>
+      </div>
+
+      <div class="storyboard-character dino-cake" style="bottom: 80px;">
+        <div class="storyboard-signboard" style="border-color: #f43f5e; color: #ffffff; background: #f43f5e;"><i class="fa-solid fa-birthday-cake"></i> 🎂 ${escapeHtml(dateText)}</div>
+      </div>
+    `;
   }
+
+  phoneScreen.appendChild(stage);
+
+  // Clean up stage after full animation completes
+  setTimeout(() => {
+    if (stage) stage.remove();
+  }, 11000);
 }
 
 function triggerMarioJump() {
