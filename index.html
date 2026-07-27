@@ -69,16 +69,35 @@
         <!-- Custom Theme Prompt Builder -->
         <div class="section-card">
           <div class="section-title">
-            <span>Cipta Tema AI Anda</span>
-            <i class="fa-solid fa-microchip"></i>
+            <span>Penjana Tema AI Generatif</span>
+            <i class="fa-solid fa-brain"></i>
           </div>
           <div class="form-group">
-            <label for="inputCustomTheme">Terangkan Tema Anda (BM/BI)</label>
-            <textarea id="inputCustomTheme" class="form-control" placeholder="Contoh: Tema Spiderman, Tema Barbie, Harry Potter, warna hutan hijau gold..."></textarea>
+            <label for="inputCustomTheme">Terangkan Tema Bebas (Apa sahaja prompt)</label>
+            <textarea id="inputCustomTheme" class="form-control" placeholder="Contoh: Kucing comel di awan pink, Cyberpunk samurai neon, Pantai sunset Bali, Taman bunga sakura, Istana raja emas..."></textarea>
           </div>
+          
+          <div class="form-group">
+            <label for="selectAiEngine">Enjin AI</label>
+            <select id="selectAiEngine" class="form-control">
+              <option value="local-ai">⚡ Enjin AI Semantic Generatif (Bebas / Instant)</option>
+              <option value="gemini-api">🤖 Google Gemini AI API (Guna API Key)</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="geminiApiKeyGroup" style="display: none;">
+            <label for="inputGeminiApiKey">Gemini API Key (Pilihan)</label>
+            <input type="password" id="inputGeminiApiKey" class="form-control" placeholder="AIzaSy...">
+            <small style="color: #94a3b8; font-size: 0.75rem; display: block; margin-top: 4px;">Dapatkan API Key percuma di aistudio.google.com</small>
+          </div>
+
           <button class="btn-action btn-primary" id="btnGenerateTheme" style="width: 100%;">
-            <i class="fa-solid fa-microchip"></i> Jana Tema Pintar
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Jana Tema Dengan AI
           </button>
+          
+          <div id="aiGenerationStatus" style="display: none; margin-top: 10px; padding: 8px 12px; background: rgba(16,185,129,0.1); border: 1px solid #10b981; border-radius: 6px; font-size: 0.8rem; color: #10b981;">
+            <i class="fa-solid fa-spinner fa-spin"></i> <span id="aiStatusText">AI sedang mereka bentuk tema...</span>
+          </div>
         </div>
 
         <!-- General Settings -->

@@ -2174,77 +2174,168 @@ function playSweetBellSound() {
   } catch(e) {}
 }
 
-// Custom Theme Generator Controller
+// Gemini API Theme Generator
+async function generateCustomThemeWithGemini(promptText, apiKey) {
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  
+  const systemPrompt = `You are a world-class UI designer generating a custom theme for a digital invitation card based on user prompt: "${promptText}".
+Return ONLY a valid JSON object without any markdown wrapping or formatting. The JSON must match this structure:
+{
+  "themeName": "custom",
+  "colors": {
+    "bg": "#hex",
+    "bgGradient": "linear-gradient(135deg, #hex 0%, #hex 100%)",
+    "text": "#hex",
+    "textMuted": "#hex",
+    "accent": "#hex",
+    "accentRgb": "r, g, b",
+    "border": "1.5px solid rgba(...)",
+    "softBg": "rgba(...)",
+    "particleColor": "rgba(...)"
+  },
+  "fonts": {
+    "script": "Great Vibes, cursive",
+    "title": "Playfair Display, serif",
+    "transform": "none",
+    "letterSpacing": "1px"
+  },
+  "particleType": "spark",
+  "coverSvg": "<div class=\\"theme-illustration-container\\"><svg viewBox=\\"0 0 100 100\\" style=\\"width: 55px; height: 55px;\\">...</svg></div>"
+}`;
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: systemPrompt }] }]
+    })
+  });
+
+  const data = await response.json();
+  if (data.candidates && data.candidates[0].content.parts[0].text) {
+    let rawText = data.candidates[0].content.parts[0].text.trim();
+    rawText = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(rawText);
+  }
+  throw new Error('Respons Gemini API tidak sah.');
+}
+
+// Custom Theme Generator Controller (Supports Gemini API & Semantic Local AI Engine)
 function initCustomThemeGenerator() {
   const btn = document.getElementById('btnGenerateTheme');
   const promptInput = document.getElementById('inputCustomTheme');
-  
+  const engineSelect = document.getElementById('selectAiEngine');
+  const apiKeyGroup = document.getElementById('geminiApiKeyGroup');
+  const apiKeyInput = document.getElementById('inputGeminiApiKey');
+  const statusBox = document.getElementById('aiGenerationStatus');
+  const statusText = document.getElementById('aiStatusText');
+
   if (!btn || !promptInput) return;
-  
-  const triggerGeneration = () => {
+
+  if (engineSelect && apiKeyGroup) {
+    engineSelect.addEventListener('change', () => {
+      apiKeyGroup.style.display = engineSelect.value === 'gemini-api' ? 'block' : 'none';
+    });
+  }
+
+  const triggerGeneration = async () => {
     const promptText = promptInput.value.trim();
-    if (!promptText) return;
+    if (!promptText) {
+      alert('Sila taipkan sesuatu pada arahan tema (prompt).');
+      return;
+    }
 
-    console.log('[THEME] Trigger called with:', promptText);
+    if (statusBox && statusText) {
+      statusBox.style.display = 'block';
+      statusText.textContent = '🤖 AI sedang menguraikan konsep & mereka tema...';
+    }
 
-    // Show visual feedback
-    btn.textContent = '⏳ Generating...';
-    btn.style.background = 'orange';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Merencana...';
 
     // Deactivate standard theme buttons active state
     const themeButtons = document.querySelectorAll('.theme-picker .theme-btn');
     themeButtons.forEach(b => b.classList.remove('active'));
 
-    // Generate theme details
-    const theme = generateCustomTheme(promptText);
-    console.log('[THEME] Generated theme:', theme.themeName, theme.colors);
-
-    // Save to state
-    appState.theme = theme.themeName;
-    appState.customThemeActive = true;
-    appState.customThemePrompt = promptText;
-    appState.customThemeColors = theme.colors;
-    appState.customThemeFonts = theme.fonts;
-    appState.customThemeClass = theme.customClass;
-    appState.customThemeCoverSvg = theme.coverSvg;
-    appState.customThemeInteractiveHtml = theme.interactiveHtml;
-    appState.customThemeParticleType = theme.particleType;
-
-    console.log('[THEME] appState updated. Calling applyCustomTheme...');
-
-    // Apply theme
     try {
+      let theme = null;
+      const engineMode = engineSelect ? engineSelect.value : 'local-ai';
+      const apiKey = apiKeyInput ? apiKeyInput.value.trim() : '';
+
+      if (engineMode === 'gemini-api' && apiKey) {
+        if (statusText) statusText.textContent = '⚡ Menghubungi Google Gemini API...';
+        theme = await generateCustomThemeWithGemini(promptText, apiKey);
+      } else {
+        if (statusText) statusText.textContent = '✨ Generasi Semantik AI Dalaman...';
+        theme = generateCustomTheme(promptText);
+      }
+
+      // Save generated theme into appState
+      appState.theme = theme.themeName || 'custom';
+      appState.customThemeActive = true;
+      appState.customThemePrompt = promptText;
+      appState.customThemeColors = theme.colors;
+      appState.customThemeFonts = theme.fonts;
+      appState.customThemeClass = theme.customClass || 'theme-custom';
+      appState.customThemeCoverSvg = theme.coverSvg;
+      appState.customThemeInteractiveHtml = theme.interactiveHtml || '';
+      appState.customThemeParticleType = theme.particleType || 'circle';
+
       applyCustomTheme();
-      console.log('[THEME] applyCustomTheme() completed successfully!');
-      btn.textContent = '✅ Tema ' + theme.themeName + ' diterapkan!';
+      renderMainIllustration();
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Tema Berjaya Dijana!';
       btn.style.background = '#10b981';
+
+      if (statusBox) {
+        statusBox.style.display = 'none';
+      }
+
       setTimeout(() => {
-        btn.innerHTML = '🤖 Jana Tema Pintar';
+        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Jana Tema Dengan AI';
         btn.style.background = '';
-      }, 2000);
-    } catch(e) {
-      console.error('[THEME] ERROR in applyCustomTheme:', e);
-      btn.textContent = '❌ Error: ' + e.message;
+      }, 2500);
+
+    } catch (e) {
+      console.error('[AI THEME ERROR]', e);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Gagal (Guna Local AI)';
       btn.style.background = '#ef4444';
+
+      if (statusText) statusText.textContent = '❌ Gagal. Menggunakan Enjin Semantik...';
+
+      // Fallback to local semantic theme generator
+      const fallbackTheme = generateCustomTheme(promptText);
+      appState.theme = fallbackTheme.themeName;
+      appState.customThemeActive = true;
+      appState.customThemePrompt = promptText;
+      appState.customThemeColors = fallbackTheme.colors;
+      appState.customThemeFonts = fallbackTheme.fonts;
+      appState.customThemeClass = fallbackTheme.customClass;
+      appState.customThemeCoverSvg = fallbackTheme.coverSvg;
+      appState.customThemeInteractiveHtml = fallbackTheme.interactiveHtml;
+      appState.customThemeParticleType = fallbackTheme.particleType;
+
+      applyCustomTheme();
+      renderMainIllustration();
+
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Jana Tema Dengan AI';
+        btn.style.background = '';
+        if (statusBox) statusBox.style.display = 'none';
+      }, 2500);
     }
   };
 
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    triggerGeneration();
-  });
+  btn.addEventListener('click', triggerGeneration);
 
-  // Auto-trigger on Enter keypress
+  // Auto-trigger on Enter keypress inside prompt textarea
   promptInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       triggerGeneration();
     }
-  });
-
-  // Instant trigger on input, change, keyup, paste
-  ['input', 'change', 'keyup', 'paste'].forEach(evt => {
-    promptInput.addEventListener(evt, triggerGeneration);
   });
 }
 
