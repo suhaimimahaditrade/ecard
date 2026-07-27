@@ -1931,7 +1931,35 @@ function generateCustomTheme(promptText) {
     interactiveHtml = `
       <div id="pinkHeartPulse" class="heart-pulse-overlay" style="background-color: rgba(192,132,252,0.4)"></div>
     `;
-    customClass = 'theme-fantasy';
+  } else if (prompt.includes('duck') || prompt.includes('motorcycle') || prompt.includes('birthday') || prompt.includes('cake') || prompt.includes('sparkler')) {
+    themeName = 'duck-birthday';
+    colors = {
+      bg: '#0f1a10',
+      bgGradient: 'linear-gradient(135deg, #0f1a10 0%, #1c2e1b 50%, #3b1d1b 100%)',
+      text: '#ffffff',
+      textMuted: '#fde047',
+      accent: '#fde047',
+      accentRgb: '253, 224, 71',
+      border: '2px solid #fde047',
+      softBg: 'rgba(253, 224, 71, 0.15)',
+      particleColor: 'rgba(253, 224, 71, 0.7)'
+    };
+    fonts = {
+      script: 'Pinyon Script, Great Vibes, cursive',
+      title: 'Outfit, sans-serif',
+      transform: 'none',
+      letterSpacing: '1px'
+    };
+    coverSvg = `
+      <div class="theme-illustration-container" style="padding: 0; margin: 0 auto; height: 65px;">
+        <svg viewBox="0 0 100 100" style="width: 55px; height: 55px; fill: #fde047;">
+          <!-- 3D Birthday Cake & Sparkler SVG -->
+          <path d="M20,60 L80,60 L80,85 L20,85 Z M15,55 L85,55 L85,60 L15,60 Z M30,35 L70,35 L70,55 L30,55 Z M48,15 L52,15 L52,35 L48,35 Z" />
+          <circle cx="50" cy="10" r="4" fill="#f43f5e" />
+        </svg>
+      </div>
+    `;
+    customClass = 'theme-duck-birthday';
 
   } else if (prompt.includes('jurassic') || prompt.includes('dino') || prompt.includes('dinosaur') || prompt.includes('jungle') || prompt.includes('prehistoric')) {
     themeName = 'jurassic';
