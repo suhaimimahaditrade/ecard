@@ -927,6 +927,11 @@ function initRsvpForm() {
     
     renderWishes();
     
+    // Trigger Celebratory Confetti Blast!
+    if (typeof triggerThemeConfetti === 'function') {
+      triggerThemeConfetti();
+    }
+    
     // Reset RSVP form details but keep name if URL supplied
     form.reset();
     initGuestName();
@@ -1639,13 +1644,19 @@ function initHtmlExporter() {
           createParticles('coverParticles', 10);
           
           // Seed local state wishes
-          const stored = localStorage.getItem('standalone_wishes_' + appState.shortNames.replace(/\\s+/g, ''));
+          const stored = localStorage.getItem('standalone_wishes_' + appState.shortNames.replace(/\s+/g, ''));
           if (stored) {
             appState.wishes = JSON.parse(stored);
           } else {
-            appState.wishes = \${JSON.stringify(appState.wishes)};
+            appState.wishes = ${JSON.stringify(appState.wishes)};
           }
           renderWishes();
+
+          // Initialize Next-Level Interactive Features in Standalone Export
+          try { init3DTiltEngine(); } catch(e) {}
+          try { initInteractiveCanvasEngine(); } catch(e) {}
+          try { initVinylAudioPlayer(); } catch(e) {}
+          try { initTimelineEngine(); } catch(e) {}
 
           // Envelope action
           document.getElementById('btnOpenCard').addEventListener('click', () => {
@@ -1674,9 +1685,10 @@ function initHtmlExporter() {
           });
 
           // Music toggle
-          document.getElementById('cardFloatingMusic').addEventListener('click', () => playMusic());
+          const floatMusic = document.getElementById('cardFloatingMusic');
+          if (floatMusic) floatMusic.addEventListener('click', () => playMusic());
 
-          // RSVP handler
+          // RSVP handler with Confetti Blast
           const form = document.getElementById('rsvpForm');
           const pGroup = document.getElementById('paxGroup');
           if (form) {
@@ -1696,10 +1708,11 @@ function initHtmlExporter() {
               
               const newWish = { name, status: attendance, pax, message, timestamp: Date.now() };
               appState.wishes.push(newWish);
-              localStorage.setItem('standalone_wishes_' + appState.shortNames.replace(/\\s+/g, ''), JSON.stringify(appState.wishes));
+              localStorage.setItem('standalone_wishes_' + appState.shortNames.replace(/\s+/g, ''), JSON.stringify(appState.wishes));
               renderWishes();
               form.reset();
               initGuestName();
+              try { triggerThemeConfetti(); } catch(e) {}
               alert('Terima kasih! RSVP anda telah dihantar.');
             });
           }
@@ -1711,9 +1724,9 @@ function initHtmlExporter() {
               e.preventDefault();
               const start = new Date(appState.targetDate);
               const end = new Date(start.getTime() + 5*60*60*1000);
-              const format = (d) => d.toISOString().replace(/-|:|\\.\\d\\d\\d/g, '');
+              const format = (d) => d.toISOString().replace(/-|:|\.\d\d\d/g, '');
               const title = encodeURIComponent('Majlis Perkahwinan ' + appState.shortNames);
-              const detail = encodeURIComponent('Venue: ' + appState.venueName + '\\nAlamat: ' + appState.venueAddress);
+              const detail = encodeURIComponent('Venue: ' + appState.venueName + '\nAlamat: ' + appState.venueAddress);
               const loc = encodeURIComponent(appState.venueName + ', ' + appState.venueAddress);
               const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + title + '&dates=' + format(start) + '/' + format(end) + '&details=' + detail + '&location=' + loc;
               window.open(url, '_blank');
@@ -2429,6 +2442,303 @@ function renderMainIllustration() {
   }
 }
 
+// ==========================================
+// NEXT-LEVEL UNMATCHED INTERACTIVE ENGINES
+// ==========================================
+
+// 1. 3D Tilt & Holographic Foil Engine
+function init3DTiltEngine() {
+  const frame = document.getElementById('phone3dFrame');
+  const screen = document.getElementById('cardContainer');
+  const sheen = document.getElementById('foilSheen');
+
+  if (!frame || !screen) return;
+
+  const handleMove = (e) => {
+    const rect = screen.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+    if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) {
+      resetTilt();
+      return;
+    }
+
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -12; // Max 12deg tilt
+    const rotateY = ((x - centerX) / centerX) * 12;
+
+    frame.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+
+    if (sheen) {
+      const sheenX = ((x / rect.width) * 100) - 25;
+      const sheenY = ((y / rect.height) * 100) - 25;
+      sheen.style.transform = `translate(${sheenX}%, ${sheenY}%)`;
+    }
+  };
+
+  const resetTilt = () => {
+    frame.style.transform = 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+  };
+
+  document.addEventListener('mousemove', handleMove);
+  document.addEventListener('touchmove', handleMove, { passive: true });
+  document.addEventListener('mouseleave', resetTilt);
+}
+
+// 2. 60FPS Interactive Touch / Tap Physics Canvas Engine
+let canvasParticles = [];
+let animFrameId = null;
+
+function initInteractiveCanvasEngine() {
+  const canvas = document.getElementById('interactiveCanvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const resizeCanvas = () => {
+    canvas.width = canvas.offsetWidth || 340;
+    canvas.height = canvas.offsetHeight || 600;
+  };
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  const spawnParticles = (x, y, count = 12) => {
+    const theme = appState.theme || 'emerald';
+    for (let i = 0; i < count; i++) {
+      let color = appState.customThemeColors ? appState.customThemeColors.accent : '#d4af37';
+      let size = Math.random() * 6 + 3;
+      let vx = (Math.random() - 0.5) * 6;
+      let vy = (Math.random() - 0.7) * 6;
+      let shape = 'circle';
+      let rotation = Math.random() * Math.PI * 2;
+      let vRot = (Math.random() - 0.5) * 0.1;
+
+      if (theme === 'mario') {
+        color = '#f8d818';
+        shape = 'coin';
+      } else if (theme === 'spiderman') {
+        color = Math.random() > 0.5 ? '#e53e3e' : '#3182ce';
+        shape = 'spark';
+      } else if (theme === 'barbie') {
+        color = '#e91e63';
+        shape = 'heart';
+      } else if (theme === 'rose-gold' || theme === 'rose') {
+        color = '#b76e79';
+        shape = 'petal';
+      }
+
+      canvasParticles.push({
+        x, y, vx, vy, size, color, shape,
+        alpha: 1, life: 1, rotation, vRot
+      });
+    }
+  };
+
+  const handleTap = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    spawnParticles(x, y, 15);
+  };
+
+  canvas.addEventListener('click', handleTap);
+  canvas.addEventListener('touchstart', handleTap, { passive: true });
+
+  const renderLoop = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = canvasParticles.length - 1; i >= 0; i--) {
+      const p = canvasParticles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.15; // Gravity
+      p.life -= 0.02;
+      p.alpha = Math.max(0, p.life);
+      p.rotation += p.vRot;
+
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color;
+
+      if (p.shape === 'coin') {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      } else if (p.shape === 'heart') {
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-p.size, -p.size, -p.size * 1.5, p.size / 3, 0, p.size * 1.2);
+        ctx.bezierCurveTo(p.size * 1.5, p.size / 3, p.size, -p.size, 0, 0);
+        ctx.fill();
+      } else if (p.shape === 'petal') {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.size, p.size * 1.8, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      if (p.life <= 0) {
+        canvasParticles.splice(i, 1);
+      }
+    }
+
+    animFrameId = requestAnimationFrame(renderLoop);
+  };
+
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  renderLoop();
+}
+
+// 3. Vinyl Record Audio Player Controller
+function initVinylAudioPlayer() {
+  const widget = document.getElementById('cardVinylPlayer');
+  if (!widget) return;
+
+  widget.addEventListener('click', () => {
+    playMusic();
+    if (musicState && musicState.isPlaying) {
+      widget.classList.add('playing');
+    } else {
+      widget.classList.remove('playing');
+    }
+  });
+}
+
+// 4. Interactive Timeline Journey Engine
+function initTimelineEngine() {
+  const container = document.getElementById('previewTimelineJourney');
+  const headerTitle = document.getElementById('previewTimelineHeaderTitle');
+  if (!container) return;
+
+  const updateTimeline = () => {
+    const titleInput = document.getElementById('inputTimelineTitle');
+    const t1Title = document.getElementById('inputTime1Title');
+    const t1Date = document.getElementById('inputTime1Date');
+    const t1Desc = document.getElementById('inputTime1Desc');
+    const t2Title = document.getElementById('inputTime2Title');
+    const t2Date = document.getElementById('inputTime2Date');
+    const t2Desc = document.getElementById('inputTime2Desc');
+
+    if (headerTitle && titleInput) {
+      headerTitle.textContent = (titleInput.value || 'KISAH CINTA KAMI').toUpperCase();
+    }
+
+    let html = '';
+    
+    // Milestone 1
+    if (t1Title && t1Title.value.trim()) {
+      html += `
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-date">${t1Date ? escapeHtml(t1Date.value) : ''}</div>
+            <div class="timeline-title-text">${escapeHtml(t1Title.value)}</div>
+            <div class="timeline-desc">${t1Desc ? escapeHtml(t1Desc.value) : ''}</div>
+            ${appState.time1Photo ? `<img src="${appState.time1Photo}" class="timeline-photo" alt="Momen 1">` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // Milestone 2
+    if (t2Title && t2Title.value.trim()) {
+      html += `
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-date">${t2Date ? escapeHtml(t2Date.value) : ''}</div>
+            <div class="timeline-title-text">${escapeHtml(t2Title.value)}</div>
+            <div class="timeline-desc">${t2Desc ? escapeHtml(t2Desc.value) : ''}</div>
+            ${appState.time2Photo ? `<img src="${appState.time2Photo}" class="timeline-photo" alt="Momen 2">` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+  };
+
+  // Bind inputs
+  ['inputTimelineTitle', 'inputTime1Title', 'inputTime1Date', 'inputTime1Desc', 'inputTime2Title', 'inputTime2Date', 'inputTime2Desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateTimeline);
+  });
+
+  // Bind photo uploads
+  const up1 = document.getElementById('uploadTime1Photo');
+  if (up1) {
+    up1.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          appState.time1Photo = evt.target.result;
+          updateTimeline();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  const up2 = document.getElementById('uploadTime2Photo');
+  if (up2) {
+    up2.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          appState.time2Photo = evt.target.result;
+          updateTimeline();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  updateTimeline();
+}
+
+// 5. Confetti Celebration Blast for RSVP
+function triggerThemeConfetti() {
+  const canvas = document.getElementById('interactiveCanvas');
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+
+  for (let i = 0; i < 45; i++) {
+    const color = ['#f8d818', '#e53e3e', '#e91e63', '#10b981', '#6366f1', '#ffffff'][Math.floor(Math.random() * 6)];
+    canvasParticles.push({
+      x: centerX,
+      y: centerY,
+      vx: (Math.random() - 0.5) * 14,
+      vy: (Math.random() - 0.8) * 14,
+      size: Math.random() * 7 + 4,
+      color,
+      shape: Math.random() > 0.5 ? 'coin' : 'circle',
+      alpha: 1,
+      life: 1.5,
+      rotation: Math.random() * Math.PI * 2,
+      vRot: (Math.random() - 0.5) * 0.2
+    });
+  }
+  playSweetBellSound();
+}
+
 // Global holding variables for compiler export files
 let inlinedCss = '';
 let inlinedJsStandalone = '';
@@ -2460,15 +2770,27 @@ window.addEventListener('DOMContentLoaded', () => {
   initHtmlExporter();
   loadCssFallbacks();
   
+  // Initialize Unmatched Next-Level Features
+  init3DTiltEngine();
+  initInteractiveCanvasEngine();
+  initVinylAudioPlayer();
+  initTimelineEngine();
+  
   // Floating Music Click listener
-  document.getElementById('cardFloatingMusic').addEventListener('click', () => {
-    playMusic();
-  });
+  const floatMusic = document.getElementById('cardFloatingMusic');
+  if (floatMusic) {
+    floatMusic.addEventListener('click', () => {
+      playMusic();
+    });
+  }
   
   // Back to Studio click listener (useful on exported cards preview)
-  document.getElementById('backToStudio').addEventListener('click', (e) => {
-    e.preventDefault();
-    // Smooth scroll to top of editor panel
-    document.getElementById('editorPanel').scrollIntoView({ behavior: 'smooth' });
-  });
+  const backBtn = document.getElementById('backToStudio');
+  if (backBtn) {
+    backBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('editorPanel').scrollIntoView({ behavior: 'smooth' });
+    });
+  }
 });
+

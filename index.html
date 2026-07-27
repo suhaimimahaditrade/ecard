@@ -150,6 +150,36 @@
           </div>
         </div>
 
+        <!-- Interactive Love Story / Event Timeline Settings -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>Timeline Kisah / Kenangan</span>
+            <i class="fa-solid fa-timeline"></i>
+          </div>
+          <div class="form-group">
+            <label for="inputTimelineTitle">Tajuk Timeline</label>
+            <input type="text" id="inputTimelineTitle" class="form-control" value="Kisah Cinta Kami">
+          </div>
+          
+          <!-- Momen 1 -->
+          <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+            <label style="color: #10b981; font-weight: 600; font-size: 0.8rem;">Momen 1 (Pertemuan Pertama / Detik Lahir)</label>
+            <input type="text" id="inputTime1Title" class="form-control" value="Pertemuan Pertama" placeholder="Tajuk Momen">
+            <input type="text" id="inputTime1Date" class="form-control" value="Mac 2021" placeholder="Tarikh / Tahun" style="margin-top: 4px;">
+            <input type="text" id="inputTime1Desc" class="form-control" value="Bermula takdir pertemuan indah di kampus." placeholder="Keterangan Ringkas" style="margin-top: 4px;">
+            <input type="file" id="uploadTime1Photo" accept="image/*" class="form-control" style="margin-top: 4px;">
+          </div>
+
+          <!-- Momen 2 -->
+          <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+            <label style="color: #10b981; font-weight: 600; font-size: 0.8rem;">Momen 2 (Lamaran / Detik Membesar)</label>
+            <input type="text" id="inputTime2Title" class="form-control" value="Ikatan Pertunangan" placeholder="Tajuk Momen">
+            <input type="text" id="inputTime2Date" class="form-control" value="Jun 2024" placeholder="Tarikh / Tahun" style="margin-top: 4px;">
+            <input type="text" id="inputTime2Desc" class="form-control" value="Menyarung cincin tanda persefahaman dua keluarga." placeholder="Keterangan Ringkas" style="margin-top: 4px;">
+            <input type="file" id="uploadTime2Photo" accept="image/*" class="form-control" style="margin-top: 4px;">
+          </div>
+        </div>
+
         <!-- Date, Time, Venue Settings -->
         <div class="section-card">
           <div class="section-title">
@@ -244,15 +274,34 @@
     <div class="preview-panel" id="previewPanel">
       
       <!-- Smartphone Simulator Container -->
-      <div class="phone-frame">
+      <div class="phone-frame" id="phone3dFrame">
         <div class="phone-notch"></div>
         
         <!-- Live Invitation E-Card inside Screen -->
         <div class="phone-screen" id="cardContainer">
+          <!-- 60FPS Interactive Touch / Tap Physics Canvas -->
+          <canvas id="interactiveCanvas" class="interactive-canvas"></canvas>
+
+          <!-- Holographic Foil Sheen Overlay -->
+          <div class="foil-sheen" id="foilSheen"></div>
+          
           <div id="customThemeInteractiveContainer"></div>
           
-          <!-- Floating Background Music Player control -->
-          <div class="floating-music" id="cardFloatingMusic" title="Main/Senyap Lagu">
+          <!-- Vinyl Audio Player & Equalizer Bar Visualizer Widget -->
+          <div class="vinyl-player-widget" id="cardVinylPlayer" title="Piring Hitam Muzik - Klik untuk Main / Senyap">
+            <div class="vinyl-disc" id="vinylDisc">
+              <div class="vinyl-label"></div>
+            </div>
+            <div class="vinyl-arm" id="vinylArm"></div>
+            <div class="audio-equalizer" id="audioEqualizer">
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+            </div>
+          </div>
+          <!-- Fallback Music Button for quick access -->
+          <div class="floating-music" id="cardFloatingMusic" style="display: none;" title="Main/Senyap Lagu">
             <i class="fa-solid fa-music"></i>
           </div>
           
@@ -292,7 +341,11 @@
             <!-- Hero Introduction -->
             <section class="card-section hero-section">
               <span class="wedding-tagline" id="previewTagline">UNDANGAN KAMI</span>
-              <h2 class="font-script hero-names" id="previewShortNames">Aiman & Sarah</h2>
+              
+              <!-- Kinetic Calligraphy Writing Container -->
+              <div id="previewCalligraphyContainer" class="calligraphy-container">
+                <h2 class="font-script hero-names calligraphy-text" id="previewShortNames">Aiman & Sarah</h2>
+              </div>
               
               <svg class="divider-ornament" viewBox="0 0 100 10">
                 <path d="M 0 5 Q 25 1 50 5 T 100 5" fill="none" stroke="currentColor" stroke-width="1.5" />
@@ -330,6 +383,14 @@
                   <div class="avatar-circle">L</div>
                   <div class="avatar-name" id="previewGroomName">Ahmad Aiman Bin Md Yusuf</div>
                 </div>
+              </div>
+            </section>
+
+            <!-- Interactive Love Story / Event Timeline Section -->
+            <section class="card-section timeline-section" id="previewTimelineSection">
+              <span class="detail-title" id="previewTimelineHeaderTitle">KISAH CINTA KAMI</span>
+              <div class="timeline-journey" id="previewTimelineJourney">
+                <!-- Rendered dynamically in app.js -->
               </div>
             </section>
             

@@ -1665,3 +1665,262 @@ textarea.form-control {
   0% { transform: scale(0.9); }
   100% { transform: scale(1.15); }
 }
+
+/* ==========================================
+   NEXT-LEVEL UNMATCHED INTERACTIVE STYLES
+   ========================================== */
+
+/* 3D Parallax Perspective & Foil Sheen */
+.preview-panel {
+  perspective: 1200px;
+}
+
+.phone-frame {
+  transform-style: preserve-3d;
+  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s ease;
+  will-change: transform;
+}
+
+.interactive-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  z-index: 4;
+}
+
+.foil-sheen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 5;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 215, 0, 0.15) 50%,
+    rgba(255, 255, 255, 0.12) 60%,
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  mix-blend-mode: overlay;
+  transform: translate(-25%, -25%);
+}
+
+.phone-screen:hover .foil-sheen {
+  opacity: 1;
+}
+
+/* Vinyl Audio Player & Equalizer Visualizer Widget */
+.vinyl-player-widget {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 48px;
+  height: 48px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid var(--card-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 99;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.vinyl-player-widget:hover {
+  transform: scale(1.12);
+  box-shadow: 0 6px 20px rgba(var(--card-accent-rgb), 0.5);
+}
+
+.vinyl-disc {
+  width: 36px;
+  height: 36px;
+  background: radial-gradient(circle, #262626 20%, #111 21%, #111 40%, #000 41%, #000 70%, #222 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.5s ease;
+}
+
+.vinyl-player-widget.playing .vinyl-disc {
+  animation: vinylSpin 3s linear infinite;
+}
+
+.vinyl-label {
+  width: 14px;
+  height: 14px;
+  background-color: var(--card-accent);
+  border-radius: 50%;
+  border: 2px solid #000;
+}
+
+.vinyl-arm {
+  position: absolute;
+  top: -4px;
+  right: 6px;
+  width: 16px;
+  height: 2px;
+  background-color: #cbd5e1;
+  transform-origin: right center;
+  transform: rotate(-35deg);
+  transition: transform 0.4s ease;
+  pointer-events: none;
+}
+
+.vinyl-player-widget.playing .vinyl-arm {
+  transform: rotate(5deg);
+}
+
+@keyframes vinylSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.audio-equalizer {
+  position: absolute;
+  bottom: -6px;
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 12px;
+  pointer-events: none;
+}
+
+.eq-bar {
+  width: 2px;
+  height: 4px;
+  background-color: var(--card-accent);
+  border-radius: 1px;
+}
+
+.vinyl-player-widget.playing .eq-bar:nth-child(1) { animation: eqJump 0.4s ease-in-out infinite alternate; }
+.vinyl-player-widget.playing .eq-bar:nth-child(2) { animation: eqJump 0.5s ease-in-out 0.1s infinite alternate; }
+.vinyl-player-widget.playing .eq-bar:nth-child(3) { animation: eqJump 0.35s ease-in-out 0.2s infinite alternate; }
+.vinyl-player-widget.playing .eq-bar:nth-child(4) { animation: eqJump 0.45s ease-in-out 0.15s infinite alternate; }
+
+@keyframes eqJump {
+  0% { height: 3px; }
+  100% { height: 12px; }
+}
+
+/* Kinetic Calligraphy Typography & Shimmer */
+.calligraphy-container {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+.calligraphy-text {
+  background: linear-gradient(90deg, var(--card-accent) 0%, #ffffff 50%, var(--card-accent) 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmerGradient 4s linear infinite;
+  display: inline-block;
+}
+
+@keyframes shimmerGradient {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Interactive Love Story / Event Timeline */
+.timeline-section {
+  padding: 1.5rem 1rem;
+}
+
+.timeline-journey {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+  margin-top: 1rem;
+}
+
+.timeline-journey::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--card-accent), rgba(var(--card-accent-rgb), 0.2));
+}
+
+.timeline-item {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+  z-index: 2;
+  align-items: flex-start;
+}
+
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  border-radius: 50%;
+  background-color: var(--card-accent);
+  border: 3px solid var(--card-bg);
+  box-shadow: 0 0 10px rgba(var(--card-accent-rgb), 0.6);
+  margin-top: 4px;
+  margin-left: 14px;
+}
+
+.timeline-card {
+  flex: 1;
+  background: var(--card-soft-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 0.85rem;
+  backdrop-filter: blur(4px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timeline-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(var(--card-accent-rgb), 0.25);
+}
+
+.timeline-date {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--card-accent);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.timeline-title-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--card-text);
+  margin: 2px 0 4px 0;
+}
+
+.timeline-desc {
+  font-size: 0.8rem;
+  color: var(--card-text-muted);
+  line-height: 1.4;
+}
+
+.timeline-photo {
+  width: 100%;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 8px;
+  border: 1px solid var(--card-border);
+}
+
