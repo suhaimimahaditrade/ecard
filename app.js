@@ -2473,14 +2473,7 @@ function applyCustomTheme() {
   const colors = appState.customThemeColors;
   const fonts = appState.customThemeFonts;
 
-  // Generate Pollinations 3D AI Poster Image URL based on prompt
-  let aiBgImageCss = '';
-  if (appState.customThemePrompt) {
-    const aiImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(appState.customThemePrompt + ', 3d cinematic unreal engine 5 render, highly detailed, beautiful lighting, invitation card background')}&width=800&height=1200&nologo=true&seed=88`;
-    aiBgImageCss = `linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.88) 100%), url('${aiImageUrl}')`;
-  }
-
-  const bgStyle = aiBgImageCss || colors.bgGradient;
+  const bgStyle = colors.bgGradient || 'linear-gradient(135deg, #051408 0%, #1a3d1f 100%)';
 
   // ✅ NUCLEAR OPTION: Inject a <style> tag with !important rules
   // This bypasses ALL CSS specificity, inline style conflicts, and inheritance issues
