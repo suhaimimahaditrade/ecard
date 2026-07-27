@@ -2174,6 +2174,60 @@ function playSweetBellSound() {
   } catch(e) {}
 }
 
+// OpenRouter Free AI API Theme Generator
+async function generateCustomThemeWithOpenRouter(promptText, apiKey) {
+  const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
+  
+  const systemPrompt = `You are a world-class UI designer generating a custom theme for a digital invitation card based on user prompt: "${promptText}".
+Return ONLY a valid JSON object without any markdown wrapping or formatting. The JSON must match this exact structure:
+{
+  "themeName": "custom",
+  "colors": {
+    "bg": "#hex",
+    "bgGradient": "linear-gradient(135deg, #hex 0%, #hex 100%)",
+    "text": "#hex",
+    "textMuted": "#hex",
+    "accent": "#hex",
+    "accentRgb": "r, g, b",
+    "border": "1.5px solid rgba(...)",
+    "softBg": "rgba(...)",
+    "particleColor": "rgba(...)"
+  },
+  "fonts": {
+    "script": "Great Vibes, cursive",
+    "title": "Playfair Display, serif",
+    "transform": "none",
+    "letterSpacing": "1px"
+  },
+  "particleType": "spark",
+  "coverSvg": "<div class=\\"theme-illustration-container\\"><svg viewBox=\\"0 0 100 100\\" style=\\"width: 55px; height: 55px;\\">...</svg></div>"
+}`;
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': 'https://suhaimimahaditrade.github.io/ecard/',
+      'X-Title': 'E-Card Studio',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
+      messages: [
+        { role: 'user', content: systemPrompt }
+      ]
+    })
+  });
+
+  const data = await response.json();
+  if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+    let rawText = data.choices[0].message.content.trim();
+    rawText = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(rawText);
+  }
+  throw new Error(data.error ? data.error.message : 'Respons OpenRouter API tidak sah.');
+}
+
 // Gemini API Theme Generator
 async function generateCustomThemeWithGemini(promptText, apiKey) {
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
@@ -2220,22 +2274,30 @@ Return ONLY a valid JSON object without any markdown wrapping or formatting. The
   throw new Error('Respons Gemini API tidak sah.');
 }
 
-// Custom Theme Generator Controller (Supports Gemini API & Semantic Local AI Engine)
+// Custom Theme Generator Controller (Supports OpenRouter API, Gemini API & Semantic Local AI Engine)
 function initCustomThemeGenerator() {
   const btn = document.getElementById('btnGenerateTheme');
   const promptInput = document.getElementById('inputCustomTheme');
   const engineSelect = document.getElementById('selectAiEngine');
-  const apiKeyGroup = document.getElementById('geminiApiKeyGroup');
-  const apiKeyInput = document.getElementById('inputGeminiApiKey');
+  const openRouterGroup = document.getElementById('openRouterApiKeyGroup');
+  const openRouterInput = document.getElementById('inputOpenRouterApiKey');
+  const geminiGroup = document.getElementById('geminiApiKeyGroup');
+  const geminiInput = document.getElementById('inputGeminiApiKey');
   const statusBox = document.getElementById('aiGenerationStatus');
   const statusText = document.getElementById('aiStatusText');
 
   if (!btn || !promptInput) return;
 
-  if (engineSelect && apiKeyGroup) {
-    engineSelect.addEventListener('change', () => {
-      apiKeyGroup.style.display = engineSelect.value === 'gemini-api' ? 'block' : 'none';
-    });
+  const updateApiKeyGroupVisibility = () => {
+    if (!engineSelect) return;
+    const mode = engineSelect.value;
+    if (openRouterGroup) openRouterGroup.style.display = mode === 'openrouter-api' ? 'block' : 'none';
+    if (geminiGroup) geminiGroup.style.display = mode === 'gemini-api' ? 'block' : 'none';
+  };
+
+  if (engineSelect) {
+    engineSelect.addEventListener('change', updateApiKeyGroupVisibility);
+    updateApiKeyGroupVisibility();
   }
 
   const triggerGeneration = async () => {
@@ -2259,12 +2321,16 @@ function initCustomThemeGenerator() {
 
     try {
       let theme = null;
-      const engineMode = engineSelect ? engineSelect.value : 'local-ai';
-      const apiKey = apiKeyInput ? apiKeyInput.value.trim() : '';
+      const engineMode = engineSelect ? engineSelect.value : 'openrouter-api';
+      const openRouterKey = openRouterInput ? openRouterInput.value.trim() : '';
+      const geminiKey = geminiInput ? geminiInput.value.trim() : '';
 
-      if (engineMode === 'gemini-api' && apiKey) {
+      if (engineMode === 'openrouter-api' && openRouterKey) {
+        if (statusText) statusText.textContent = '🌐 Menghubungi OpenRouter AI API (Free Model)...';
+        theme = await generateCustomThemeWithOpenRouter(promptText, openRouterKey);
+      } else if (engineMode === 'gemini-api' && geminiKey) {
         if (statusText) statusText.textContent = '⚡ Menghubungi Google Gemini API...';
-        theme = await generateCustomThemeWithGemini(promptText, apiKey);
+        theme = await generateCustomThemeWithGemini(promptText, geminiKey);
       } else {
         if (statusText) statusText.textContent = '✨ Generasi Semantik AI Dalaman...';
         theme = generateCustomTheme(promptText);

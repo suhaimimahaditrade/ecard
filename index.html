@@ -80,13 +80,20 @@
           <div class="form-group">
             <label for="selectAiEngine">Enjin AI</label>
             <select id="selectAiEngine" class="form-control">
+              <option value="openrouter-api">🌐 OpenRouter AI API (Percuma / Free Key)</option>
               <option value="local-ai">⚡ Enjin AI Semantic Generatif (Bebas / Instant)</option>
               <option value="gemini-api">🤖 Google Gemini AI API (Guna API Key)</option>
             </select>
           </div>
 
+          <div class="form-group" id="openRouterApiKeyGroup">
+            <label for="inputOpenRouterApiKey">OpenRouter API Key (Percuma / Free)</label>
+            <input type="password" id="inputOpenRouterApiKey" class="form-control" placeholder="sk-or-v1-...">
+            <small style="color: #94a3b8; font-size: 0.75rem; display: block; margin-top: 4px;">Dapatkan API Key percuma di openrouter.ai/keys</small>
+          </div>
+
           <div class="form-group" id="geminiApiKeyGroup" style="display: none;">
-            <label for="inputGeminiApiKey">Gemini API Key (Pilihan)</label>
+            <label for="inputGeminiApiKey">Gemini API Key</label>
             <input type="password" id="inputGeminiApiKey" class="form-control" placeholder="AIzaSy...">
             <small style="color: #94a3b8; font-size: 0.75rem; display: block; margin-top: 4px;">Dapatkan API Key percuma di aistudio.google.com</small>
           </div>
