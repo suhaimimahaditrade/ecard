@@ -2332,6 +2332,24 @@ function initCustomThemeGenerator() {
 
   if (!btn || !promptInput) return;
 
+  // Load saved API keys from localStorage
+  const savedOpenRouterKey = localStorage.getItem('ecard_openrouter_api_key') || '';
+  const savedGeminiKey = localStorage.getItem('ecard_gemini_api_key') || '';
+
+  if (openRouterInput) {
+    openRouterInput.value = savedOpenRouterKey;
+    openRouterInput.addEventListener('input', () => {
+      localStorage.setItem('ecard_openrouter_api_key', openRouterInput.value.trim());
+    });
+  }
+
+  if (geminiInput) {
+    geminiInput.value = savedGeminiKey;
+    geminiInput.addEventListener('input', () => {
+      localStorage.setItem('ecard_gemini_api_key', geminiInput.value.trim());
+    });
+  }
+
   const updateApiKeyGroupVisibility = () => {
     if (!engineSelect) return;
     const mode = engineSelect.value;
