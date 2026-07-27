@@ -2178,20 +2178,20 @@ function playSweetBellSound() {
 async function generateCustomThemeWithOpenRouter(promptText, apiKey) {
   const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
   
-  const systemPrompt = `You are a world-class UI designer generating a custom theme for a digital invitation card based on user prompt: "${promptText}".
-Return ONLY a valid JSON object without any markdown wrapping or formatting. The JSON must match this exact structure:
+  const systemPrompt = `You are a world-class UI designer generating a theme JSON for invitation card prompt "${promptText}".
+Output ONLY valid JSON matching this exact structure:
 {
   "themeName": "custom",
   "colors": {
-    "bg": "#hex",
-    "bgGradient": "linear-gradient(135deg, #hex 0%, #hex 100%)",
-    "text": "#hex",
-    "textMuted": "#hex",
-    "accent": "#hex",
-    "accentRgb": "r, g, b",
-    "border": "1.5px solid rgba(...)",
-    "softBg": "rgba(...)",
-    "particleColor": "rgba(...)"
+    "bg": "#0f0a1c",
+    "bgGradient": "linear-gradient(135deg, #0f0a1c 0%, #1c1038 100%)",
+    "text": "#ffffff",
+    "textMuted": "#94a3b8",
+    "accent": "#fbbf24",
+    "accentRgb": "251, 191, 36",
+    "border": "1.5px solid #fbbf24",
+    "softBg": "rgba(251, 191, 36, 0.1)",
+    "particleColor": "rgba(251, 191, 36, 0.5)"
   },
   "fonts": {
     "script": "Great Vibes, cursive",
@@ -2199,33 +2199,55 @@ Return ONLY a valid JSON object without any markdown wrapping or formatting. The
     "transform": "none",
     "letterSpacing": "1px"
   },
-  "particleType": "spark",
-  "coverSvg": "<div class=\\"theme-illustration-container\\"><svg viewBox=\\"0 0 100 100\\" style=\\"width: 55px; height: 55px;\\">...</svg></div>"
+  "particleType": "spark"
 }`;
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://suhaimimahaditrade.github.io/ecard/',
-      'X-Title': 'E-Card Studio',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
-      messages: [
-        { role: 'user', content: systemPrompt }
-      ]
-    })
-  });
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey.trim()}`,
+        'HTTP-Referer': 'https://suhaimimahaditrade.github.io/ecard/',
+        'X-Title': 'E-Card Studio',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'openrouter/free',
+        messages: [
+          { role: 'user', content: systemPrompt }
+        ]
+      })
+    });
 
-  const data = await response.json();
-  if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-    let rawText = data.choices[0].message.content.trim();
-    rawText = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    return JSON.parse(rawText);
+    const data = await response.json();
+    if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+      let rawText = data.choices[0].message.content.trim();
+      
+      // Try to find JSON block in output
+      const jsonMatch = rawText.match(/\{[\s\S]*"colors"[\s\S]*\}/);
+      if (jsonMatch) {
+        rawText = jsonMatch[0];
+      }
+      
+      const parsed = JSON.parse(rawText);
+      const fallback = generateCustomTheme(promptText);
+      
+      return {
+        themeName: parsed.themeName || fallback.themeName,
+        colors: parsed.colors || fallback.colors,
+        fonts: parsed.fonts || fallback.fonts,
+        particleType: parsed.particleType || fallback.particleType,
+        coverSvg: fallback.coverSvg,
+        interactiveHtml: fallback.interactiveHtml,
+        customClass: fallback.customClass
+      };
+    }
+  } catch (e) {
+    console.warn('[OPENROUTER PARSE FALLBACK]', e);
   }
-  throw new Error(data.error ? data.error.message : 'Respons OpenRouter API tidak sah.');
+
+  // Graceful fallback to Semantic AI
+  return generateCustomTheme(promptText);
 }
 
 // Gemini API Theme Generator
