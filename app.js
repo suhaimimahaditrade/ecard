@@ -1305,6 +1305,16 @@ function initHtmlExporter() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      // Show Share & Live Link Modal Prompt
+      const liveUrl = 'https://suhaimimahaditrade.github.io/ecard/';
+      const waMsg = `Assalamu'alaikum & Salam Sejahtera! 💌 Kami berbesar hati menjemput anda ke majlis kami. Sila buka e-kad interaktif kami di pautan: ${liveUrl}`;
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(waMsg).catch(() => {});
+      }
+
+      alert(`✅ KAD BERJAYA DISIMPAN & DIMUAT TURUN!\n\n1. Fail kad (.html) telah disimpan ke komputer anda.\n2. Pautan WhatsApp rasmi telah disalin ke papatanda (clipboard):\n\n"${waMsg}"\n\nAnda boleh terus 'Paste' mesej ini di WhatsApp/Telegram untuk dihantar kepada tetamu!`);
     };
 
     // Attempt to dynamically fetch css and js content, or fallback to bundling
