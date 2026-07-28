@@ -780,9 +780,73 @@
     opacity: 1;
     pointer-events: auto;
   }
+  /* ===== CRAWLING SPIDER ON RSVP ===== */
+  @keyframes spiderCrawlAcross {
+    0% { left: -100px; top: 75%; transform: scale(1.2) rotate(90deg); }
+    40% { left: 40%; top: 70%; transform: scale(1.2) rotate(110deg); }
+    70% { left: 70%; top: 78%; transform: scale(1.2) rotate(70deg); }
+    100% { left: calc(100% + 100px); top: 75%; transform: scale(1.2) rotate(90deg); }
+  }
+  @keyframes legWiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+  .big-spidey-crawl {
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+    animation: spiderCrawlAcross 20s linear infinite;
+    transform-origin: center;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  .big-spidey-crawl svg {
+    filter: drop-shadow(0 5px 8px rgba(0,0,0,0.6));
+  }
+  .big-spidey-crawl .leg {
+    transform-origin: 50px 50px;
+    animation: legWiggle 0.25s linear infinite;
+  }
+  .big-spidey-crawl .leg.l1, .big-spidey-crawl .leg.l3, .big-spidey-crawl .leg.r2, .big-spidey-crawl .leg.r4 {
+    animation-delay: 0.12s;
+  }
+  .big-spidey-crawl.squish {
+    transform: scale(0) rotate(720deg) !important;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ===== MUSIC TOGGLE ===== */
+  .music-toggle-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1000;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(12, 4, 20, 0.7);
+    border: 1.5px solid rgba(192, 57, 43, 0.4);
+    color: #ffffff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+  }
+  .music-toggle-btn.playing {
+    animation: spin 3s linear infinite;
+    background: rgba(192, 57, 43, 0.85);
+    border-color: #fce68a;
+    box-shadow: 0 0 12px rgba(192, 57, 43, 0.6);
+  }
 </style>
 </head>
 <body>
+<!-- PWA Background Music -->
+<audio id="bgMusic" loop src="music.mp3"></audio>
+<button id="musicToggle" class="music-toggle-btn">🔇</button>
 
 <div class="stage">
   <div class="blob blob1"></div>
@@ -971,6 +1035,23 @@
 
       <!-- RSVP -->
       <section id="sec-rsvp">
+        <!-- Large Crawling Spider (tap to squish) -->
+        <div id="big-spider-crawl" class="big-spidey-crawl">
+          <svg viewBox="0 0 100 100" width="70" height="70">
+            <ellipse cx="50" cy="55" rx="14" ry="18" fill="#11051e" stroke="#c0392b" stroke-width="1.5"/>
+            <circle cx="50" cy="38" r="9" fill="#11051e" stroke="#c0392b" stroke-width="1"/>
+            <circle cx="47" cy="35" r="1.5" fill="#f1c40f"/>
+            <circle cx="53" cy="35" r="1.5" fill="#f1c40f"/>
+            <path d="M 38 48 Q 18 30 8 42" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l1"/>
+            <path d="M 36 56 Q 14 56 4 66" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l2"/>
+            <path d="M 38 64 Q 18 82 10 76" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l3"/>
+            <path d="M 40 71 Q 23 93 16 88" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l4"/>
+            <path d="M 62 48 Q 82 30 92 42" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r1"/>
+            <path d="M 64 56 Q 86 56 96 66" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r2"/>
+            <path d="M 62 64 Q 82 82 90 76" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r3"/>
+            <path d="M 60 71 Q 77 93 84 88" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r4"/>
+          </svg>
+        </div>
         <div class="spider" id="spider3" style="top:16px"><div class="spider-legs"></div><div class="spider-body"></div></div>
         <div class="section-title" style="margin-bottom:6px">RSVP Kehadiran</div>
         
@@ -1062,8 +1143,8 @@
     <div class="spidey-nav-bar">
       <button class="spidey-nav-btn" onclick="navTo('sec-aturcara')">🕒 Aturcara</button>
       <button class="spidey-nav-btn" onclick="navTo('sec-rsvp')">🕸️ RSVP</button>
-      <button class="spidey-nav-btn" onclick="navTo('sec-lokasi')">📍 Lokasi</button>
       <button class="spidey-nav-btn" onclick="navTo('sec-ucapan')">💬 Ucapan</button>
+      <button class="spidey-nav-btn" onclick="navTo('sec-lokasi')">📍 Lokasi</button>
     </div>
 
     <div class="navdots" id="navdots"></div>
@@ -1178,6 +1259,13 @@ setTimeout(() => {
 // ---------- OPEN CARD (hero drops + navigate) ----------
 const heroHang = $('heroHang');
 $('openCardBtn').addEventListener('click', () => {
+  // Start background music
+  bgMusic.play().then(() => {
+    musicPlaying = true;
+    musicToggle.classList.add('playing');
+    musicToggle.textContent = '🎵';
+  }).catch(err => console.log('Music autoplay blocked:', err));
+
   // Stop floating, trigger drop
   heroImgWrap.classList.remove('floating');
   webString.classList.add('snapping');
@@ -1499,6 +1587,37 @@ function updateDynamicLeash() {
 }
 // Start tracking leash
 requestAnimationFrame(updateDynamicLeash);
+
+// ---------- BACKGROUND MUSIC & CRAWLING SPIDER ----------
+const bgMusic = $('bgMusic');
+const musicToggle = $('musicToggle');
+let musicPlaying = false;
+
+function toggleMusic() {
+  if (musicPlaying) {
+    bgMusic.pause();
+    musicToggle.classList.remove('playing');
+    musicToggle.textContent = '🔇';
+  } else {
+    bgMusic.play().then(() => {
+      musicToggle.classList.add('playing');
+      musicToggle.textContent = '🎵';
+    }).catch(err => console.log('Music play block:', err));
+  }
+  musicPlaying = !musicPlaying;
+}
+musicToggle.addEventListener('click', toggleMusic);
+
+// Tap to Squish Crawling Spider
+const crawlingSpider = $('big-spider-crawl');
+if (crawlingSpider) {
+  crawlingSpider.addEventListener('click', () => {
+    crawlingSpider.classList.add('squish');
+    setTimeout(() => {
+      crawlingSpider.style.display = 'none';
+    }, 450);
+  });
+}
 
 // Register Service Worker for PWA support
 if ('serviceWorker' in navigator) {
