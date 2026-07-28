@@ -1281,7 +1281,7 @@ $('rsvpSubmit').addEventListener('click', () => {
 
 // ---------- UCAPAN (Google Form & Sheets Live Guestbook) ----------
 // GANTIKAN DENGAN URL CSV GOOGLE SPREADSHEET UCAPAN ANDA (Langkah 3 dalam panduan)
-const GOOGLE_SHEET_CSV_URL = ''; 
+const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQEsp0s91TIBeVnKp5WouXorG9FmsG2kGhEqRQkqvMbcaetwfdaMqXgKwb1spz5hzzDc4RBnnP-EZGd/pub?output=csv'; 
 
 // GANTIKAN DENGAN MAKLUMAT GOOGLE FORM UCAPAN ANDA (Langkah 1 & 2 dalam panduan)
 const GOOGLE_FORM_WISH_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSenfhSRHGRgnd0z6Lq_VIEVzBIIGybYNp-qZqESB7f-Qq8hjA/formResponse';
@@ -1307,11 +1307,25 @@ function parseCSV(csvText) {
     const line = lines[i].trim();
     if (!line) continue;
     
-    // Parse fields separating commas but respecting quotes
-    const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
-    if (matches.length >= 3) {
-      const name = matches[1].replace(/^"|"$/g, '').trim();
-      const message = matches[2].replace(/^"|"$/g, '').trim();
+    // Character-by-character robust CSV row parsing
+    let p = '', c = '', r = [];
+    let q = false;
+    for (let j = 0; j < line.length; j++) {
+      c = line.charAt(j);
+      if (c === '"') {
+        q = !q;
+      } else if (c === ',' && !q) {
+        r.push(p.trim());
+        p = '';
+      } else {
+        p += c;
+      }
+    }
+    r.push(p.trim());
+
+    if (r.length >= 3) {
+      const name = r[1].replace(/^"|"$/g, '').trim();
+      const message = r[2].replace(/^"|"$/g, '').trim();
       if (name && message) {
         result.push({ name, message });
       }
