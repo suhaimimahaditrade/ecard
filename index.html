@@ -1272,8 +1272,10 @@ $('rsvpSubmit').addEventListener('click', () => {
   }
 });
 
-// ---------- UCAPAN ----------
+// ---------- UCAPAN (Live Shared Guestbook) ----------
+const KVDB_URL = 'https://kvdb.io/B6Vw47hZpU1wHq7L8E2QzY/wishes_v1';
 const wishList = $('wishList');
+
 function addWishItem(name, message){
   const item = document.createElement('div');
   item.className = 'wish-item';
@@ -1283,13 +1285,86 @@ function addWishItem(name, message){
   wishList.prepend(item);
 }
 
-$('wishSubmit').addEventListener('click', () => {
+// Load all wishes from live serverless database on page load
+async function loadWishes() {
+  try {
+    wishList.innerHTML = '<div style="color:rgba(255,255,255,0.4);text-align:center;font-size:12px;" id="wishLoading">Memuatkan ucapan...</div>';
+    const res = await fetch(KVDB_URL);
+    if (res.status === 200) {
+      const data = await res.json();
+      wishList.innerHTML = ''; // clear loading state
+      if (Array.isArray(data)) {
+        if (data.length === 0) {
+          wishList.innerHTML = '<div style="color:rgba(255,255,255,0.4);text-align:center;font-size:12px;" id="wishEmpty">Belum ada ucapan lagi. Jadilah yang pertama!</div>';
+        } else {
+          data.forEach(wish => {
+            if (wish.name && wish.message) {
+              addWishItem(wish.name, wish.message);
+            }
+          });
+        }
+      }
+    } else {
+      wishList.innerHTML = '<div style="color:rgba(255,255,255,0.4);text-align:center;font-size:12px;" id="wishEmpty">Belum ada ucapan lagi. Jadilah yang pertama!</div>';
+    }
+  } catch (err) {
+    console.error('Failed to load wishes:', err);
+    wishList.innerHTML = '<div style="color:rgba(255,255,255,0.4);text-align:center;font-size:12px;">Gagal memuatkan ucapan live.</div>';
+  }
+}
+
+// Post new wish to live database
+async function submitWish(name, message) {
+  try {
+    // 1. Get current wishes
+    let wishes = [];
+    const getRes = await fetch(KVDB_URL);
+    if (getRes.status === 200) {
+      wishes = await getRes.json();
+      if (!Array.isArray(wishes)) wishes = [];
+    }
+    
+    // 2. Append new wish
+    wishes.push({ name, message, timestamp: Date.now() });
+    
+    // 3. Save back to KVdb
+    const putRes = await fetch(KVDB_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(wishes)
+    });
+    
+    if (putRes.ok) {
+      const emptyMsg = $('wishEmpty');
+      if (emptyMsg) emptyMsg.remove();
+      addWishItem(name, message);
+    } else {
+      alert('Gagal menghantar ucapan. Sila cuba lagi.');
+    }
+  } catch (err) {
+    console.error('Submit wish error:', err);
+    alert('Ralat rangkaian. Sila cuba lagi.');
+  }
+}
+
+// Trigger initial load
+loadWishes();
+
+$('wishSubmit').addEventListener('click', async () => {
   const name = $('wishName').value.trim() || 'Tetamu';
   const message = $('wishMessage').value.trim();
   if (!message) return;
-  addWishItem(name, message);
+  
+  // Disable button to prevent spamming
+  $('wishSubmit').disabled = true;
+  $('wishSubmit').textContent = 'Menghantar...';
+  
+  await submitWish(name, message);
+  
   $('wishName').value = '';
   $('wishMessage').value = '';
+  $('wishSubmit').disabled = false;
+  $('wishSubmit').textContent = 'Hantar Ucapan';
 });
 
 // ---------- NAV DOTS ----------
