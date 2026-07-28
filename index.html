@@ -366,19 +366,30 @@
     margin-top: 2px;
   }
   /* Walking Baby Spiderman & Goat Animation */
+  .welcome-ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 35px;
+    background: #0d0614;
+    border-top: 3px solid #c0392b;
+    z-index: 1;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+  }
   .walking-spidey-container {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 180px;
+    height: 190px;
     overflow: hidden;
     pointer-events: none;
     z-index: 2;
   }
   .walking-spidey-wrap {
     position: absolute;
-    bottom: 0;
+    bottom: 12px; /* Align Spidey's feet to walk on the red street line */
     left: 0;
     width: 180px;
     height: auto;
@@ -503,11 +514,14 @@
           <button class="spidey-btn" onclick="navTo('sec-lokasi')">📍 Lokasi</button>
           <button class="spidey-btn" onclick="navTo('sec-ucapan')">💬 Ucapan</button>
         </div>
+        <!-- Ground/Street for Spidey to walk on -->
+        <div class="welcome-ground"></div>
         <!-- Walking Baby Spiderman & Goat Animation -->
         <div class="walking-spidey-container">
           <div class="walking-spidey-wrap">
             <img class="walking-img" src="edric-walking-nobg.png" alt="Baby Spiderman walking goat">
           </div>
+        </div>
         <button class="music-btn" id="musicBtn"><div class="music-dot" id="musicDot"></div></button>
       </section>
 
