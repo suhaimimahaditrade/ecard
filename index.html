@@ -893,13 +893,6 @@
         </div>
 
         <button class="btn-open" id="openCardBtn">🕸️ Buka Jemputan</button>
-
-        <button class="music-btn" id="musicBtn">
-          <!-- SVG Music Icon -->
-          <svg class="music-icon" id="musicIcon" viewBox="0 0 24 24" width="22" height="22" style="transition: transform 0.3s ease;">
-            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="#c0392b"/>
-          </svg>
-        </button>
       </section>
 
       <!-- MAJLIS -->
@@ -1282,12 +1275,7 @@ scrollwrap.addEventListener('scroll', () => {
   }
 });
 
-// ---------- MUSIC TOGGLE (visual only) ----------
-let musicOn = false;
-$('musicBtn').addEventListener('click', () => {
-  musicOn = !musicOn;
-  $('musicIcon').classList.toggle('on', musicOn);
-});
+// Music button listener removed (handled globally by #musicToggle)
 
 // ---------- ATURCARA TIMELINE ----------
 const timelineEl = $('timeline');
@@ -1582,15 +1570,35 @@ function toggleMusic() {
     bgMusic.pause();
     musicToggle.classList.remove('playing');
     musicToggle.textContent = '🔇';
+    musicPlaying = false;
   } else {
     bgMusic.play().then(() => {
       musicToggle.classList.add('playing');
       musicToggle.textContent = '🎵';
+      musicPlaying = true;
     }).catch(err => console.log('Music play block:', err));
   }
-  musicPlaying = !musicPlaying;
 }
 musicToggle.addEventListener('click', toggleMusic);
+
+// Autoplay bypass: Start music on the very first user interaction (click, touch, scroll)
+const startMusicOnInteraction = () => {
+  if (!musicPlaying) {
+    bgMusic.play().then(() => {
+      musicPlaying = true;
+      musicToggle.classList.add('playing');
+      musicToggle.textContent = '🎵';
+      // Clean up event listeners so we don't trigger again
+      document.removeEventListener('click', startMusicOnInteraction);
+      document.removeEventListener('touchstart', startMusicOnInteraction);
+      document.removeEventListener('scroll', startMusicOnInteraction);
+    }).catch(err => console.log('Autoplay blocked:', err));
+  }
+};
+
+document.addEventListener('click', startMusicOnInteraction);
+document.addEventListener('touchstart', startMusicOnInteraction);
+document.addEventListener('scroll', startMusicOnInteraction);
 
 // ---------- SPIDEY SMASHER MINI-GAME (RSVP PAGE) ----------
 let squishedScore = 0;
