@@ -500,6 +500,7 @@ setTimeout(() => {
 }, 3600);
 
 // ---------- OPEN CARD (hero drops + navigate) ----------
+const heroHang = $('heroHang');
 $('openCardBtn').addEventListener('click', () => {
   // Stop floating, trigger drop
   heroImgWrap.classList.remove('floating');
@@ -508,6 +509,15 @@ $('openCardBtn').addEventListener('click', () => {
     heroImgWrap.classList.add('dropping');
   }, 150);
   setTimeout(() => navTo('sec-majlis'), 1050);
+  // Reset hero back to original position after animation completes
+  setTimeout(() => {
+    heroImgWrap.classList.remove('dropping');
+    webString.classList.remove('snapping');
+    // Re-apply web string height
+    webString.style.height = '100px';
+    // Restart floating
+    heroImgWrap.classList.add('floating');
+  }, 2000);
 });
 
 // ---------- MUSIC TOGGLE (visual only - hook up an <audio> tag if needed) ----------
