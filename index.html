@@ -60,10 +60,9 @@
   .spider-body{position:absolute;inset:3px;background:#241f1a;border-radius:50%;}
   .spider{position:absolute;width:18px;height:12px;z-index:4;opacity:.5;animation:spiderCrawl 9s linear infinite;}
 
-  /* ===== WELCOME — 3D CITYSCAPE ===== */
   #sec-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;
     background:linear-gradient(180deg,#1a0a2e 0%,#2d1b4e 15%,#6b2c3e 30%,#c0543a 50%,#e8996b 70%,#f0c489 90%,#fce4a8 100%);
-    padding:48px 28px 40px;perspective:800px;}
+    padding:48px 28px 85px;perspective:800px;}
   /* Sun glow */
   .sun-glow{position:absolute;top:55%;left:50%;transform:translate(-50%,-30%);width:200px;height:200px;
     background:radial-gradient(circle,rgba(255,200,80,.6) 0%,rgba(255,150,50,.3) 40%,transparent 70%);
@@ -372,16 +371,16 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 75px;
+    height: 150px;
     overflow: hidden;
     pointer-events: none;
     z-index: 2;
   }
   .walking-spidey-wrap {
     position: absolute;
-    bottom: -2px;
+    bottom: -6px;
     left: 0;
-    width: 90px;
+    width: 180px;
     height: auto;
     animation: walkLeftToRight 16s linear infinite;
   }
@@ -390,7 +389,7 @@
     height: auto;
   }
   @keyframes walkLeftToRight {
-    0% { transform: translateX(-100px); }
+    0% { transform: translateX(-190px); }
     100% { transform: translateX(430px); }
   }
 
@@ -504,6 +503,11 @@
           <button class="spidey-btn" onclick="navTo('sec-lokasi')">📍 Lokasi</button>
           <button class="spidey-btn" onclick="navTo('sec-ucapan')">💬 Ucapan</button>
         </div>
+        <!-- Walking Baby Spiderman & Goat Animation -->
+        <div class="walking-spidey-container">
+          <div class="walking-spidey-wrap">
+            <img class="walking-img" src="edric-walking-nobg.png" alt="Baby Spiderman walking goat">
+          </div>
         <button class="music-btn" id="musicBtn"><div class="music-dot" id="musicDot"></div></button>
       </section>
 
@@ -529,12 +533,6 @@
             <div class="info-icon">🕓</div>
             <div class="info-label">Masa</div>
             <div class="info-value">4:00 Petang</div>
-          </div>
-        </div>
-        <!-- Walking Baby Spiderman & Goat Animation -->
-        <div class="walking-spidey-container">
-          <div class="walking-spidey-wrap">
-            <img class="walking-img" src="edric-walking-nobg.png" alt="Baby Spiderman walking goat">
           </div>
         </div>
       </section>
