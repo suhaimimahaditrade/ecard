@@ -342,13 +342,6 @@
     background: rgba(41, 128, 185, 0.18);
     border: 1px solid rgba(41, 128, 185, 0.45);
     box-shadow: 0 6px 20px rgba(41, 128, 185, 0.25);
-  }
-  .info-card.ic-venue {
-    background: rgba(243, 156, 18, 0.15);
-    border: 1px solid rgba(243, 156, 18, 0.45);
-    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.25);
-    margin-top: 10px;
-  }
   .info-icon {
     font-size: 20px;
     margin-bottom: 4px;
@@ -372,6 +365,33 @@
     font-size: 11px;
     color: rgba(255, 255, 255, 0.5);
     margin-top: 2px;
+  }
+  /* Walking Baby Spiderman & Goat Animation */
+  .walking-spidey-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 75px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .walking-spidey-wrap {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 90px;
+    height: auto;
+    animation: walkLeftToRight 16s linear infinite;
+  }
+  .walking-img {
+    width: 100%;
+    height: auto;
+  }
+  @keyframes walkLeftToRight {
+    0% { transform: translateX(-100px); }
+    100% { transform: translateX(430px); }
   }
 
   /* ===== ATURCARA ===== */
@@ -511,12 +531,11 @@
             <div class="info-value">4:00 Petang</div>
             <div class="info-sub">sehingga selesai</div>
           </div>
-        </div>
-        <div class="info-card ic-venue" style="width:100%">
-          <div class="info-icon">📍</div>
-          <div class="info-label">Tempat</div>
-          <div class="info-value">Manzil Sufya</div>
-          <div class="info-sub">Kota Seriemas, Negeri Sembilan</div>
+        <!-- Walking Baby Spiderman & Goat Animation -->
+        <div class="walking-spidey-container">
+          <div class="walking-spidey-wrap">
+            <img class="walking-img" src="edric-walking-nobg.png" alt="Baby Spiderman walking goat">
+          </div>
         </div>
       </section>
 
