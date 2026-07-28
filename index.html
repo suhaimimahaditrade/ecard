@@ -305,38 +305,63 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  .parents-label {
-    position: relative;
-    z-index: 2;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: #fce68a;
-    margin-bottom: 6px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    margin-bottom: 4px;
   }
   .parent-name {
     position: relative;
     z-index: 2;
     font-family: 'Baloo 2', sans-serif;
     font-weight: 700;
-    font-size: 17px;
+    font-size: 16px;
     color: #ffffff;
-    margin-bottom: 2px;
-    line-height: 1.3;
+    margin-bottom: 1px;
+    line-height: 1.2;
     text-shadow: 0 2px 4px rgba(0,0,0,0.6);
   }
   .amp {
     position: relative;
     z-index: 2;
-    font-size: 20px;
+    font-size: 18px;
     color: #fce68a;
-    margin: 2px 0;
+    margin: 1px 0;
     font-family: 'Caveat', cursive;
     font-weight: 800;
     text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  }
+  .invitation-text {
+    position: relative;
+    z-index: 2;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
+    text-align: center;
+    margin: 12px 0;
+    padding: 0 10px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .child-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .child-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #e74c3c;
+    margin-bottom: 2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .child-name {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: #fce68a;
+    text-shadow: 0 0 10px rgba(252, 230, 138, 0.6), 0 2px 4px rgba(0,0,0,0.5);
+    letter-spacing: 0.02em;
   }
 
   .card-divider {
@@ -689,16 +714,22 @@
       <section id="sec-majlis">
         <div class="spider" id="spider1"><div class="spider-legs"></div><div class="spider-body"></div></div>
         <div class="section-title">Majlis Kesyukuran & Aqiqah</div>
-        <div class="section-subtitle">Dengan segala hormatnya kami menjemput</div>
-        
         <!-- Unified Premium Bento Card -->
         <div class="premium-event-card">
           <!-- Parents Info -->
           <div class="parents-section">
-            <div class="parents-label">Anak kepada</div>
             <div class="parent-name">Ilmi Harith Mahdi bin Mohd Suhaimi</div>
             <div class="amp">&amp;</div>
             <div class="parent-name">Nayli Irdina binti Huzairie</div>
+          </div>
+
+          <div class="invitation-text">
+            Dengan segala hormatnya menjemput tuan / puan / encik / cik untuk memeriahkan majlis kesyukuran & aqiqah putera kami:
+          </div>
+
+          <!-- Child Info -->
+          <div class="child-section">
+            <div class="child-name">Edric Erren</div>
           </div>
           
           <!-- Web Divider Line -->
