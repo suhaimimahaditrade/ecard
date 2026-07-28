@@ -1,616 +1,505 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pembuat E-Kad Jemputan Interaktif | Kad Kahwin Digital</title>
-  <!-- SEO Tags -->
-  <meta name="description" content="Cipta dan ubah suai kad kahwin digital / e-kad jemputan interaktif dengan rekaan premium secara langsung. Lengkap dengan lagu, RSVP, dan peta lokasi.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✉️</text></svg>">
-  
-  <!-- Google Fonts Luxury Collection -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=9000">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edric Erren - Aqiqah & Hari Jadi Pertama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#4a3626; --cream:#faf6ee; --card-shadow: 0 30px 60px -20px rgba(60,40,20,.35);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#eee6d6;font-family:'Nunito',sans-serif;color:var(--ink);}
+  a{color:#c0392b;}
+  a:hover{color:#a5281a;}
+
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  @keyframes popin{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes wiggle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+  @keyframes bounceIn{0%{opacity:0;transform:rotate(-6deg) scale(.4) translateY(40px)}60%{opacity:1;transform:rotate(-6deg) scale(1.08) translateY(-6px)}80%{transform:rotate(-6deg) scale(.96)}100%{transform:rotate(-6deg) scale(1)}}
+  @keyframes swingDown{0%{transform:rotate(-6deg) translateY(0) scale(1);opacity:1}22%{transform:rotate(22deg) translateY(16px) scale(1.03)}55%{transform:rotate(150deg) translateY(280px) scale(.92)}100%{transform:rotate(270deg) translateY(680px) scale(.65);opacity:0}}
+  @keyframes webDrop{0%{height:0;opacity:.9}70%{opacity:.9}100%{height:680px;opacity:0}}
+  @keyframes flagSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+  @keyframes letterPopL{0%{opacity:0;transform:translateY(16px) scale(.6) rotate(-4deg)}60%{transform:translateY(-3px) scale(1.08) rotate(-4deg)}100%{opacity:1;transform:translateY(0) scale(1) rotate(-4deg)}}
+  @keyframes letterPopR{0%{opacity:0;transform:translateY(16px) scale(.6) rotate(4deg)}60%{transform:translateY(-3px) scale(1.08) rotate(4deg)}100%{opacity:1;transform:translateY(0) scale(1) rotate(4deg)}}
+  @keyframes drift{0%{transform:translateY(0) rotate(0);opacity:.9}100%{transform:translateY(-540px) rotate(40deg);opacity:0}}
+  @keyframes runTrack{0%{top:2%}20%{top:20%}40%{top:40%}60%{top:58%}80%{top:78%}100%{top:95%}}
+  @keyframes pinBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  @keyframes burstOut{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--bx),var(--by)) scale(.3);opacity:0}}
+  @keyframes spiderCrawl{0%{left:-6%;transform:translateY(0)}25%{transform:translateY(-4px)}50%{left:48%;transform:translateY(2px)}75%{transform:translateY(-4px)}100%{left:104%;transform:translateY(0)}}
+  @keyframes legScuttle{0%,100%{transform:scaleX(1) rotate(0)}25%{transform:scaleX(.82) rotate(-6deg)}50%{transform:scaleX(1.05) rotate(0)}75%{transform:scaleX(.82) rotate(6deg)}}
+
+  .stage{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 12px;position:relative;overflow:hidden;background:#eee6d6;}
+  .blob{position:absolute;border-radius:50%;opacity:.5;}
+  .blob1{top:-60px;left:-60px;width:220px;height:220px;background:#f6dfa1;opacity:.6;}
+  .blob2{bottom:-80px;right:-60px;width:260px;height:260px;background:#a9d2e6;}
+  .blob3{top:40%;right:-40px;width:140px;height:140px;background:#b7e3c9;}
+
+  .card{position:relative;width:100%;max-width:430px;height:860px;max-height:92vh;background:#faf6ee;border-radius:36px;box-shadow:var(--card-shadow), 0 0 0 10px rgba(255,255,255,.7);overflow:hidden;}
+  .scrollwrap{height:100%;overflow-y:auto;scroll-snap-type:y proximity;scrollbar-width:none;}
+  .scrollwrap::-webkit-scrollbar{display:none;}
+  section{scroll-snap-align:start;min-height:100%;box-sizing:border-box;padding:40px 30px;position:relative;}
+
+  /* spider (shared) */
+  .spider-legs{position:absolute;inset:-6px;border-radius:50%;opacity:.85;animation:legScuttle .4s linear infinite;
+    background:conic-gradient(#241f1a 0deg 8deg,transparent 8deg 37deg,#241f1a 37deg 45deg,transparent 45deg 74deg,#241f1a 74deg 82deg,transparent 82deg 111deg,#241f1a 111deg 119deg,transparent 119deg 148deg,#241f1a 148deg 156deg,transparent 156deg 185deg,#241f1a 185deg 193deg,transparent 193deg 222deg,#241f1a 222deg 230deg,transparent 230deg 259deg,#241f1a 259deg 267deg,transparent 267deg 360deg);}
+  .spider-body{position:absolute;inset:3px;background:#241f1a;border-radius:50%;}
+  .spider{position:absolute;width:18px;height:12px;z-index:4;opacity:.5;animation:spiderCrawl 9s linear infinite;}
+
+  /* ===== WELCOME ===== */
+  #sec-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;
+    background:linear-gradient(180deg,#d97a5a 0%,#e8996b 50%,#f0c489 100%);padding:48px 28px 40px;}
+  .bunting{position:absolute;top:0;left:0;right:0;height:60px;display:flex;justify-content:space-evenly;z-index:1;}
+  .flag{width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:18px solid #c0392b;animation:flagSway 2.6s ease-in-out infinite;}
+  .pompom{position:absolute;border-radius:50%;box-shadow:0 6px 14px rgba(80,40,20,.3);z-index:1;}
+  .pompom1{top:26px;left:10px;width:54px;height:54px;background:repeating-conic-gradient(#c0392b 0deg 20deg,#e8996b 20deg 40deg);}
+  .pompom2{top:116px;right:16px;width:36px;height:36px;background:repeating-conic-gradient(#3f6fa8 0deg 20deg,#66b0c9 20deg 40deg);}
+  .skyline{position:absolute;bottom:0;left:0;right:0;height:34%;display:flex;align-items:flex-end;gap:4px;padding:0 4px;z-index:1;opacity:.35;}
+  .skyline div{background:#2c2c33;}
+  .confetti-dot{position:absolute;pointer-events:none;}
+  .greet{position:relative;z-index:2;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:#4a2f1c;margin-bottom:8px;margin-top:8px;}
+  .subgreet{position:relative;z-index:2;font-weight:700;font-size:15px;color:#472d1a;margin-bottom:10px;}
+  .title-row{position:relative;z-index:2;display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:1px;width:100%;}
+  .title-row.row1{margin-bottom:4px;}
+  .title-row.row2{margin-bottom:8px;}
+  .letter{display:inline-block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:34px;line-height:1;
+    text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff,3px 4px 0 rgba(80,40,20,.25);}
+  .web-drop{position:absolute;top:0;left:50%;width:2px;background:rgba(255,255,255,.8);display:none;}
+  .web-drop.on{display:block;animation:webDrop 1s ease forwards;}
+  .polaroid-wrap{position:relative;z-index:2;width:168px;margin:4px 0 8px;animation:bounceIn .9s cubic-bezier(.34,1.56,.64,1) both;}
+  .polaroid-wrap.opening{animation:swingDown 1s cubic-bezier(.55,.06,.68,.19) forwards;transform-origin:top center;}
+  .polaroid{background:#fff;padding:10px 10px 26px;border-radius:6px;box-shadow:0 10px 24px -8px rgba(80,40,20,.4);}
+  .photo-slot{width:148px;height:148px;border-radius:2px;background:#f1e9dc repeat;background-size:cover;background-position:center;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px dashed #d8c8b0;color:#a08a6c;font-size:12px;text-align:center;padding:8px;}
+  .sticker{position:absolute;bottom:2px;right:-18px;background:#f0c489;color:#5c3d17;font-family:'Caveat',cursive;font-weight:700;font-size:20px;
+    padding:3px 12px;border-radius:8px;box-shadow:0 3px 8px rgba(80,40,20,.3);animation:wiggle 2.6s ease-in-out infinite;}
+  .rule{position:relative;z-index:2;width:46px;height:4px;border-radius:2px;background:#6b3fa0;margin:14px 0;}
+  .event-date{position:relative;z-index:2;font-size:15px;font-weight:800;color:#472d1a;margin-bottom:4px;}
+  .event-venue{position:relative;z-index:2;font-size:14px;font-weight:600;color:#5c4020;}
+  .btn-open{position:relative;z-index:2;margin-top:28px;border:none;cursor:pointer;background:#c0392b;color:#faf6ee;
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;padding:14px 32px;border-radius:999px;box-shadow:0 10px 20px -8px rgba(80,40,20,.6);}
+  .btn-open:hover{background:#a5281a;}
+  .music-btn{position:absolute;top:66px;right:20px;z-index:2;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(250,246,238,.9);box-shadow:0 4px 12px rgba(80,40,20,.3);display:flex;align-items:center;justify-content:center;}
+  .music-dot{width:18px;height:18px;border-radius:50%;background:#8a8378;}
+  .music-dot.on{background:#c0392b;animation:spin 3s linear infinite;}
+
+  /* ===== MAJLIS ===== */
+  #sec-majlis{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#faf6ee;overflow:hidden;}
+  .section-title{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:26px;color:#4a3626;margin-bottom:22px;text-align:center;}
+  .parents-card{background:#f6dfa1;border-radius:22px;padding:26px 22px;width:100%;}
+  .parents-label{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7a5b1e;margin-bottom:10px;}
+  .parent-name{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:20px;color:#4a3020;margin-bottom:4px;}
+  .amp{font-size:15px;color:#6b5138;margin:8px 0;}
+  .two-col{display:flex;gap:12px;width:100%;margin-top:18px;}
+  .info-chip{flex:1;border-radius:18px;padding:16px 12px;}
+  .info-chip.date{background:#a9d2e6;}
+  .info-chip.time{background:#b7e3c9;}
+  .chip-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+  .chip-value{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;}
+  .venue-box{margin-top:12px;width:100%;background:#eee6d6;border-radius:18px;padding:16px 14px;}
+  .venue-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b5138;margin-bottom:6px;}
+  .venue-name{font-weight:700;font-size:15px;color:#4a3020;}
+  .venue-addr{font-size:13px;color:#6b5138;}
+
+  /* ===== ATURCARA ===== */
+  #sec-aturcara{display:flex;flex-direction:column;justify-content:center;background:#f6ede0;}
+  .timeline{position:relative;display:flex;flex-direction:column;}
+  .runner{position:absolute;left:-3px;width:12px;height:12px;animation:runTrack 4s linear infinite;animation-play-state:paused;}
+  .timeline-item{display:flex;gap:14px;}
+  .dot-col{display:flex;flex-direction:column;align-items:center;width:26px;}
+  .dot{width:14px;height:14px;border-radius:50%;}
+  .dot-line{width:2px;flex:1;background:#e2d6c2;margin-top:2px;}
+  .timeline-text{padding-bottom:24px;}
+  .timeline-time{font-weight:800;font-size:14px;color:#4a3626;margin-bottom:2px;}
+  .timeline-title{font-size:14px;color:#6b5138;}
+
+  /* ===== RSVP ===== */
+  #sec-rsvp{display:flex;flex-direction:column;justify-content:center;background:#faf6ee;}
+  .rsvp-thanks{position:relative;background:#b7e3c9;border-radius:20px;padding:28px 20px;text-align:center;animation:popin .4s ease;overflow:hidden;display:none;}
+  .rsvp-thanks.show{display:block;}
+  .rsvp-thanks h3{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:18px;color:#28572f;margin:0 0 8px;}
+  .rsvp-thanks p{font-size:14px;color:#2f5a34;margin:0;}
+  .burst-bit{position:absolute;left:50%;top:40%;width:8px;height:8px;border-radius:50%;}
+  .rsvp-form{display:flex;flex-direction:column;gap:14px;}
+  .field-label{font-size:12px;font-weight:700;color:#4a3626;margin-bottom:6px;}
+  input[type="text"], textarea{width:100%;box-sizing:border-box;border:2px solid #e2d6c2;border-radius:12px;padding:12px 14px;
+    font-family:'Nunito',sans-serif;font-size:14px;outline:none;}
+  .attend-row{display:flex;gap:10px;}
+  .attend-btn{flex:1;border:none;cursor:pointer;font-weight:800;font-size:14px;padding:12px;border-radius:12px;background:#eee6d6;color:#4a3626;}
+  .attend-btn.active-yes{background:#b7e3c9;color:#1c4a24;}
+  .attend-btn.active-no{background:#e6b3a1;color:#6b2318;}
+  .pax-row{display:flex;align-items:center;gap:14px;}
+  .pax-btn{width:38px;height:38px;border-radius:10px;border:none;cursor:pointer;background:#f6dfa1;font-weight:800;font-size:18px;}
+  .pax-value{font-weight:800;font-size:16px;min-width:20px;text-align:center;}
+  .btn-submit{margin-top:8px;border:none;cursor:pointer;background:#c0392b;color:#faf6ee;font-weight:800;font-size:15px;padding:14px;border-radius:14px;}
+
+  /* ===== UCAPAN ===== */
+  #sec-ucapan{display:flex;flex-direction:column;background:#f6ede0;}
+  .wish-form{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+  .btn-wish{border:none;cursor:pointer;background:#a9d2e6;color:#1c3b52;font-weight:800;font-size:14px;padding:12px;border-radius:12px;}
+  .wish-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+  .wish-item{background:#faf6ee;border-radius:14px;padding:12px 14px;animation:popin .3s ease;}
+  .wish-name{font-weight:800;font-size:13px;color:#4a3626;margin-bottom:3px;}
+  .wish-msg{font-size:13px;color:#6b5138;line-height:1.4;}
+
+  /* ===== LOKASI ===== */
+  #sec-lokasi{display:flex;flex-direction:column;justify-content:center;background:#faf6ee;}
+  .map-box{position:relative;border-radius:18px;overflow:hidden;height:240px;margin-bottom:16px;box-shadow:0 4px 16px rgba(60,40,20,.15);}
+  .map-box iframe{border:0;width:100%;height:100%;}
+  .pin{position:absolute;top:10px;left:50%;transform:translateX(-50%);animation:pinBounce 1.2s ease-in-out infinite;pointer-events:none;}
+  .pin-tri{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:14px solid #c0392b;margin:0 auto;}
+  .pin-dot{width:22px;height:22px;border-radius:50%;background:#c0392b;margin-top:-2px;box-shadow:0 4px 8px rgba(0,0,0,.4);}
+  .venue-center{text-align:center;margin-bottom:18px;}
+  .venue-center .venue-name{font-size:15px;}
+  a.btn-directions{display:block;text-decoration:none;text-align:center;background:#c0392b;color:#faf6ee;font-weight:800;font-size:15px;padding:14px;border-radius:14px;}
+  .signoff{text-align:center;margin-top:30px;font-size:12px;color:#8a7a63;}
+
+  .navdots{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:5;}
+  .navdot{width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;padding:0;background:rgba(74,54,38,.5);box-shadow:0 0 0 1px rgba(250,246,238,.6);}
+</style>
 </head>
 <body>
 
-  <div class="app-container">
-    
-    <!-- Editor Settings Panel (Left) -->
-    <div class="editor-panel" id="editorPanel">
-      <div class="editor-header">
-        <h1><i class="fa-solid fa-wand-magic-sparkles"></i> E-Card Studio</h1>
-        <p>Ubah maklumat di bawah untuk melihat kemaskini secara langsung pada e-kad anda.</p>
-      </div>
-      
-      <div class="editor-body">
-        
-        <!-- Theme Selection -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Pilihan Tema</span>
-            <i class="fa-solid fa-palette"></i>
+<div class="stage">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+
+  <div class="card">
+    <div class="scrollwrap" id="scrollwrap">
+
+      <!-- WELCOME -->
+      <section id="sec-welcome">
+        <div class="bunting" id="bunting"></div>
+        <div class="pompom pompom1"></div>
+        <div class="pompom pompom2"></div>
+        <div class="skyline">
+          <div style="width:14%;height:55%"></div>
+          <div style="width:10%;height:80%"></div>
+          <div style="width:16%;height:40%"></div>
+          <div style="width:9%;height:95%"></div>
+          <div style="width:13%;height:60%"></div>
+          <div style="width:11%;height:72%"></div>
+          <div style="width:15%;height:48%"></div>
+        </div>
+        <div id="confetti"></div>
+
+        <div class="greet">Bismillahirrahmanirrahim</div>
+        <div class="subgreet">Aqiqah &amp; Sambutan Hari Jadi Pertama</div>
+
+        <div class="title-row row1" id="title-edric"></div>
+        <div class="title-row row2" id="title-erren"></div>
+
+        <div class="web-drop" id="webDrop"></div>
+        <div class="polaroid-wrap" id="polaroidWrap">
+          <div class="polaroid">
+            <div class="photo-slot" id="photoSlot" onclick="document.getElementById('photoInput').click()">Klik untuk upload gambar Edric</div>
+            <input type="file" id="photoInput" accept="image/*" style="display:none">
           </div>
-          <div class="theme-picker">
-            <button class="theme-btn active" data-theme="emerald">
-              <span class="theme-color-dot dot-emerald"></span>
-              Emerald Gold
-            </button>
-            <button class="theme-btn" data-theme="rose-gold">
-              <span class="theme-color-dot dot-rose"></span>
-              Rose Blossom
-            </button>
-            <button class="theme-btn" data-theme="royal-blue">
-              <span class="theme-color-dot dot-blue"></span>
-              Royal Blue
-            </button>
-            <button class="theme-btn" data-theme="classic-white">
-              <span class="theme-color-dot dot-white"></span>
-              Classic Slate
-            </button>
-            <button class="theme-btn" data-theme="marvel">
-              <span class="theme-color-dot dot-marvel"></span>
-              Marvel Neon
-            </button>
-            <button class="theme-btn" data-theme="mario">
-              <span class="theme-color-dot dot-mario"></span>
-              Super Mario
-            </button>
-          </div>
+          <div class="sticker">zoom!</div>
         </div>
 
-        <!-- Custom Theme Prompt Builder -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Penjana Tema AI Generatif</span>
-            <i class="fa-solid fa-brain"></i>
-          </div>
-          <div class="form-group">
-            <label for="inputCustomTheme">Terangkan Tema Bebas (Apa sahaja prompt)</label>
-            <textarea id="inputCustomTheme" class="form-control" placeholder="Contoh: jurassic world, istana fantasi, cyberpunk samurai, kucing pink..."></textarea>
-          </div>
+        <div class="rule"></div>
+        <div class="event-date">12 September 2026</div>
+        <div class="event-venue">Manzil Sufya, N. Sembilan</div>
 
-          <!-- CCO Master Prompt Chips -->
-          <div class="prompt-chips-container" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
-            <span class="prompt-chip" onclick="applyPresetThemeDirectly('duck chef riding motorcycle carrying birthday cake in enchanted forest with sparklers')" style="cursor: pointer; font-size: 0.72rem; padding: 5px 12px; background: rgba(234, 179, 8, 0.25); border: 1.5px solid #fde047; color: #fde047; border-radius: 14px; font-weight: 700;"><i class="fa-solid fa-motorcycle"></i> 🐥 Duck Chef Birthday</span>
-            <span class="prompt-chip" onclick="applyPresetThemeDirectly('jurassic world dinosaur jungle')" style="cursor: pointer; font-size: 0.72rem; padding: 5px 10px; background: rgba(245, 158, 11, 0.2); border: 1.5px solid #f59e0b; color: #f59e0b; border-radius: 14px; font-weight: 700;"><i class="fa-solid fa-dragon"></i> 🦖 Jurassic World</span>
-            <span class="prompt-chip" onclick="applyPresetThemeDirectly('fantasy castle kingdom fairytale')" style="cursor: pointer; font-size: 0.72rem; padding: 5px 10px; background: rgba(192, 132, 252, 0.2); border: 1.5px solid #c084fc; color: #c084fc; border-radius: 14px; font-weight: 700;"><i class="fa-solid fa-chess-castle"></i> 🏰 Fantasy Kingdom</span>
-            <span class="prompt-chip" onclick="applyPresetThemeDirectly('cyberpunk neon city samurai')" style="cursor: pointer; font-size: 0.72rem; padding: 5px 10px; background: rgba(0, 240, 255, 0.2); border: 1.5px solid #00f0ff; color: #00f0ff; border-radius: 14px; font-weight: 700;"><i class="fa-solid fa-bolt"></i> ⚡ Cyberpunk Neon</span>
-            <span class="prompt-chip" onclick="applyPresetThemeDirectly('royal imperial gold wedding')" style="cursor: pointer; font-size: 0.72rem; padding: 5px 10px; background: rgba(253, 224, 71, 0.2); border: 1.5px solid #fde047; color: #fde047; border-radius: 14px; font-weight: 700;"><i class="fa-solid fa-crown"></i> 👑 Royal Gold</span>
-          </div>
-          
-          <div class="form-group">
-            <label for="selectAiEngine">Enjin AI</label>
-            <select id="selectAiEngine" class="form-control">
-              <option value="openrouter-api">🌐 OpenRouter AI API (Percuma / Free Key)</option>
-              <option value="local-ai">⚡ Enjin AI Semantic Generatif (Bebas / Instant)</option>
-              <option value="gemini-api">🤖 Google Gemini AI API (Guna API Key)</option>
-            </select>
-          </div>
+        <button class="btn-open" id="openCardBtn">Buka Jemputan</button>
+        <button class="music-btn" id="musicBtn"><div class="music-dot" id="musicDot"></div></button>
+      </section>
 
-          <div class="form-group" id="openRouterApiKeyGroup">
-            <label for="inputOpenRouterApiKey">OpenRouter API Key (Percuma / Free)</label>
-            <input type="password" id="inputOpenRouterApiKey" class="form-control" placeholder="sk-or-v1-...">
-            <small style="color: #94a3b8; font-size: 0.75rem; display: block; margin-top: 4px;">Dapatkan API Key percuma di openrouter.ai/keys</small>
+      <!-- MAJLIS -->
+      <section id="sec-majlis">
+        <div class="spider" id="spider1"><div class="spider-legs"></div><div class="spider-body"></div></div>
+        <div class="section-title">Majlis Kami</div>
+        <div class="parents-card">
+          <div class="parents-label">Anak kepada</div>
+          <div class="parent-name">Ilmi Harith Mahdi<br>bin Mohd Suhaimi</div>
+          <div class="amp">&amp;</div>
+          <div class="parent-name">Nayli Irdina<br>binti Huzairie</div>
+        </div>
+        <div class="two-col">
+          <div class="info-chip date">
+            <div class="chip-label">Tarikh</div>
+            <div class="chip-value">12 September 2026</div>
           </div>
-
-          <div class="form-group" id="geminiApiKeyGroup" style="display: none;">
-            <label for="inputGeminiApiKey">Gemini API Key</label>
-            <input type="password" id="inputGeminiApiKey" class="form-control" placeholder="AIzaSy...">
-            <small style="color: #94a3b8; font-size: 0.75rem; display: block; margin-top: 4px;">Dapatkan API Key percuma di aistudio.google.com</small>
-          </div>
-
-          <button class="btn-action btn-primary" id="btnGenerateTheme" style="width: 100%;">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Jana Tema Dengan AI
-          </button>
-          
-          <div id="aiGenerationStatus" style="display: none; margin-top: 10px; padding: 8px 12px; background: rgba(16,185,129,0.1); border: 1px solid #10b981; border-radius: 6px; font-size: 0.8rem; color: #10b981;">
-            <i class="fa-solid fa-spinner fa-spin"></i> <span id="aiStatusText">AI sedang mereka bentuk tema...</span>
+          <div class="info-chip time">
+            <div class="chip-label">Masa</div>
+            <div class="chip-value">4:00 ptg</div>
           </div>
         </div>
+        <div class="venue-box">
+          <div class="venue-label">Tempat</div>
+          <div class="venue-name">Manzil Sufya</div>
+          <div class="venue-addr">Kota Seriemas, Negeri Sembilan</div>
+        </div>
+      </section>
 
-        <!-- General Settings -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Maklumat Utama</span>
-            <i class="fa-solid fa-file-signature"></i>
+      <!-- ATURCARA -->
+      <section id="sec-aturcara">
+        <div class="spider" id="spider2" style="top:14px"><div class="spider-legs"></div><div class="spider-body"></div></div>
+        <div class="section-title">Aturcara Majlis</div>
+        <div class="timeline" id="timeline">
+          <div class="runner" id="runner"><div class="spider-legs"></div><div class="spider-body"></div></div>
+        </div>
+      </section>
+
+      <!-- RSVP -->
+      <section id="sec-rsvp">
+        <div class="spider" id="spider3" style="top:16px"><div class="spider-legs"></div><div class="spider-body"></div></div>
+        <div class="section-title" style="margin-bottom:6px">RSVP Kehadiran</div>
+        <div style="text-align:center;font-size:13px;color:#6b5138;margin-bottom:22px">Sila sahkan kehadiran melalui WhatsApp</div>
+
+        <div class="rsvp-thanks" id="rsvpThanks">
+          <div id="burstWrap"></div>
+          <h3>Terima kasih! 🎉</h3>
+          <p>Mesej WhatsApp anda sedang disediakan. Sila hantar untuk sahkan kehadiran.</p>
+        </div>
+
+        <div class="rsvp-form" id="rsvpForm">
+          <div>
+            <div class="field-label">Nama</div>
+            <input type="text" id="rsvpName" placeholder="Nama anda">
           </div>
-          <div class="form-group">
-            <label for="inputEventType">Jenis Majlis</label>
-            <select id="inputEventType" class="form-control">
-              <option value="perkahwinan">Walimatulurus / Perkahwinan</option>
-              <option value="hari-jadi">Ulang Tahun Hari Lahir</option>
-              <option value="aqiqah">Majlis Kesyukuran & Aqiqah</option>
-              <option value="rumah-terbuka">Rumah Terbuka</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="inputTitle">Tajuk Jemputan</label>
-            <input type="text" id="inputTitle" class="form-control" value="Walimatulurus">
-          </div>
-          <div class="form-group">
-            <label for="inputTagline">Slogan Ringkas</label>
-            <input type="text" id="inputTagline" class="form-control" value="UNDANGAN KAMI">
-          </div>
-          <div class="row-grid">
-            <div class="form-group">
-              <label for="inputShortNames">Singkatan Nama</label>
-              <input type="text" id="inputShortNames" class="form-control" value="Aiman & Sarah">
-            </div>
-            <div class="form-group">
-              <label for="inputTargetDate">Tarikh Undur (RSVP)</label>
-              <input type="datetime-local" id="inputTargetDate" class="form-control" value="2026-12-12T11:00">
+          <div>
+            <div class="field-label">Kehadiran</div>
+            <div class="attend-row">
+              <button class="attend-btn active-yes" id="btnHadir">Hadir</button>
+              <button class="attend-btn" id="btnTidakHadir">Tidak Hadir</button>
             </div>
           </div>
-        </div>
-
-        <!-- Bride & Groom Settings -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Butiran Pasangan / Hos</span>
-            <i class="fa-solid fa-heart"></i>
-          </div>
-          <div class="form-group">
-            <label for="inputBrideName" id="lblBrideName">Nama Pengantin Perempuan</label>
-            <input type="text" id="inputBrideName" class="form-control" value="Siti Sarah Binti Ahmad">
-            <input type="file" id="uploadBridePhoto" accept="image/*" class="form-control" style="margin-top: 0.4rem;">
-          </div>
-          <div class="form-group" id="groomFormGroup">
-            <label for="inputGroomName" id="lblGroomName">Nama Pengantin Lelaki</label>
-            <input type="text" id="inputGroomName" class="form-control" value="Aiman">
-            <input type="file" id="uploadGroomPhoto" accept="image/*" class="form-control" style="margin-top: 0.4rem;">
-          </div>
-          <div class="form-group">
-            <label for="inputParents" id="lblParents">Nama Ibu Bapa (Penganjur)</label>
-            <textarea id="inputParents" class="form-control">Hj. Ahmad Bin Razali & Hjh. Fatimah Binti Ismail</textarea>
-          </div>
-        </div>
-
-        <!-- Gallery Settings -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Galeri Foto Majlis</span>
-            <i class="fa-solid fa-images"></i>
-          </div>
-          <div class="form-group">
-            <label for="uploadGalleryPhotos">Muat Naik Gambar Galeri (Maksimum 4 keping)</label>
-            <input type="file" id="uploadGalleryPhotos" accept="image/*" multiple class="form-control">
-          </div>
-        </div>
-
-        <!-- Interactive Love Story / Event Timeline Settings -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Timeline Kisah / Kenangan</span>
-            <i class="fa-solid fa-timeline"></i>
-          </div>
-          <div class="form-group">
-            <label for="inputTimelineTitle">Tajuk Timeline</label>
-            <input type="text" id="inputTimelineTitle" class="form-control" value="Kisah Cinta Kami">
-          </div>
-          
-          <!-- Momen 1 -->
-          <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px; margin-bottom: 10px;">
-            <label style="color: #10b981; font-weight: 600; font-size: 0.8rem;">Momen 1 (Pertemuan Pertama / Detik Lahir)</label>
-            <input type="text" id="inputTime1Title" class="form-control" value="Pertemuan Pertama" placeholder="Tajuk Momen">
-            <input type="text" id="inputTime1Date" class="form-control" value="Mac 2021" placeholder="Tarikh / Tahun" style="margin-top: 4px;">
-            <input type="text" id="inputTime1Desc" class="form-control" value="Bermula takdir pertemuan indah di kampus." placeholder="Keterangan Ringkas" style="margin-top: 4px;">
-            <input type="file" id="uploadTime1Photo" accept="image/*" class="form-control" style="margin-top: 4px;">
-          </div>
-
-          <!-- Momen 2 -->
-          <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px; margin-bottom: 10px;">
-            <label style="color: #10b981; font-weight: 600; font-size: 0.8rem;">Momen 2 (Lamaran / Detik Membesar)</label>
-            <input type="text" id="inputTime2Title" class="form-control" value="Ikatan Pertunangan" placeholder="Tajuk Momen">
-            <input type="text" id="inputTime2Date" class="form-control" value="Jun 2024" placeholder="Tarikh / Tahun" style="margin-top: 4px;">
-            <input type="text" id="inputTime2Desc" class="form-control" value="Menyarung cincin tanda persefahaman dua keluarga." placeholder="Keterangan Ringkas" style="margin-top: 4px;">
-            <input type="file" id="uploadTime2Photo" accept="image/*" class="form-control" style="margin-top: 4px;">
-          </div>
-        </div>
-
-        <!-- Date, Time, Venue Settings -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Tarikh, Masa & Tempat</span>
-            <i class="fa-solid fa-calendar-day"></i>
-          </div>
-          <div class="form-group">
-            <label for="inputEventDate">Tarikh Majlis (Paparan)</label>
-            <input type="text" id="inputEventDate" class="form-control" value="Sabtu, 12 Disember 2026">
-          </div>
-          <div class="form-group">
-            <label for="inputEventTime">Masa Majlis</label>
-            <input type="text" id="inputEventTime" class="form-control" value="11:00 Pagi - 4:00 Petang">
-          </div>
-          <div class="form-group">
-            <label for="inputVenueName">Nama Tempat</label>
-            <input type="text" id="inputVenueName" class="form-control" value="Dewan Serbaguna Putrajaya">
-          </div>
-          <div class="form-group">
-            <label for="inputVenueAddress">Alamat Penuh</label>
-            <textarea id="inputVenueAddress" class="form-control">Presint 9, 62250 Wilayah Persekutuan Putrajaya</textarea>
-          </div>
-        </div>
-
-        <!-- Maps & Navigation -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Navigasi & Peta</span>
-            <i class="fa-solid fa-map-location-dot"></i>
-          </div>
-          <div class="form-group">
-            <label for="inputGmaps">Pautan Google Maps</label>
-            <input type="text" id="inputGmaps" class="form-control" value="https://maps.google.com/?q=Dewan+Serbaguna+Putrajaya">
-          </div>
-          <div class="form-group">
-            <label for="inputWaze">Pautan Waze</label>
-            <input type="text" id="inputWaze" class="form-control" value="https://waze.com/ul?q=Dewan+Serbaguna+Putrajaya">
-          </div>
-        </div>
-
-        <!-- Background Music -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Muzik Latar</span>
-            <i class="fa-solid fa-music"></i>
-          </div>
-          <button class="music-btn active" id="btnToggleSynthMusic">
-            <i class="fa-solid fa-wave-square"></i> Built-in Synth Piano (Melodi Canon)
-          </button>
-          <div class="form-group" style="margin-top: 1rem;">
-            <label for="inputMusicUrl">Atau URL MP3 Anda Sendiri</label>
-            <input type="text" id="inputMusicUrl" class="form-control" placeholder="https://contoh.com/lagu.mp3" value="">
-          </div>
-        </div>
-
-        <!-- Contact Hosts -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>Hubungi Tuan Rumah</span>
-            <i class="fa-solid fa-phone"></i>
-          </div>
-          <div class="form-group">
-            <label>Kenalan 1 (Nama & No Telefon)</label>
-            <div class="row-grid">
-              <input type="text" id="contactName1" class="form-control" value="Hj. Ahmad (Bapa)">
-              <input type="text" id="contactPhone1" class="form-control" value="0123456789">
+          <div>
+            <div class="field-label">Bilangan Kehadiran</div>
+            <div class="pax-row">
+              <button class="pax-btn" id="paxDec">-</button>
+              <div class="pax-value" id="paxValue">1</div>
+              <button class="pax-btn" id="paxInc">+</button>
             </div>
           </div>
-          <div class="form-group">
-            <label>Kenalan 2 (Nama & No Telefon)</label>
-            <div class="row-grid">
-              <input type="text" id="contactName2" class="form-control" value="Aiman (Pengantin)">
-              <input type="text" id="contactPhone2" class="form-control" value="0198765432">
-            </div>
-          </div>
+          <button class="btn-submit" id="rsvpSubmit">Hantar via WhatsApp</button>
         </div>
+      </section>
 
-      </div>
-      
-      <!-- Export Options -->
-      <div class="editor-footer">
-        <button class="btn-action btn-secondary" id="btnResetSettings">
-          <i class="fa-solid fa-rotate-left"></i> Reset
-        </button>
-        <button class="btn-action btn-primary" id="btnDownloadHtml">
-          <i class="fa-solid fa-download"></i> Simpan Kad
-        </button>
-      </div>
+      <!-- UCAPAN -->
+      <section id="sec-ucapan">
+        <div class="spider" id="spider4" style="top:14px"><div class="spider-legs"></div><div class="spider-body"></div></div>
+        <div class="section-title" style="margin-bottom:20px">Ucapan &amp; Doa</div>
+        <div class="wish-form">
+          <input type="text" id="wishName" placeholder="Nama anda">
+          <textarea id="wishMessage" rows="3" placeholder="Tulis ucapan dan doa untuk Edric Erren..."></textarea>
+          <button class="btn-wish" id="wishSubmit">Hantar Ucapan</button>
+        </div>
+        <div class="wish-list" id="wishList"></div>
+      </section>
+
+      <!-- LOKASI -->
+      <section id="sec-lokasi">
+        <div class="spider" id="spider5" style="top:16px"><div class="spider-legs"></div><div class="spider-body"></div></div>
+        <div class="section-title">Lokasi</div>
+        <div class="map-box">
+          <iframe src="https://www.google.com/maps?q=Manzil%20Sufya%2C%20Kota%20Seriemas%2C%20Negeri%20Sembilan&output=embed" loading="lazy" title="Lokasi Majlis"></iframe>
+          <div class="pin"><div class="pin-tri"></div><div class="pin-dot"></div></div>
+        </div>
+        <div class="venue-center">
+          <div class="venue-name">Manzil Sufya</div>
+          <div class="venue-addr">Kota Seriemas, Negeri Sembilan</div>
+        </div>
+        <a class="btn-directions" href="https://maps.app.goo.gl/UfJVRVRNr8uzh94c9" target="_blank">Buka dalam Google Maps</a>
+        <div class="signoff">Dengan penuh kasih sayang,<br>Keluarga Ilmi &amp; Nayli 💛</div>
+      </section>
+
     </div>
-    
-    <!-- Live Preview Display Panel (Right) -->
-    <div class="preview-panel" id="previewPanel">
-      
-      <!-- Smartphone Simulator Container -->
-      <div class="phone-frame" id="phone3dFrame">
-        <div class="phone-notch"></div>
-        
-        <!-- Live Invitation E-Card inside Screen -->
-        <div class="phone-screen" id="cardContainer">
-          <!-- 60FPS Interactive Touch / Tap Physics Canvas -->
-          <canvas id="interactiveCanvas" class="interactive-canvas"></canvas>
 
-          <!-- Holographic Foil Sheen Overlay -->
-          <div class="foil-sheen" id="foilSheen"></div>
-          
-          <div id="customThemeInteractiveContainer"></div>
-          
-          <!-- Vinyl Audio Player & Equalizer Bar Visualizer Widget -->
-          <div class="vinyl-player-widget" id="cardVinylPlayer" title="Piring Hitam Muzik - Klik untuk Main / Senyap">
-            <div class="vinyl-disc" id="vinylDisc">
-              <div class="vinyl-label"></div>
-            </div>
-            <div class="vinyl-arm" id="vinylArm"></div>
-            <div class="audio-equalizer" id="audioEqualizer">
-              <span class="eq-bar"></span>
-              <span class="eq-bar"></span>
-              <span class="eq-bar"></span>
-              <span class="eq-bar"></span>
-            </div>
-          </div>
-          <!-- Fallback Music Button for quick access -->
-          <div class="floating-music" id="cardFloatingMusic" style="display: none;" title="Main/Senyap Lagu">
-            <i class="fa-solid fa-music"></i>
-          </div>
-          
-          <!-- Native 1080p 60FPS Sparkler Motion Video Background -->
-          <video src="https://assets.mixkit.co/videos/preview/mixkit-sparkler-fireworks-burning-in-the-dark-41584-large.mp4" autoplay loop muted playsinline class="bg-motion-video"></video>
-          
-          <!-- Envelope Cover Overlay -->
-          <div class="envelope-cover" id="envelopeCover" style="background: transparent;">
-            <div class="particles-container" id="coverParticles"></div>
-            
-            <div class="envelope-card" style="background: rgba(15, 26, 16, 0.85); backdrop-filter: blur(16px); border: 2px solid #fde047; box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 25px rgba(253, 224, 71, 0.4);">
-              <!-- 3D AI Duck Chef Motorcycle Poster Banner -->
-              <div class="ai-cover-banner">
-                <img src="https://image.pollinations.ai/prompt/3d%20cute%20duck%20chef%20riding%20vintage%20motorcycle%20carrying%20giant%20birthday%20cake%20in%20enchanted%20forest%20with%20glowing%20sparklers%20and%20fairy%20lights%2C%20unreal%20engine%205%203d%20render%2C%20cinematic%20lighting&width=800&height=500&nologo=true&seed=88" class="ai-cover-img" alt="Duck Chef Birthday">
-                <div class="sparkler-flame-overlay"></div>
-              </div>
-              
-              <div class="font-script couple-names" id="coverShortNames" style="color: #fde047; text-shadow: 0 0 12px rgba(253, 224, 71, 0.6);">Aiman & Sarah</div>
-              <div class="wedding-tagline" id="coverTitle" style="color: #ffffff;">HARI LAHIR & SAMBUTAN</div>
-              
-              <div class="invitation-to">Undangan Khas Ke Majlis:</div>
-              <div class="guest-name-box" id="coverGuestName" style="color: #fde047; border-color: #fde047;">Nama Tetamu</div>
-              
-              <!-- 3D Metallic Wax Seal Stamp -->
-              <div class="wax-seal-container" id="envelopeWaxSeal" title="Cap Mohor Di-Raja - Klik untuk Buka">
-                <div class="wax-seal-badge" style="background: linear-gradient(135deg, #fde047 0%, #ca8a04 100%);">
-                  <span class="wax-initials" id="waxSealInitials" style="color: #000000; text-shadow: none;">🐥</span>
-                </div>
-              </div>
-              
-              <button class="btn-open-card" id="btnOpenCard" style="background: linear-gradient(135deg, #fde047 0%, #eab308 100%); color: #000; font-weight: 800; border: none; box-shadow: 0 6px 20px rgba(253, 224, 71, 0.5);">
-                <i class="fa-solid fa-envelope-open"></i> Buka Undangan
-              </button>
-            </div>
-          </div>
-          
-          <!-- Main Card Content Details (Visible after opening) -->
-          <div class="card-content" style="display: none;" id="mainCardContent">
-            <div class="particles-container" id="mainParticles"></div>
-            
-            <!-- Dynamic Custom Theme Main Illustration (TOP VISIBLE SCENE) -->
-            <div id="customThemeMainIllustration">
-              <div class="ai-poster-banner-wrapper">
-                <img src="https://image.pollinations.ai/prompt/3d%20cute%20duck%20chef%20riding%20vintage%20motorcycle%20carrying%20giant%20birthday%20cake%20in%20enchanted%20forest%20with%20glowing%20sparklers%20and%20fairy%20lights%2C%20unreal%20engine%205%203d%20render%2C%20cinematic%20lighting&width=800&height=500&nologo=true&seed=88" class="ai-poster-img animated-motion" alt="Duck Chef Birthday">
-                <div class="sparkler-flame-overlay"></div>
-                <div class="ai-poster-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 3D Duck Chef Birthday</div>
-              </div>
-            </div>
-
-            <!-- Hero Introduction -->
-            <section class="card-section hero-section">
-              <span class="wedding-tagline" id="previewTagline">UNDANGAN KAMI</span>
-              
-              <!-- Kinetic Calligraphy Writing Container -->
-              <div id="previewCalligraphyContainer" class="calligraphy-container">
-                <h2 class="font-script hero-names calligraphy-text" id="previewShortNames">Aiman & Sarah</h2>
-              </div>
-              
-              <svg class="divider-ornament" viewBox="0 0 100 10">
-                <path d="M 0 5 Q 25 1 50 5 T 100 5" fill="none" stroke="currentColor" stroke-width="1.5" />
-                <circle cx="50" cy="5" r="3" fill="currentColor" />
-              </svg>
-              
-              <p class="hero-date" id="previewEventDate">Sabtu, 12 Disember 2026</p>
-            </section>
-            
-            <!-- Beautiful Verse / Quote -->
-            <section class="card-section quote-section">
-              <p class="quote-text" id="previewQuote">"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang."</p>
-              <p class="quote-author" id="previewQuoteAuthor">(Surah Ar-Rum: 21)</p>
-            </section>
-            
-            <!-- Host and Bride/Groom Profiles -->
-            <section class="card-section profile-section">
-              <span class="profile-title">Dengan penuh kesyukuran menjemput ke majlis</span>
-              
-              <div class="parent-intro" id="previewParents">
-                Hj. Ahmad Bin Razali & Hjh. Fatimah Binti Ismail
-              </div>
-              
-              <div class="and-divider">Untuk menghadiri majlis perkahwinan anakanda kesayangan kami:</div>
-              
-              <div class="couple-avatars" id="coupleAvatarsContainer">
-                <div class="avatar-wrapper" id="brideAvatarWrapper">
-                  <div class="avatar-circle">P</div>
-                  <div class="avatar-name" id="previewBrideName">Siti Sarah Binti Ahmad</div>
-                </div>
-                
-                <div class="and-divider" id="coupleAvatarDivider">&</div>
-                
-                <div class="avatar-wrapper" id="groomAvatarWrapper">
-                  <div class="avatar-circle">L</div>
-                  <div class="avatar-name" id="previewGroomName">Ahmad Aiman Bin Md Yusuf</div>
-                </div>
-              </div>
-            </section>
-
-            <!-- Interactive Love Story / Event Timeline Section -->
-            <section class="card-section timeline-section" id="previewTimelineSection">
-              <span class="detail-title" id="previewTimelineHeaderTitle">KISAH CINTA KAMI</span>
-              <div class="timeline-journey" id="previewTimelineJourney">
-                <!-- Rendered dynamically in app.js -->
-              </div>
-            </section>
-            
-            <!-- Countdown Timer -->
-            <section class="card-section countdown-section">
-              <span class="detail-title">KAUNTER UNDUR MAJLIS</span>
-              <div class="countdown-grid">
-                <div class="countdown-box">
-                  <span class="countdown-num" id="daysBox">00</span>
-                  <span class="countdown-label">Hari</span>
-                </div>
-                <div class="countdown-box">
-                  <span class="countdown-num" id="hoursBox">00</span>
-                  <span class="countdown-label">Jam</span>
-                </div>
-                <div class="countdown-box">
-                  <span class="countdown-num" id="minsBox">00</span>
-                  <span class="countdown-label">Minit</span>
-                </div>
-                <div class="countdown-box">
-                  <span class="countdown-num" id="secsBox">00</span>
-                  <span class="countdown-label">Saat</span>
-                </div>
-              </div>
-            </section>
-            
-            <!-- Photo Gallery Slider -->
-            <section class="card-section gallery-section" id="previewGallerySection" style="display: none;">
-              <span class="detail-title">GALERI FOTO</span>
-              <div class="gallery-slider" id="previewGallerySlider">
-                <!-- Rendered dynamically in app.js -->
-              </div>
-            </section>
-            
-            <!-- Details Cards & Map Links -->
-            <section class="card-section details-section">
-              <div class="event-card">
-                <div class="detail-row">
-                  <i class="fa-regular fa-calendar detail-icon"></i>
-                  <span class="detail-title">Tarikh Majlis</span>
-                  <span class="detail-value-large" id="previewEventDateCard">12 Disember 2026</span>
-                </div>
-                
-                <div class="detail-row">
-                  <i class="fa-regular fa-clock detail-icon"></i>
-                  <span class="detail-title">Masa Majlis</span>
-                  <span class="detail-value" id="previewEventTimeCard">11:00 Pagi - 4:00 Petang</span>
-                </div>
-                
-                <div class="detail-row">
-                  <i class="fa-solid fa-location-dot detail-icon"></i>
-                  <span class="detail-title">Tempat</span>
-                  <span class="detail-value" id="previewVenueNameCard" style="font-weight: 700;">Dewan Serbaguna Putrajaya</span>
-                  <span class="detail-value" id="previewVenueAddressCard" style="font-size: 0.8rem; text-align: center; color: var(--card-text-muted);">Presint 9, 62250 Wilayah Persekutuan Putrajaya</span>
-                </div>
-                
-                <div class="button-group">
-                  <a href="#" class="btn-card btn-card-outline" id="btnGmaps" target="_blank">
-                    <i class="fa-solid fa-map-location-dot"></i> Google Maps
-                  </a>
-                  <a href="#" class="btn-card btn-card-outline" id="btnWaze" target="_blank">
-                    <i class="fa-solid fa-car-side"></i> Waze
-                  </a>
-                </div>
-                
-                <button class="btn-card btn-card-solid" id="btnAddCalendar" style="margin-top: 0.75rem; width: 100%;">
-                  <i class="fa-regular fa-calendar-plus"></i> Simpan Tarikh (Calendar)
-                </button>
-              </div>
-            </section>
-            
-            <!-- Contact section -->
-            <section class="card-section contact-section">
-              <span class="detail-title">HUBUNGI KAMI</span>
-              
-              <div class="contact-row" id="contactRow1">
-                <div class="contact-info">
-                  <div class="contact-name" id="previewContactName1">Hj. Ahmad (Bapa)</div>
-                  <div class="contact-relation">Hubungi untuk pertanyaan</div>
-                </div>
-                <div class="contact-actions">
-                  <a href="tel:0123456789" class="btn-icon" id="callLink1"><i class="fa-solid fa-phone"></i></a>
-                  <a href="https://wa.me/60123456789" class="btn-icon" id="waLink1" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-              </div>
-              
-              <div class="contact-row" id="contactRow2">
-                <div class="contact-info">
-                  <div class="contact-name" id="previewContactName2">Aiman (Pengantin)</div>
-                  <div class="contact-relation">Hubungi untuk pertanyaan</div>
-                </div>
-                <div class="contact-actions">
-                  <a href="tel:0198765432" class="btn-icon" id="callLink2"><i class="fa-solid fa-phone"></i></a>
-                  <a href="https://wa.me/60198765432" class="btn-icon" id="waLink2" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-              </div>
-            </section>
-            
-            <!-- Interactive RSVP Form & Guestbook Wishes -->
-            <section class="card-section rsvp-section">
-              <span class="detail-title">RSVP & UCAPAN KASIH</span>
-              
-              <form class="rsvp-form" id="rsvpForm">
-                <div>
-                  <label for="rsvpName">Nama Tetamu</label>
-                  <input type="text" id="rsvpName" class="rsvp-input" required placeholder="Sila masukkan nama anda">
-                </div>
-                
-                <div>
-                  <label>Kehadiran</label>
-                  <div class="rsvp-radio-group">
-                    <label class="rsvp-radio-label">
-                      <input type="radio" name="attendance" value="hadir" checked> Hadir
-                    </label>
-                    <label class="rsvp-radio-label">
-                      <input type="radio" name="attendance" value="tidak"> Tidak Hadir
-                    </label>
-                  </div>
-                </div>
-                
-                <div id="paxGroup">
-                  <label for="rsvpPax">Jumlah Tetamu (Termasuk Anda)</label>
-                  <select id="rsvpPax" class="rsvp-input">
-                    <option value="1">1 Orang</option>
-                    <option value="2" selected>2 Orang</option>
-                    <option value="3">3 Orang</option>
-                    <option value="4">4 Orang</option>
-                    <option value="5">5 Orang</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label for="rsvpMessage">Ucapan / Doa Restu</label>
-                  <textarea id="rsvpMessage" class="rsvp-input" placeholder="Tuliskan ucapan tahniah atau doa anda di sini..." style="min-height: 70px; resize: none;"></textarea>
-                </div>
-                
-                <button type="submit" class="btn-card btn-card-solid" style="width: 100%; border: none;">
-                  Hantar Pengesahan
-                </button>
-              </form>
-              
-              <!-- Guestbook wishes list -->
-              <div class="wishes-wall">
-                <h4 class="wishes-title">Ucapan Tetamu</h4>
-                <div class="wishes-container" id="wishesList">
-                  <!-- Rendered dynamically in app.js -->
-                </div>
-              </div>
-            </section>
-            
-            <!-- Footer -->
-            <section class="card-section footer-section">
-              <span class="watermark">
-                E-Kad Jemputan Interaktif &copy; 2026. <br>Cipta milik anda di <a href="#" id="backToStudio">E-Card Studio</a>
-              </span>
-            </section>
-            
-          </div>
-          
-        </div>
-      </div>
-      
-    </div>
-    
+    <div class="navdots" id="navdots"></div>
   </div>
+</div>
 
-  <!-- Mobile View Toggle Button -->
-  <button class="mobile-view-toggle" id="btnMobileViewToggle">
-    <i class="fa-solid fa-mobile-screen-button"></i> Preview Kad
-  </button>
+<script>
+// ---------- CONFIG ----------
+const WA_NUMBER = '60163549114';
+const SECTIONS = ['sec-welcome','sec-majlis','sec-aturcara','sec-rsvp','sec-ucapan','sec-lokasi'];
+const ATURCARA = [
+  { time:'4:00 ptg', title:'Ketibaan tetamu', color:'#c0392b' },
+  { time:'5:00 ptg', title:'Majlis aqiqah & jamuan makan', color:'#3f6fa8' },
+  { time:'8:00 mlm', title:'Majlis hari lahir', color:'#3f9a55' },
+  { time:'11:00 mlm', title:'Majlis bersurai', color:'#c0392b' },
+];
+const PARTY_PALETTE = ['#c0392b','#3f6fa8','#3f9a55','#7a4fa8','#d98a2b','#2f8f9a'];
+const BUNTING_COLORS = ['#c0392b','#d98a2b','#3f6fa8','#3f9a55','#7a4fa8'];
+const CONFETTI_COLORS = ['#f6dfa1','#a9d2e6','#b7e3c9','#e6b3a1'];
 
-  <!-- Script logic -->
-  <script src="app.js?v=4000"></script>
+const $ = (id) => document.getElementById(id);
+const scrollwrap = $('scrollwrap');
+function navTo(id){
+  const el = $(id);
+  if(el) scrollwrap.scrollTo({ top: el.offsetTop, behavior:'smooth' });
+}
+
+// ---------- BUNTING ----------
+const buntingEl = $('bunting');
+BUNTING_COLORS.concat(BUNTING_COLORS).slice(0,9).forEach((color,i) => {
+  const flag = document.createElement('div');
+  flag.className = 'flag';
+  flag.style.borderTopColor = color;
+  flag.style.animation = `flagSway ${2.4 + (i%3)*0.3}s ease-in-out ${i*0.15}s infinite`;
+  buntingEl.appendChild(flag);
+});
+
+// ---------- CONFETTI ----------
+const confettiEl = $('confetti');
+CONFETTI_COLORS.forEach((color,i) => {
+  const d = document.createElement('div');
+  d.className = 'confetti-dot';
+  const size = 8 + (i%2)*4;
+  d.style.cssText = `left:${10+i*20}%;bottom:-12px;width:${size}px;height:${size}px;border-radius:${i%2===0?'50%':'3px'};
+    background:${color};animation:drift ${5+i}s linear ${i*0.7}s infinite;`;
+  confettiEl.appendChild(d);
+});
+
+// ---------- TITLE LETTERS ----------
+function makeLetters(word, startIdx, containerId){
+  const container = $(containerId);
+  word.split('').forEach((char,i) => {
+    const span = document.createElement('span');
+    span.className = 'letter';
+    span.textContent = char;
+    span.style.color = PARTY_PALETTE[(startIdx+i) % PARTY_PALETTE.length];
+    span.style.animation = `${i%2===0?'letterPopL':'letterPopR'} 0.6s ease ${(startIdx+i)*0.05}s both`;
+    container.appendChild(span);
+  });
+}
+makeLetters('EDRIC', 0, 'title-edric');
+makeLetters('ERREN', 5, 'title-erren');
+
+// ---------- PHOTO UPLOAD (persists via localStorage) ----------
+const photoSlot = $('photoSlot');
+const photoInput = $('photoInput');
+const PHOTO_KEY = 'edric-card-photo-v1';
+function setPhoto(url){
+  photoSlot.style.backgroundImage = `url(${url})`;
+  photoSlot.textContent = '';
+}
+const savedPhoto = localStorage.getItem(PHOTO_KEY);
+if (savedPhoto) setPhoto(savedPhoto);
+photoInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    setPhoto(reader.result);
+    try { localStorage.setItem(PHOTO_KEY, reader.result); } catch(err) {}
+  };
+  reader.readAsDataURL(file);
+});
+
+// ---------- OPEN CARD (swing-away + navigate) ----------
+$('openCardBtn').addEventListener('click', () => {
+  $('webDrop').classList.add('on');
+  $('polaroidWrap').classList.add('opening');
+  setTimeout(() => navTo('sec-majlis'), 950);
+});
+
+// ---------- MUSIC TOGGLE (visual only - hook up an <audio> tag if needed) ----------
+let musicOn = false;
+$('musicBtn').addEventListener('click', () => {
+  musicOn = !musicOn;
+  $('musicDot').classList.toggle('on', musicOn);
+});
+
+// ---------- ATURCARA TIMELINE ----------
+const timelineEl = $('timeline');
+const runnerEl = $('runner');
+timelineEl.appendChild(runnerEl); // keep runner as first child
+ATURCARA.forEach((item, i) => {
+  const row = document.createElement('div');
+  row.className = 'timeline-item';
+  row.innerHTML = `
+    <div class="dot-col">
+      <div class="dot" style="background:${item.color}"></div>
+      ${i < ATURCARA.length - 1 ? '<div class="dot-line"></div>' : ''}
+    </div>
+    <div class="timeline-text">
+      <div class="timeline-time">${item.time}</div>
+      <div class="timeline-title">${item.title}</div>
+    </div>`;
+  timelineEl.appendChild(row);
+});
+const aturcaraObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { runnerEl.style.animationPlayState = e.isIntersecting ? 'running' : 'paused'; });
+}, { threshold: 0.4 });
+aturcaraObserver.observe($('sec-aturcara'));
+
+// ---------- RSVP ----------
+let rsvpAttending = 'hadir';
+let rsvpPax = 1;
+$('btnHadir').addEventListener('click', () => {
+  rsvpAttending = 'hadir';
+  $('btnHadir').classList.add('active-yes'); $('btnHadir').classList.remove('active-no');
+  $('btnTidakHadir').classList.remove('active-no');
+});
+$('btnTidakHadir').addEventListener('click', () => {
+  rsvpAttending = 'tidak';
+  $('btnTidakHadir').classList.add('active-no'); $('btnTidakHadir').classList.remove('active-yes');
+  $('btnHadir').classList.remove('active-yes');
+});
+$('paxInc').addEventListener('click', () => { rsvpPax = Math.min(10, rsvpPax+1); $('paxValue').textContent = rsvpPax; });
+$('paxDec').addEventListener('click', () => { rsvpPax = Math.max(1, rsvpPax-1); $('paxValue').textContent = rsvpPax; });
+
+$('rsvpSubmit').addEventListener('click', () => {
+  const name = $('rsvpName').value.trim();
+  const status = rsvpAttending === 'hadir' ? 'Akan Hadir' : 'Tidak Dapat Hadir';
+  const text = `Assalamualaikum, saya ${name || '(nama)'} ingin sahkan kehadiran ke Majlis Aqiqah & Hari Jadi Edric Erren.\nStatus: ${status}\nBilangan: ${rsvpPax} orang`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
+
+  $('rsvpForm').style.display = 'none';
+  $('rsvpThanks').classList.add('show');
+  const burstWrap = $('burstWrap');
+  burstWrap.innerHTML = '';
+  const colors = ['#c0392b','#3f6fa8','#f6dfa1','#3f9a55'];
+  for (let i=0;i<10;i++){
+    const angle = (i/10) * Math.PI * 2;
+    const dist = 70 + (i%3)*20;
+    const b = document.createElement('div');
+    b.className = 'burst-bit';
+    b.style.background = colors[i%colors.length];
+    b.style.setProperty('--bx', `${Math.cos(angle)*dist}px`);
+    b.style.setProperty('--by', `${Math.sin(angle)*dist}px`);
+    b.style.animation = `burstOut 0.9s ease-out ${i*0.03}s both`;
+    burstWrap.appendChild(b);
+  }
+});
+
+// ---------- UCAPAN ----------
+const wishList = $('wishList');
+function addWishItem(name, message){
+  const item = document.createElement('div');
+  item.className = 'wish-item';
+  item.innerHTML = `<div class="wish-name"></div><div class="wish-msg"></div>`;
+  item.querySelector('.wish-name').textContent = name;
+  item.querySelector('.wish-msg').textContent = message;
+  wishList.prepend(item);
+}
+addWishItem('Mak Ngah', 'Tahniah! Semoga Edric Erren membesar jadi anak soleh, sihat dan ceria selalu.');
+$('wishSubmit').addEventListener('click', () => {
+  const name = $('wishName').value.trim() || 'Tetamu';
+  const message = $('wishMessage').value.trim();
+  if (!message) return;
+  addWishItem(name, message);
+  $('wishName').value = '';
+  $('wishMessage').value = '';
+});
+
+// ---------- NAV DOTS ----------
+const navdotsEl = $('navdots');
+SECTIONS.forEach(id => {
+  const btn = document.createElement('button');
+  btn.className = 'navdot';
+  btn.addEventListener('click', () => navTo(id));
+  navdotsEl.appendChild(btn);
+});
+</script>
 </body>
 </html>
