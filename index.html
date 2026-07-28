@@ -1282,7 +1282,7 @@ function addWishItem(name, message){
   item.querySelector('.wish-msg').textContent = message;
   wishList.prepend(item);
 }
-addWishItem('Mak Ngah', 'Tahniah! Semoga Edric Erren membesar jadi anak soleh, sihat dan ceria selalu.');
+
 $('wishSubmit').addEventListener('click', () => {
   const name = $('wishName').value.trim() || 'Tetamu';
   const message = $('wishMessage').value.trim();
