@@ -438,27 +438,23 @@
     height: 110px;
     animation: walkLeftToRight 16s linear infinite;
   }
-  .spidey-char {
+  .spidey-cartoon {
     position: absolute;
-    right: 0; /* Spidey is at the front (leading) */
+    right: 0; /* Spidey leading */
     bottom: 0;
     width: 100px;
-    height: auto;
-    transform: scaleX(-1);
-    transform-origin: bottom center;
-    animation: spideyWalk 0.75s ease-in-out infinite;
+    height: 120px;
     z-index: 3;
+    animation: cartoonBob 0.6s ease-in-out infinite;
   }
-  .goat-char {
+  .goat-cartoon {
     position: absolute;
-    left: 0; /* Goat is behind */
+    left: 0; /* Goat behind */
     bottom: 0;
     width: 100px;
-    height: auto;
-    transform: scaleX(-1);
-    transform-origin: bottom center;
-    animation: goatWalk 0.85s ease-in-out infinite 0.15s; /* Phase offset! */
+    height: 100px;
     z-index: 2;
+    animation: cartoonBob 0.7s ease-in-out infinite 0.1s; /* Out of phase bob */
   }
   .spidey-leash {
     position: absolute;
@@ -473,36 +469,42 @@
     0% { transform: translateX(-230px); }
     100% { transform: translateX(430px); }
   }
-  /* Rhythmic walking: bobbing, weight-shifting skew, and squash/stretch for Spidey */
-  @keyframes spideyWalk {
-    0%, 100% {
-      transform: scaleX(-1) translateY(0) skewX(-4deg) scaleY(1);
-    }
-    25% {
-      transform: scaleX(-1) translateY(-9px) skewX(2deg) scaleY(1.04);
-    }
-    50% {
-      transform: scaleX(-1) translateY(0) skewX(4deg) scaleY(1);
-    }
-    75% {
-      transform: scaleX(-1) translateY(-9px) skewX(-2deg) scaleY(1.04);
-    }
+  
+  /* Body Bobbing Animation */
+  @keyframes cartoonBob {
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    50% { transform: translateY(-5px) scaleY(1.02); }
   }
-  /* Rhythmic walking: bobbing, weight-shifting skew, and squash/stretch for Goat */
-  @keyframes goatWalk {
-    0%, 100% {
-      transform: scaleX(-1) translateY(0) skewX(3deg) scaleY(1);
-    }
-    25% {
-      transform: scaleX(-1) translateY(-7px) skewX(-2deg) scaleY(1.02);
-    }
-    50% {
-      transform: scaleX(-1) translateY(0) skewX(-3deg) scaleY(1);
-    }
-    75% {
-      transform: scaleX(-1) translateY(-7px) skewX(2deg) scaleY(1.02);
-    }
+
+  /* Limb Swing Animations for Stepping Walk Cycle */
+  @keyframes swingForward {
+    0%, 100% { transform: rotate(-24deg); }
+    50% { transform: rotate(24deg); }
   }
+  @keyframes swingBackward {
+    0%, 100% { transform: rotate(24deg); }
+    50% { transform: rotate(-24deg); }
+  }
+  @keyframes armSwingForward {
+    0%, 100% { transform: rotate(-15deg); }
+    50% { transform: rotate(15deg); }
+  }
+  @keyframes armSwingBackward {
+    0%, 100% { transform: rotate(15deg); }
+    50% { transform: rotate(-15deg); }
+  }
+
+  /* Rigging Spidey Limbs */
+  .leg-front { animation: swingForward 0.6s ease-in-out infinite; }
+  .leg-back { animation: swingBackward 0.6s ease-in-out infinite; }
+  .arm-front { animation: armSwingBackward 0.6s ease-in-out infinite; }
+  .arm-back { animation: armSwingForward 0.6s ease-in-out infinite; }
+
+  /* Rigging Goat Limbs (diagonals match for standard quad walk) */
+  .gleg-front-front { animation: swingForward 0.7s ease-in-out infinite; }
+  .gleg-back-rear { animation: swingForward 0.7s ease-in-out infinite; }
+  .gleg-front-rear { animation: swingBackward 0.7s ease-in-out infinite; }
+  .gleg-back-front { animation: swingBackward 0.7s ease-in-out infinite; }
 
   /* ===== ATURCARA ===== */
   #sec-aturcara{display:flex;flex-direction:column;justify-content:center;background:#f6ede0;}
@@ -659,14 +661,105 @@
         <!-- Walking Baby Spiderman & Goat Animation on Page 2 -->
         <div class="walking-spidey-container">
           <div class="walking-spidey-wrap" id="walkingWrap">
-            <!-- Goat (Behind, x=0) -->
-            <img class="goat-char" src="goat-walking.png" alt="Baby Goat">
-            <!-- Leash (SVG line between them) -->
+            <!-- Vector Baby Goat (Behind, x=0) -->
+            <svg class="goat-cartoon" viewBox="0 0 100 100" width="100" height="100">
+              <!-- Back Legs -->
+              <g class="gleg-back-rear" style="transform-origin: 25px 65px;">
+                <line x1="25" y1="65" x2="20" y2="90" stroke="#7f8c8d" stroke-width="6" stroke-linecap="round"/>
+                <circle cx="20" cy="90" r="3" fill="#34495e"/>
+              </g>
+              <g class="gleg-front-rear" style="transform-origin: 65px 65px;">
+                <line x1="65" y1="65" x2="60" y2="90" stroke="#7f8c8d" stroke-width="6" stroke-linecap="round"/>
+                <circle cx="60" cy="90" r="3" fill="#34495e"/>
+              </g>
+              
+              <!-- Torso/Body -->
+              <g class="gtorso">
+                <rect x="20" y="40" width="55" height="30" rx="10" fill="#bdc3c7"/>
+                <!-- Brown spots -->
+                <circle cx="35" cy="48" r="6" fill="#795548" opacity="0.85"/>
+                <circle cx="55" cy="58" r="7.5" fill="#795548" opacity="0.85"/>
+                <circle cx="45" cy="44" r="4.5" fill="#795548" opacity="0.85"/>
+                <circle cx="62" cy="46" r="5" fill="#795548" opacity="0.85"/>
+              </g>
+              
+              <!-- Head -->
+              <g class="ghead">
+                <!-- Neck -->
+                <line x1="65" y1="50" x2="75" y2="35" stroke="#bdc3c7" stroke-width="12" stroke-linecap="round"/>
+                <!-- Collar for leash -->
+                <circle cx="72" cy="38" r="7" fill="none" stroke="#d35400" stroke-width="3"/>
+                <!-- Collar anchor for leash path -->
+                <circle class="leash-anchor-goat" cx="72" cy="38" r="1" opacity="0"/>
+                <!-- Head -->
+                <g transform="rotate(12 79 29)">
+                  <rect x="68" y="18" width="22" height="22" rx="6" fill="#bdc3c7"/>
+                  <!-- Ear -->
+                  <ellipse cx="64" cy="22" rx="4" ry="10" fill="#7f8c8d" transform="rotate(-30 64 22)"/>
+                  <!-- Horns -->
+                  <path d="M78 18 Q 72 6 68 10" stroke="#34495e" stroke-width="3" fill="none" stroke-linecap="round"/>
+                  <path d="M83 17 Q 78 5 74 9" stroke="#34495e" stroke-width="3" fill="none" stroke-linecap="round"/>
+                  <!-- Eye -->
+                  <circle cx="82" cy="25" r="2.5" fill="#2c3e50"/>
+                  <!-- Snout -->
+                  <circle cx="89" cy="34" r="2.5" fill="#e0e0e0"/>
+                </g>
+              </g>
+              
+              <!-- Front Legs -->
+              <g class="gleg-back-front" style="transform-origin: 35px 65px;">
+                <line x1="35" y1="65" x2="38" y2="90" stroke="#bdc3c7" stroke-width="6" stroke-linecap="round"/>
+                <circle cx="38" cy="90" r="3" fill="#505050"/>
+              </g>
+              <g class="gleg-front-front" style="transform-origin: 55px 65px;">
+                <line x1="55" y1="65" x2="58" y2="90" stroke="#bdc3c7" stroke-width="6" stroke-linecap="round"/>
+                <circle cx="58" cy="90" r="3" fill="#505050"/>
+              </g>
+            </svg>
+
+            <!-- Leash (SVG line dynamically updated) -->
             <svg class="spidey-leash" viewBox="0 0 220 110">
               <path id="leashPath" d="M 65 72 Q 110 92 145 62" stroke="#ffffff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-dasharray="3 3"/>
             </svg>
-            <!-- Spidey (In Front, x=120) -->
-            <img class="spidey-char" src="spidey-walking.png" alt="Baby Spiderman">
+
+            <!-- Vector Spiderman (In Front, x=120) -->
+            <svg class="spidey-cartoon" viewBox="0 0 100 120" width="100" height="120">
+              <!-- Back Leg -->
+              <g class="leg-back" style="transform-origin: 45px 75px;">
+                <line x1="45" y1="75" x2="35" y2="105" stroke="#2980b9" stroke-width="8" stroke-linecap="round"/>
+                <path d="M28 102 h12 v6 h-12 z" fill="#c0392b" rx="2"/>
+              </g>
+              <!-- Back Arm -->
+              <g class="arm-back" style="transform-origin: 40px 50px;">
+                <line x1="40" y1="50" x2="25" y2="70" stroke="#c0392b" stroke-width="7" stroke-linecap="round"/>
+              </g>
+              <!-- Torso -->
+              <g class="gtorso">
+                <rect x="35" y="45" width="22" height="32" rx="6" fill="#c0392b"/>
+                <rect x="38" y="52" width="16" height="25" rx="3" fill="#2980b9"/>
+                <circle cx="46" cy="56" r="2.5" fill="#111"/>
+                <line x1="46" y1="56" x2="46" y2="62" stroke="#111" stroke-width="1.5"/>
+                <path d="M42 54 l8 4 M42 58 l8-4 M43 61 l6-2 M43 57 l6 2" stroke="#111" stroke-width="0.8"/>
+              </g>
+              <!-- Head -->
+              <g class="ghead">
+                <circle cx="46" cy="30" r="20" fill="#c0392b" stroke="#a93226" stroke-width="1"/>
+                <path d="M46 10 v40 M26 30 h40 M32 16 l28 28 M32 44 l28-28" stroke="rgba(0,0,0,0.15)" stroke-width="1"/>
+                <path d="M32 28 q6-8 12-2 q-4 8-12 2 Z" fill="#ffffff" stroke="#111" stroke-width="2"/>
+                <path d="M60 28 q-6-8-12-2 q4 8 12 2 Z" fill="#ffffff" stroke="#111" stroke-width="2"/>
+              </g>
+              <!-- Front Leg -->
+              <g class="leg-front" style="transform-origin: 55px 75px;">
+                <line x1="55" y1="75" x2="65" y2="105" stroke="#2980b9" stroke-width="8" stroke-linecap="round"/>
+                <path d="M58 102 h12 v6 h-12 z" fill="#c0392b" rx="2"/>
+              </g>
+              <!-- Front Arm -->
+              <g class="arm-front" style="transform-origin: 52px 50px;">
+                <line x1="52" y1="50" x2="68" y2="68" stroke="#c0392b" stroke-width="7" stroke-linecap="round"/>
+                <!-- Hand anchor for leash path -->
+                <circle class="leash-anchor-spidey" cx="68" cy="68" r="1" opacity="0"/>
+              </g>
+            </svg>
           </div>
         </div>
       </section>
@@ -982,36 +1075,25 @@ SECTIONS.forEach(id => {
 });
 // ---------- DYNAMIC SPIDEY LEASH UPDATE ----------
 const leashPath = document.getElementById('leashPath');
-const spideyChar = document.querySelector('.spidey-char');
-const goatChar = document.querySelector('.goat-char');
+const anchorSpidey = document.querySelector('.leash-anchor-spidey');
+const anchorGoat = document.querySelector('.leash-anchor-goat');
+const walkingWrap = document.getElementById('walkingWrap');
 
 function updateDynamicLeash() {
-  if (leashPath && spideyChar && goatChar) {
-    // Spidey is on the right, Goat is on the left.
-    // Read their current computed bottom translateY transform values to track vertical bobbing
-    const spideyStyle = window.getComputedStyle(spideyChar);
-    const goatStyle = window.getComputedStyle(goatChar);
+  if (leashPath && anchorSpidey && anchorGoat && walkingWrap) {
+    const rWrap = walkingWrap.getBoundingClientRect();
+    const rSpidey = anchorSpidey.getBoundingClientRect();
+    const rGoat = anchorGoat.getBoundingClientRect();
     
-    // Parse the transform matrix to get translateY
-    const getTranslateY = (styleStr) => {
-      if (!styleStr || styleStr === 'none') return 0;
-      const values = styleStr.split('(')[1].split(')')[0].split(',');
-      return parseFloat(values[5] || 0); // index 5 is translateY in 2d matrix
-    };
+    // Convert screen coordinates to container-relative coordinates
+    const x1 = rSpidey.left - rWrap.left;
+    const y1 = rSpidey.top - rWrap.top;
+    const x2 = rGoat.left - rWrap.left;
+    const y2 = rGoat.top - rWrap.top;
     
-    const sy = getTranslateY(spideyStyle.transform);
-    const gy = getTranslateY(goatStyle.transform);
-    
-    // Spidey hand is at x=145, y=62 (relative to container viewBox 220x110)
-    // Goat collar is at x=65, y=72
-    const x1 = 145;
-    const y1 = 62 + sy;
-    const x2 = 65;
-    const y2 = 72 + gy;
-    
-    // Draw a curved line that sags down like a real rope
+    // Calculate control point for curved sag of the web leash
     const cx = (x1 + x2) / 2;
-    const cy = Math.max(y1, y2) + 18; // Control point for curve sag
+    const cy = Math.max(y1, y2) + 20; // Sag factor
     
     leashPath.setAttribute('d', `M ${x2} ${y2} Q ${cx} ${cy} ${x1} ${y1}`);
   }
