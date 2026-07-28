@@ -567,6 +567,8 @@
 
   /* ===== RSVP — NEON SPIDEY DARK THEME ===== */
   #sec-rsvp {
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -780,37 +782,36 @@
     opacity: 1;
     pointer-events: auto;
   }
-  /* ===== CRAWLING SPIDER ON RSVP ===== */
-  @keyframes spiderCrawlAcross {
-    0% { left: -100px; top: 75%; transform: scale(1.2) rotate(90deg); }
-    40% { left: 40%; top: 70%; transform: scale(1.2) rotate(110deg); }
-    70% { left: 70%; top: 78%; transform: scale(1.2) rotate(70deg); }
-    100% { left: calc(100% + 100px); top: 75%; transform: scale(1.2) rotate(90deg); }
-  }
+  /* ===== DYNAMIC CRAWLING SPIDER GAME ON RSVP ===== */
   @keyframes legWiggle {
-    0%, 100% { transform: rotate(-5deg); }
-    50% { transform: rotate(5deg); }
+    0%, 100% { transform: rotate(-8deg); }
+    50% { transform: rotate(8deg); }
+  }
+  @keyframes splatFade {
+    0% { transform: translateY(0) scale(0.8); opacity: 1; }
+    100% { transform: translateY(-30px) scale(1.4); opacity: 0; }
   }
   .big-spidey-crawl {
     position: absolute;
-    z-index: 10;
+    z-index: 100;
     cursor: pointer;
-    animation: spiderCrawlAcross 20s linear infinite;
     transform-origin: center;
     transition: transform 0.4s ease, opacity 0.4s ease;
+    user-select: none;
+    -webkit-user-select: none;
   }
   .big-spidey-crawl svg {
-    filter: drop-shadow(0 5px 8px rgba(0,0,0,0.6));
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
   }
   .big-spidey-crawl .leg {
     transform-origin: 50px 50px;
-    animation: legWiggle 0.25s linear infinite;
+    animation: legWiggle 0.18s linear infinite;
   }
   .big-spidey-crawl .leg.l1, .big-spidey-crawl .leg.l3, .big-spidey-crawl .leg.r2, .big-spidey-crawl .leg.r4 {
-    animation-delay: 0.12s;
+    animation-delay: 0.09s;
   }
   .big-spidey-crawl.squish {
-    transform: scale(0) rotate(720deg) !important;
+    transform: scale(0) rotate(540deg) !important;
     opacity: 0;
     pointer-events: none;
   }
@@ -1035,23 +1036,6 @@
 
       <!-- RSVP -->
       <section id="sec-rsvp">
-        <!-- Large Crawling Spider (tap to squish) -->
-        <div id="big-spider-crawl" class="big-spidey-crawl">
-          <svg viewBox="0 0 100 100" width="70" height="70">
-            <ellipse cx="50" cy="55" rx="14" ry="18" fill="#11051e" stroke="#c0392b" stroke-width="1.5"/>
-            <circle cx="50" cy="38" r="9" fill="#11051e" stroke="#c0392b" stroke-width="1"/>
-            <circle cx="47" cy="35" r="1.5" fill="#f1c40f"/>
-            <circle cx="53" cy="35" r="1.5" fill="#f1c40f"/>
-            <path d="M 38 48 Q 18 30 8 42" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l1"/>
-            <path d="M 36 56 Q 14 56 4 66" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l2"/>
-            <path d="M 38 64 Q 18 82 10 76" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l3"/>
-            <path d="M 40 71 Q 23 93 16 88" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l4"/>
-            <path d="M 62 48 Q 82 30 92 42" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r1"/>
-            <path d="M 64 56 Q 86 56 96 66" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r2"/>
-            <path d="M 62 64 Q 82 82 90 76" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r3"/>
-            <path d="M 60 71 Q 77 93 84 88" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r4"/>
-          </svg>
-        </div>
         <div class="spider" id="spider3" style="top:16px"><div class="spider-legs"></div><div class="spider-body"></div></div>
         <div class="section-title" style="margin-bottom:6px">RSVP Kehadiran</div>
         
@@ -1608,16 +1592,155 @@ function toggleMusic() {
 }
 musicToggle.addEventListener('click', toggleMusic);
 
-// Tap to Squish Crawling Spider
-const crawlingSpider = $('big-spider-crawl');
-if (crawlingSpider) {
-  crawlingSpider.addEventListener('click', () => {
-    crawlingSpider.classList.add('squish');
-    setTimeout(() => {
-      crawlingSpider.style.display = 'none';
-    }, 450);
-  });
+// ---------- SPIDEY SMASHER MINI-GAME (RSVP PAGE) ----------
+let squishedScore = 0;
+let spiderSpawnInterval = null;
+
+function createScoreIndicator() {
+  const scoreDiv = document.createElement('div');
+  scoreDiv.id = 'spidey-score';
+  scoreDiv.style.cssText = `text-align:center; font-size:13px; color:#f1c40f; margin: 8px 0 16px; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; z-index:50; position:relative;`;
+  scoreDiv.innerHTML = `🕷️ Labah-labah Dipadam: <span id="score-val" style="font-size:16px; color:#ffffff; background:#c0392b; padding:2px 8px; border-radius:10px; margin-left:4px; box-shadow:0 2px 6px rgba(192,57,43,0.5);">0</span>`;
+  
+  const rsvpSec = $('sec-rsvp');
+  if (rsvpSec) {
+    const title = rsvpSec.querySelector('.section-title');
+    if (title) {
+      title.parentNode.insertBefore(scoreDiv, title.nextSibling);
+    }
+  }
 }
+
+function spawnSpider() {
+  const rsvpSec = $('sec-rsvp');
+  if (!rsvpSec) return;
+  
+  const containerWidth = rsvpSec.clientWidth || 360;
+  const containerHeight = rsvpSec.clientHeight || 640;
+  
+  const spider = document.createElement('div');
+  spider.className = 'big-spidey-crawl';
+  
+  // Random size between 40px and 70px
+  const size = Math.floor(Math.random() * 25) + 40;
+  
+  spider.innerHTML = `
+    <svg viewBox="0 0 100 100" width="${size}" height="${size}">
+      <ellipse cx="50" cy="55" rx="14" ry="18" fill="#11051e" stroke="#c0392b" stroke-width="1.5"/>
+      <circle cx="50" cy="38" r="9" fill="#11051e" stroke="#c0392b" stroke-width="1"/>
+      <circle cx="47" cy="35" r="1.5" fill="#f1c40f"/>
+      <circle cx="53" cy="35" r="1.5" fill="#f1c40f"/>
+      <path d="M 38 48 Q 18 30 8 42" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l1"/>
+      <path d="M 36 56 Q 14 56 4 66" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l2"/>
+      <path d="M 38 64 Q 18 82 10 76" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l3"/>
+      <path d="M 40 71 Q 23 93 16 88" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg l4"/>
+      <path d="M 62 48 Q 82 30 92 42" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r1"/>
+      <path d="M 64 56 Q 86 56 96 66" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r2"/>
+      <path d="M 62 64 Q 82 82 90 76" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r3"/>
+      <path d="M 60 71 Q 77 93 84 88" stroke="#c0392b" stroke-width="2.5" fill="none" class="leg r4"/>
+    </svg>
+  `;
+  
+  // Random start/end points
+  const edge = Math.floor(Math.random() * 3); // 0=left, 1=right, 2=top
+  let startX, startY, endX, endY;
+  
+  if (edge === 0) { // Crawl from left to right
+    startX = -70;
+    startY = Math.random() * (containerHeight - 200) + 100;
+    endX = containerWidth + 70;
+    endY = Math.random() * (containerHeight - 200) + 100;
+  } else if (edge === 1) { // Crawl from right to left
+    startX = containerWidth + 70;
+    startY = Math.random() * (containerHeight - 200) + 100;
+    endX = -70;
+    endY = Math.random() * (containerHeight - 200) + 100;
+  } else { // Crawl from top to bottom
+    startX = Math.random() * (containerWidth - 100) + 50;
+    startY = -70;
+    endX = Math.random() * (containerWidth - 100) + 50;
+    endY = containerHeight + 70;
+  }
+  
+  const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI + 90;
+  
+  spider.style.left = `${startX}px`;
+  spider.style.top = `${startY}px`;
+  spider.style.transform = `rotate(${angle}deg)`;
+  
+  rsvpSec.appendChild(spider);
+  
+  // Crawl animation parameters
+  const speed = Math.random() * 0.8 + 0.6;
+  let progress = 0;
+  
+  function animateCrawl() {
+    if (spider.classList.contains('squish') || !spider.parentNode) return;
+    progress += 0.003 * speed;
+    
+    const curX = startX + (endX - startX) * progress;
+    const curY = startY + (endY - startY) * progress;
+    
+    spider.style.left = `${curX}px`;
+    spider.style.top = `${curY}px`;
+    
+    if (progress < 1) {
+      requestAnimationFrame(animateCrawl);
+    } else {
+      spider.remove();
+    }
+  }
+  requestAnimationFrame(animateCrawl);
+  
+  // Handle tap/click squishing
+  const triggerSquish = (e) => {
+    e.preventDefault();
+    if (spider.classList.contains('squish')) return;
+    spider.classList.add('squish');
+    
+    squishedScore++;
+    const scoreValEl = $('score-val');
+    if (scoreValEl) scoreValEl.textContent = squishedScore;
+    
+    // Create POW text effect
+    const splat = document.createElement('div');
+    splat.textContent = 'POW!';
+    splat.style.cssText = `position:absolute; left:${spider.style.left}; top:${spider.style.top}; 
+      color:#c0392b; font-size:14px; font-weight:900; pointer-events:none; z-index:150;
+      animation: splatFade 0.45s ease-out forwards; text-shadow:0 0 4px rgba(255,255,255,0.8);`;
+    rsvpSec.appendChild(splat);
+    
+    setTimeout(() => {
+      splat.remove();
+      spider.remove();
+    }, 450);
+  };
+  
+  spider.addEventListener('mousedown', triggerSquish);
+  spider.addEventListener('touchstart', triggerSquish);
+}
+
+// Initialize score board
+createScoreIndicator();
+
+// Intersection Observer for RSVP Game Loop
+const rsvpGameObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      if (!spiderSpawnInterval) {
+        // Spawn first spider immediately, then every 1.5 seconds
+        spawnSpider();
+        spiderSpawnInterval = setInterval(spawnSpider, 1500);
+      }
+    } else {
+      if (spiderSpawnInterval) {
+        clearInterval(spiderSpawnInterval);
+        spiderSpawnInterval = null;
+      }
+    }
+  });
+}, { threshold: 0.15 });
+rsvpGameObserver.observe($('sec-rsvp'));
 
 // Register Service Worker for PWA support
 if ('serviceWorker' in navigator) {
