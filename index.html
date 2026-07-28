@@ -100,29 +100,34 @@
   .flag{width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:18px solid #c0392b;animation:flagSway 2.6s ease-in-out infinite;}
   .confetti-dot{position:absolute;pointer-events:none;}
   .confetti-dot{position:absolute;pointer-events:none;}
-  .greet{position:relative;z-index:4;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:rgba(255,240,220,.95);margin-bottom:8px;margin-top:8px;text-shadow:0 1px 4px rgba(0,0,0,.4);}
-  .subgreet{position:relative;z-index:4;font-weight:700;font-size:15px;color:rgba(255,230,200,.9);margin-bottom:10px;text-shadow:0 1px 4px rgba(0,0,0,.3);}
-  .title-row{position:relative;z-index:4;display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:1px;width:100%;}
-  .title-row.row1{margin-bottom:4px;}
-  .title-row.row2{margin-bottom:8px;}
-  .letter{display:inline-block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:34px;line-height:1;
-    text-shadow:-2px -2px 0 rgba(0,0,0,.3),2px -2px 0 rgba(0,0,0,.3),-2px 2px 0 rgba(0,0,0,.3),2px 2px 0 rgba(0,0,0,.3),0 0 12px rgba(255,200,100,.5);}
+  .greet{position:relative;z-index:4;font-weight:700;letter-spacing:.18em;text-transform:uppercase;font-size:11px;color:rgba(255,240,220,.85);margin-bottom:0;margin-top:4px;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+  .subgreet{position:relative;z-index:4;font-weight:700;font-size:13px;color:rgba(255,230,200,.75);margin-bottom:6px;text-shadow:0 1px 4px rgba(0,0,0,.3);font-style:italic;}
+  .title-row{position:relative;z-index:4;display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:2px;width:100%;}
+  .title-row.row1{margin-bottom:2px;}
+  .title-row.row2{margin-bottom:4px;}
+  .letter{display:inline-block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:40px;line-height:1;
+    text-shadow:-2px -2px 0 rgba(0,0,0,.35),2px -2px 0 rgba(0,0,0,.35),-2px 2px 0 rgba(0,0,0,.35),2px 2px 0 rgba(0,0,0,.35),0 0 16px rgba(255,200,100,.6);}
   /* Hero hanging image — descends from top on web */
-  .hero-hang{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;margin:0 0 8px;
+  .hero-hang{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;margin:0 0 4px;
     animation:spiderDescend 3s cubic-bezier(.25,.46,.45,.94) .4s both;}
   .web-string{width:2px;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.4));border-radius:1px;flex-shrink:0;
     animation:webGrow 3s cubic-bezier(.25,.46,.45,.94) .4s both;}
   .hero-img-wrap{position:relative;animation:heroSway 2s ease-in-out infinite;}
   .hero-img-wrap.floating{animation:heroFloat 3.5s ease-in-out infinite;}
   .hero-img-wrap.dropping{animation:heroDrop 1.1s cubic-bezier(.55,.06,.68,.19) forwards;}
-  .hero-img{width:200px;height:auto;filter:drop-shadow(0 6px 18px rgba(0,0,0,.55));pointer-events:none;}
+  .hero-img{width:180px;height:auto;filter:drop-shadow(0 6px 18px rgba(0,0,0,.55));pointer-events:none;}
   .web-string.snapping{--web-h:100px;animation:webSnap .4s ease-out forwards;}
-  .rule{position:relative;z-index:4;width:46px;height:4px;border-radius:2px;background:#fce68a;margin:14px 0;box-shadow:0 0 8px rgba(252,230,138,.5);}
-  .event-date{position:relative;z-index:4;font-size:15px;font-weight:800;color:rgba(255,240,220,.95);margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,.4);}
-  .event-venue{position:relative;z-index:4;font-size:14px;font-weight:600;color:rgba(255,230,200,.85);text-shadow:0 1px 3px rgba(0,0,0,.3);}
-  .btn-open{position:relative;z-index:4;margin-top:28px;border:none;cursor:pointer;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#faf6ee;
-    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;padding:14px 32px;border-radius:999px;
-    box-shadow:0 10px 30px -8px rgba(192,57,43,.7),0 0 15px rgba(231,76,60,.3);}
+  /* Event info badge */
+  .event-badge{position:relative;z-index:4;display:flex;align-items:center;gap:14px;margin:6px 0 0;
+    background:rgba(0,0,0,.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:10px 20px;}
+  .badge-divider{width:1px;height:28px;background:rgba(255,255,255,.25);}
+  .badge-item{text-align:center;}
+  .badge-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,220,180,.6);margin-bottom:2px;}
+  .badge-value{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13px;color:rgba(255,240,220,.95);text-shadow:0 1px 3px rgba(0,0,0,.3);}
+  .btn-open{position:relative;z-index:4;margin-top:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#faf6ee;
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;padding:12px 30px;border-radius:999px;
+    box-shadow:0 8px 24px -6px rgba(192,57,43,.7),0 0 12px rgba(231,76,60,.3);}
   .btn-open:hover{background:#a5281a;}
   .music-btn{position:absolute;top:66px;right:20px;z-index:2;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
     background:rgba(250,246,238,.9);box-shadow:0 4px 12px rgba(80,40,20,.3);display:flex;align-items:center;justify-content:center;}
@@ -130,22 +135,22 @@
   .music-dot.on{background:#c0392b;animation:spin 3s linear infinite;}
 
   /* ===== MAJLIS ===== */
-  #sec-majlis{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#faf6ee;overflow:hidden;}
-  .section-title{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:26px;color:#4a3626;margin-bottom:22px;text-align:center;}
-  .parents-card{background:#f6dfa1;border-radius:22px;padding:26px 22px;width:100%;}
-  .parents-label{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7a5b1e;margin-bottom:10px;}
-  .parent-name{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:20px;color:#4a3020;margin-bottom:4px;}
-  .amp{font-size:15px;color:#6b5138;margin:8px 0;}
-  .two-col{display:flex;gap:12px;width:100%;margin-top:18px;}
-  .info-chip{flex:1;border-radius:18px;padding:16px 12px;}
-  .info-chip.date{background:#a9d2e6;}
-  .info-chip.time{background:#b7e3c9;}
-  .chip-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
-  .chip-value{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;}
-  .venue-box{margin-top:12px;width:100%;background:#eee6d6;border-radius:18px;padding:16px 14px;}
-  .venue-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b5138;margin-bottom:6px;}
-  .venue-name{font-weight:700;font-size:15px;color:#4a3020;}
-  .venue-addr{font-size:13px;color:#6b5138;}
+  #sec-majlis{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#faf6ee;overflow:hidden;padding:36px 26px;}
+  .section-title{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:24px;color:#4a3626;margin-bottom:6px;text-align:center;}
+  .section-subtitle{font-size:12px;color:#8a7a63;margin-bottom:20px;letter-spacing:.06em;}
+  .parents-card{background:linear-gradient(135deg,#f8e8c8,#f6dfa1);border-radius:20px;padding:24px 20px;width:100%;box-shadow:0 4px 16px rgba(120,80,20,.1);}
+  .parents-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9a7b3e;margin-bottom:8px;}
+  .parent-name{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:18px;color:#4a3020;margin-bottom:2px;line-height:1.3;}
+  .amp{font-size:18px;color:#c0392b;margin:6px 0;font-family:'Caveat',cursive;font-weight:700;}
+  .info-row{display:flex;gap:10px;width:100%;margin-top:14px;}
+  .info-card{flex:1;border-radius:16px;padding:14px 10px;text-align:center;}
+  .info-card.ic-date{background:#a9d2e6;}
+  .info-card.ic-time{background:#b7e3c9;}
+  .info-card.ic-venue{background:#eee6d6;margin-top:10px;}
+  .info-icon{font-size:20px;margin-bottom:4px;}
+  .info-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(74,54,38,.6);margin-bottom:4px;}
+  .info-value{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;color:#4a3020;}
+  .info-sub{font-size:12px;color:#6b5138;margin-top:2px;}
 
   /* ===== ATURCARA ===== */
   #sec-aturcara{display:flex;flex-direction:column;justify-content:center;background:#f6ede0;}
@@ -236,10 +241,6 @@
         <div id="confetti"></div>
 
         <div class="greet">Bismillahirrahmanirrahim</div>
-        <div class="subgreet">Aqiqah &amp; Sambutan Hari Jadi Pertama</div>
-
-        <div class="title-row row1" id="title-edric"></div>
-        <div class="title-row row2" id="title-erren"></div>
 
         <div class="hero-hang" id="heroHang">
           <div class="web-string" id="webString"></div>
@@ -248,38 +249,56 @@
           </div>
         </div>
 
-        <div class="rule"></div>
-        <div class="event-date">12 September 2026</div>
-        <div class="event-venue">Manzil Sufya, N. Sembilan</div>
+        <div class="title-row row1" id="title-edric"></div>
+        <div class="title-row row2" id="title-erren"></div>
+        <div class="subgreet">Aqiqah &amp; Sambutan Hari Jadi Pertama</div>
 
-        <button class="btn-open" id="openCardBtn">Buka Jemputan</button>
+        <div class="event-badge">
+          <div class="badge-item">
+            <div class="badge-label">📅 Tarikh</div>
+            <div class="badge-value">12 Sept 2026</div>
+          </div>
+          <div class="badge-divider"></div>
+          <div class="badge-item">
+            <div class="badge-label">📍 Lokasi</div>
+            <div class="badge-value">Manzil Sufya</div>
+          </div>
+        </div>
+
+        <button class="btn-open" id="openCardBtn">🕸️ Buka Jemputan</button>
         <button class="music-btn" id="musicBtn"><div class="music-dot" id="musicDot"></div></button>
       </section>
 
       <!-- MAJLIS -->
       <section id="sec-majlis">
         <div class="spider" id="spider1"><div class="spider-legs"></div><div class="spider-body"></div></div>
-        <div class="section-title">Majlis Kami</div>
+        <div class="section-title">Majlis Kami 🕌</div>
+        <div class="section-subtitle">Dengan segala hormatnya kami menjemput</div>
         <div class="parents-card">
           <div class="parents-label">Anak kepada</div>
           <div class="parent-name">Ilmi Harith Mahdi<br>bin Mohd Suhaimi</div>
           <div class="amp">&amp;</div>
           <div class="parent-name">Nayli Irdina<br>binti Huzairie</div>
         </div>
-        <div class="two-col">
-          <div class="info-chip date">
-            <div class="chip-label">Tarikh</div>
-            <div class="chip-value">12 September 2026</div>
+        <div class="info-row">
+          <div class="info-card ic-date">
+            <div class="info-icon">📅</div>
+            <div class="info-label">Tarikh</div>
+            <div class="info-value">12 Sept 2026</div>
+            <div class="info-sub">Sabtu</div>
           </div>
-          <div class="info-chip time">
-            <div class="chip-label">Masa</div>
-            <div class="chip-value">4:00 ptg</div>
+          <div class="info-card ic-time">
+            <div class="info-icon">🕓</div>
+            <div class="info-label">Masa</div>
+            <div class="info-value">4:00 Petang</div>
+            <div class="info-sub">sehingga selesai</div>
           </div>
         </div>
-        <div class="venue-box">
-          <div class="venue-label">Tempat</div>
-          <div class="venue-name">Manzil Sufya</div>
-          <div class="venue-addr">Kota Seriemas, Negeri Sembilan</div>
+        <div class="info-card ic-venue" style="width:100%">
+          <div class="info-icon">📍</div>
+          <div class="info-label">Tempat</div>
+          <div class="info-value">Manzil Sufya</div>
+          <div class="info-sub">Kota Seriemas, Negeri Sembilan</div>
         </div>
       </section>
 
