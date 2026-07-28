@@ -556,73 +556,132 @@
     background: linear-gradient(180deg, #150924 0%, #0c0414 100%);
     padding: 36px 26px 80px; /* space for fixed navbar */
   }
-  .google-form-container {
-    background: rgba(18, 9, 28, 0.65);
-    border: 1.5px solid rgba(192, 57, 43, 0.45);
+  .rsvp-thanks {
+    position: relative;
+    background: rgba(46, 204, 113, 0.15);
+    border: 1.5px solid rgba(46, 204, 113, 0.4);
     border-radius: 20px;
-    padding: 26px 20px;
+    padding: 28px 20px;
     text-align: center;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 15px rgba(192, 57, 43, 0.2);
+    animation: popin .4s ease;
+    overflow: hidden;
+    display: none;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    margin-top: 10px;
-    box-sizing: border-box;
   }
-  .form-icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-    animation: pulseIcon 2s infinite ease-in-out;
+  .rsvp-thanks.show {
+    display: block;
   }
-  .form-desc {
-    font-family: 'Nunito', sans-serif;
+  .rsvp-thanks h3 {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #2ecc71;
+    margin: 0 0 8px;
+    text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+  }
+  .rsvp-thanks p {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.85);
-    line-height: 1.6;
-    margin-bottom: 10px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  }
-  .form-benefit {
-    font-family: 'Nunito', sans-serif;
-    font-size: 11px;
-    color: #fce68a;
     line-height: 1.5;
-    margin-bottom: 24px;
-    opacity: 0.9;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    margin: 0;
   }
-  .btn-google-form {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-    color: #ffffff;
-    border: none;
+  .burst-bit {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .rsvp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .field-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+    text-align: left;
+  }
+  .attend-row {
+    display: flex;
+    gap: 10px;
+  }
+  .attend-btn {
+    flex: 1;
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 12px;
     border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
     font-family: 'Baloo 2', sans-serif;
+  }
+  .attend-btn.active-yes {
+    background: #c0392b;
+    color: #ffffff;
+    border-color: #fce68a;
+    box-shadow: 0 0 12px rgba(192, 57, 43, 0.6);
+  }
+  .attend-btn.active-no {
+    background: #34495e;
+    color: rgba(255,255,255,0.6);
+    border-color: transparent;
+  }
+  .pax-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .pax-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: #c0392b;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 18px;
+    box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
+    font-family: 'Baloo 2', sans-serif;
+  }
+  .pax-value {
+    font-weight: 800;
+    font-size: 16px;
+    min-width: 20px;
+    text-align: center;
+    color: #ffffff;
+    font-family: 'Baloo 2', sans-serif;
+  }
+  .btn-submit {
+    margin-top: 8px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #c0392b, #e74c3c);
+    color: #faf6ee;
     font-weight: 800;
     font-size: 15px;
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4), 0 0 10px rgba(252, 230, 138, 0.2);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-sizing: border-box;
-    text-transform: uppercase;
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(192, 57, 43, 0.4);
+    font-family: 'Baloo 2', sans-serif;
+    transition: all 0.2s ease;
   }
-  .btn-google-form:hover {
+  .btn-submit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.6), 0 0 15px rgba(252, 230, 138, 0.3);
-    background: linear-gradient(135deg, #e74c3c 0%, #ff5252 100%);
-    color: #ffffff;
+    box-shadow: 0 8px 22px rgba(192, 57, 43, 0.6);
   }
-  .btn-google-form:active {
+  .btn-submit:active {
     transform: translateY(0);
-  }
-  @keyframes pulseIcon {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
   }
 
   /* Glassmorphism Inputs */
@@ -888,18 +947,35 @@
         <div class="spider" id="spider3" style="top:16px"><div class="spider-legs"></div><div class="spider-body"></div></div>
         <div class="section-title" style="margin-bottom:6px">RSVP Kehadiran</div>
         
-        <div class="google-form-container">
-          <div class="form-icon">📋</div>
-          <div class="form-desc">
-            Sila sahkan kehadiran anda ke majlis kami dengan mengisi borang pengesahan di bawah:
+        <!-- RSVP Success Screen -->
+        <div class="rsvp-thanks" id="rsvpThanks">
+          <div id="burstWrap"></div>
+          <h3>Terima kasih! 🎉</h3>
+          <p>Maklum balas kehadiran anda telah berjaya disimpan ke dalam rekod kami.</p>
+        </div>
+
+        <!-- RSVP Interactive Form -->
+        <div class="rsvp-form" id="rsvpForm">
+          <div>
+            <div class="field-label">Nama</div>
+            <input type="text" id="rsvpName" placeholder="Nama anda">
           </div>
-          <div class="form-benefit">
-            📊 Maklum balas anda membantu kami membuat persediaan bilangan pax dengan lebih tepat. Terima kasih!
+          <div>
+            <div class="field-label">Kehadiran</div>
+            <div class="attend-row">
+              <button class="attend-btn active-yes" id="btnHadir">Hadir</button>
+              <button class="attend-btn" id="btnTidakHadir">Tidak Hadir</button>
+            </div>
           </div>
-          <!-- GANTIKAN LINK DENGAN URL GOOGLE FORM ANDA DI BAWAH href="..." -->
-          <a href="https://forms.gle/your-google-form-link" target="_blank" class="btn-google-form" id="rsvpGoogleFormBtn">
-            🕸️ Isi RSVP (Google Form)
-          </a>
+          <div id="paxWrapper">
+            <div class="field-label">Bilangan Kehadiran</div>
+            <div class="pax-row">
+              <button class="pax-btn" id="paxDec">-</button>
+              <div class="pax-value" id="paxValue">1</div>
+              <button class="pax-btn" id="paxInc">+</button>
+            </div>
+          </div>
+          <button class="btn-submit" id="rsvpSubmit">Hantar RSVP Kehadiran</button>
         </div>
       </section>
 
@@ -1113,8 +1189,91 @@ const aturcaraObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.4 });
 aturcaraObserver.observe($('sec-aturcara'));
 
-// ---------- RSVP (Google Form Link) ----------
-// Handle RSVP button clicking optionally or keep empty as it redirects directly via href.
+// ---------- RSVP (Google Form Submission) ----------
+// GANTIKAN DENGAN MAKLUMAT GOOGLE FORM ANDA DI SINI
+const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfYOUR_FORM_ID_HERE/formResponse';
+const ENTRY_ID_NAME = 'entry.1234567890';       // ID input Nama
+const ENTRY_ID_ATTENDANCE = 'entry.0987654321'; // ID input Kehadiran
+const ENTRY_ID_PAX = 'entry.1122334455';        // ID input Bilangan Pax
+
+let rsvpAttending = 'hadir';
+let rsvpPax = 1;
+
+$('btnHadir').addEventListener('click', () => {
+  rsvpAttending = 'hadir';
+  $('btnHadir').classList.add('active-yes');
+  $('btnHadir').classList.remove('active-no');
+  $('btnTidakHadir').classList.remove('active-no');
+  $('paxWrapper').style.display = 'block'; // Show pax wrapper when attending
+});
+
+$('btnTidakHadir').addEventListener('click', () => {
+  rsvpAttending = 'tidak';
+  $('btnTidakHadir').classList.add('active-no');
+  $('btnTidakHadir').classList.remove('active-yes');
+  $('btnHadir').classList.remove('active-yes');
+  $('paxWrapper').style.display = 'none';  // Hide pax wrapper when not attending
+});
+
+$('paxInc').addEventListener('click', () => {
+  rsvpPax = Math.min(10, rsvpPax + 1);
+  $('paxValue').textContent = rsvpPax;
+});
+
+$('paxDec').addEventListener('click', () => {
+  rsvpPax = Math.max(1, rsvpPax - 1);
+  $('paxValue').textContent = rsvpPax;
+});
+
+$('rsvpSubmit').addEventListener('click', () => {
+  const name = $('rsvpName').value.trim();
+  if (!name) {
+    alert('Sila masukkan nama anda.');
+    return;
+  }
+
+  const attendanceValue = rsvpAttending === 'hadir' ? 'Hadir' : 'Tidak Hadir';
+  const paxValue = rsvpAttending === 'hadir' ? rsvpPax.toString() : '0';
+
+  // Construct URL encoded parameters
+  const formData = new URLSearchParams();
+  formData.append(ENTRY_ID_NAME, name);
+  formData.append(ENTRY_ID_ATTENDANCE, attendanceValue);
+  formData.append(ENTRY_ID_PAX, paxValue);
+
+  // Submit via fetch (no-cors prevents browser blocks on cross-origin form submissions)
+  fetch(GOOGLE_FORM_ACTION_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: formData.toString()
+  }).then(() => {
+    // Show success card
+    $('rsvpForm').style.display = 'none';
+    $('rsvpThanks').classList.add('show');
+    
+    // Confetti burst effect
+    const burstWrap = $('burstWrap');
+    burstWrap.innerHTML = '';
+    const colors = ['#c0392b','#3f6fa8','#f6dfa1','#3f9a55'];
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2;
+      const dist = 70 + (i % 3) * 20;
+      const b = document.createElement('div');
+      b.className = 'burst-bit';
+      b.style.background = colors[i % colors.length];
+      b.style.setProperty('--bx', `${Math.cos(angle) * dist}px`);
+      b.style.setProperty('--by', `${Math.sin(angle) * dist}px`);
+      b.style.animation = `burstOut 0.9s ease-out ${i * 0.03}s both`;
+      burstWrap.appendChild(b);
+    }
+  }).catch((error) => {
+    console.error('RSVP submission error:', error);
+    alert('Maaf, ralat berlaku semasa menghantar RSVP. Sila cuba lagi.');
+  });
+});
 
 // ---------- UCAPAN ----------
 const wishList = $('wishList');
