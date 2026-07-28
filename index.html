@@ -100,13 +100,64 @@
   .flag{width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:18px solid #c0392b;animation:flagSway 2.6s ease-in-out infinite;}
   .confetti-dot{position:absolute;pointer-events:none;}
   .confetti-dot{position:absolute;pointer-events:none;}
-  .greet{position:relative;z-index:4;font-weight:700;letter-spacing:.18em;text-transform:uppercase;font-size:11px;color:rgba(255,240,220,.85);margin-bottom:0;margin-top:4px;text-shadow:0 1px 4px rgba(0,0,0,.4);}
-  .subgreet{position:relative;z-index:4;font-weight:700;font-size:13px;color:rgba(255,230,200,.75);margin-bottom:6px;text-shadow:0 1px 4px rgba(0,0,0,.3);font-style:italic;}
-  .title-row{position:relative;z-index:4;display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:2px;width:100%;}
-  .title-row.row1{margin-bottom:2px;}
-  .title-row.row2{margin-bottom:4px;}
-  .letter{display:inline-block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:40px;line-height:1;
-    text-shadow:-2px -2px 0 rgba(0,0,0,.35),2px -2px 0 rgba(0,0,0,.35),-2px 2px 0 rgba(0,0,0,.35),2px 2px 0 rgba(0,0,0,.35),0 0 16px rgba(255,200,100,.6);}
+  .greet{position:relative;z-index:4;font-weight:700;letter-spacing:.18em;text-transform:uppercase;font-size:11px;color:rgba(255,240,220,.8);margin-bottom:2px;margin-top:4px;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+  .invitation-text {
+    position: relative;
+    z-index: 4;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 2px;
+  }
+  .hero-event-title {
+    position: relative;
+    z-index: 4;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.1;
+    color: #e74c3c; /* Spidey Red */
+    text-shadow: -2px -2px 0 #faf6ee, 2px -2px 0 #faf6ee, -2px 2px 0 #faf6ee, 2px 2px 0 #faf6ee, 0 4px 15px rgba(0,0,0,0.5);
+    margin: 2px 0;
+  }
+  .hero-event-sub {
+    position: relative;
+    z-index: 4;
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fce68a; /* Gold/yellow */
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    margin-bottom: 4px;
+  }
+  .putera-kami {
+    position: relative;
+    z-index: 4;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: rgba(255,230,200,0.85);
+    margin-bottom: 4px;
+  }
+  .name-banner {
+    position: relative;
+    z-index: 4;
+    background: linear-gradient(135deg, #f39c12, #d35400); /* Watercolor orange/gold gradient */
+    color: #faf6ee;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    padding: 6px 36px;
+    border-radius: 6px;
+    display: inline-block;
+    margin: 4px auto 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.35);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    border: 2px solid #fce68a;
+  }
   /* Hero hanging image — descends from top on web */
   .hero-hang{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;margin:0 0 4px;
     animation:spiderDescend 3s cubic-bezier(.25,.46,.45,.94) .4s both;}
@@ -270,10 +321,11 @@
         <div id="confetti"></div>
 
         <div class="greet">Bismillahirrahmanirrahim</div>
-
-        <div class="title-row row1" id="title-edric"></div>
-        <div class="title-row row2" id="title-erren"></div>
-        <div class="subgreet">Aqiqah &amp; Sambutan Hari Jadi Pertama</div>
+        <div class="invitation-text">KAD JEMPUTAN</div>
+        <div class="hero-event-title">MAJLIS AQIQAH</div>
+        <div class="hero-event-sub">&amp; HARI LAHIR PERTAMA</div>
+        <div class="putera-kami">PUTERA KAMI</div>
+        <div class="name-banner">Edric Erren</div>
 
         <div class="hero-hang" id="heroHang">
           <div class="web-string" id="webString"></div>
@@ -500,20 +552,7 @@ webPositions.forEach((wp, i) => {
   webDeco.appendChild(strand);
 });
 
-// ---------- TITLE LETTERS ----------
-function makeLetters(word, startIdx, containerId){
-  const container = $(containerId);
-  word.split('').forEach((char,i) => {
-    const span = document.createElement('span');
-    span.className = 'letter';
-    span.textContent = char;
-    span.style.color = PARTY_PALETTE[(startIdx+i) % PARTY_PALETTE.length];
-    span.style.animation = `${i%2===0?'letterPopL':'letterPopR'} 0.6s ease ${(startIdx+i)*0.05}s both`;
-    container.appendChild(span);
-  });
-}
-makeLetters('EDRIC', 0, 'title-edric');
-makeLetters('ERREN', 5, 'title-erren');
+// ---------- TITLE LETTERS (removed) ----------
 
 // ---------- HERO IMAGE FLOATING ----------
 const heroImgWrap = $('heroImgWrap');
