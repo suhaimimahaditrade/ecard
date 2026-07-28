@@ -282,33 +282,29 @@
     letter-spacing: .06em;
   }
   
-  /* CCO: Slanted Comic Book Frame */
-  .parents-card {
+  /* ===== Unified Premium Bento Card Styling ===== */
+  .premium-event-card {
     position: relative;
-    z-index: 1;
-    background: radial-gradient(circle at center, #c0392b 0%, #7e1616 100%);
-    border: 2px solid #e74c3c;
-    border-radius: 12px;
-    padding: 22px 18px;
+    z-index: 2;
+    background: rgba(18, 9, 28, 0.65);
+    border: 1.5px solid rgba(192, 57, 43, 0.4);
+    border-radius: 20px;
+    padding: 24px 20px;
     width: 100%;
-    box-shadow: 0 10px 25px rgba(192, 57, 43, 0.4), inset 0 0 20px rgba(255,255,255,0.15);
-    overflow: hidden;
-    transform: rotate(-1.5deg) skewX(-2deg); /* Dynamic Slanted Style */
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 15px rgba(192, 57, 43, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     margin-top: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
-  .parents-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(circle at 50% 50%, transparent 40%, rgba(255,255,255,0.05) 41%, rgba(255,255,255,0.05) 43%, transparent 44%),
-      radial-gradient(circle at 50% 50%, transparent 60%, rgba(255,255,255,0.05) 61%, rgba(255,255,255,0.05) 63%, transparent 64%),
-      linear-gradient(0deg, transparent 48%, rgba(255,255,255,0.05) 49%, rgba(255,255,255,0.05) 51%, transparent 52%),
-      linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.05) 49%, rgba(255,255,255,0.05) 51%, transparent 52%),
-      linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.05) 49%, rgba(255,255,255,0.05) 51%, transparent 52%),
-      linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.05) 49%, rgba(255,255,255,0.05) 51%, transparent 52%);
-    pointer-events: none;
-    opacity: 0.75;
+  
+  .parents-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .parents-label {
     position: relative;
@@ -342,42 +338,50 @@
     font-weight: 800;
     text-shadow: 0 2px 4px rgba(0,0,0,0.6);
   }
-  .info-row {
+
+  .card-divider {
     position: relative;
-    z-index: 1;
     display: flex;
-    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin: 4px 0;
+  }
+  .card-divider::before, .card-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(192, 57, 43, 0.4), transparent);
+  }
+  .divider-spider {
+    font-size: 14px;
+    margin: 0 10px;
+    opacity: 0.8;
+    filter: drop-shadow(0 0 4px #e74c3c);
+  }
+  
+  .details-section {
+    display: flex;
+    gap: 16px;
+    justify-content: space-around;
     width: 100%;
-    margin-top: 18px;
   }
-  .info-card {
-    position: relative;
-    z-index: 1;
+  .detail-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
-    padding: 14px 10px;
-    text-align: center;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition: transform 0.2s ease;
+    padding: 12px 8px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
   }
-  .info-card:hover {
-    transform: translateY(-2px) scale(1.02);
+  .detail-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
   }
-  
-  /* CCO: Slanted Info Cards */
-  .info-card.ic-date {
-    background: rgba(192, 57, 43, 0.2);
-    border: 1.5px solid rgba(192, 57, 43, 0.5);
-    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
-    transform: rotate(2deg); /* Dynamic Slanted Style */
-  }
-  .info-card.ic-time {
-    background: rgba(41, 128, 185, 0.2);
-    border: 1.5px solid rgba(41, 128, 185, 0.5);
-    box-shadow: 0 6px 20px rgba(41, 128, 185, 0.3);
-    transform: rotate(-2deg); /* Dynamic Slanted Style */
-  }
-  
+
   /* SVG Custom Icons */
   .info-svg {
     width: 24px;
@@ -688,44 +692,51 @@
 
       <!-- MAJLIS -->
       <section id="sec-majlis">
-        <!-- Hanging Web Lines -->
-        <div class="web-line wl-parents"></div>
-        <div class="web-line wl-date"></div>
-        <div class="web-line wl-time"></div>
-
         <div class="spider" id="spider1"><div class="spider-legs"></div><div class="spider-body"></div></div>
-        <div class="section-title">Majlis Kami 🕌</div>
+        <div class="section-title">Majlis Kesyukuran & Aqiqah</div>
         <div class="section-subtitle">Dengan segala hormatnya kami menjemput</div>
-        <div class="parents-card">
-          <div class="parents-label">Anak kepada</div>
-          <div class="parent-name">Ilmi Harith Mahdi<br>bin Mohd Suhaimi</div>
-          <div class="amp">&amp;</div>
-          <div class="parent-name">Nayli Irdina<br>binti Huzairie</div>
-        </div>
-        <div class="info-row">
-          <div class="info-card ic-date">
-            <!-- Premium Spider-themed Calendar SVG -->
-            <svg class="info-svg" viewBox="0 0 24 24" width="24" height="24">
-              <path fill="#fce68a" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
-              <circle cx="12" cy="14" r="2.5" fill="#e74c3c"/>
-              <path d="M12 11.5v5M9.5 14h5M10.2 12.2l3.6 3.6M10.2 15.8l3.6-3.6" stroke="#faf6ee" stroke-width="0.8"/>
-            </svg>
-            <div class="info-label">Tarikh</div>
-            <div class="info-value">12 Sept 2026</div>
-            <div class="info-sub">Sabtu</div>
+        
+        <!-- Unified Premium Bento Card -->
+        <div class="premium-event-card">
+          <!-- Parents Info -->
+          <div class="parents-section">
+            <div class="parents-label">Anak kepada</div>
+            <div class="parent-name">Ilmi Harith Mahdi bin Mohd Suhaimi</div>
+            <div class="amp">&amp;</div>
+            <div class="parent-name">Nayli Irdina binti Huzairie</div>
           </div>
-          <div class="info-card ic-time">
-            <!-- Premium Web-themed Clock SVG -->
-            <svg class="info-svg" viewBox="0 0 24 24" width="24" height="24">
-              <circle cx="12" cy="12" r="10" fill="none" stroke="#fce68a" stroke-width="2"/>
-              <path d="M12 2a10 10 0 0 1 10 10M12 6v6l4.5 2.7" stroke="#e74c3c" stroke-width="2" fill="none" stroke-linecap="round"/>
-              <path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" fill="#fce68a"/>
-              <!-- Spider web rays -->
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="rgba(252,230,138,0.4)" stroke-width="1"/>
-            </svg>
-            <div class="info-label">Masa</div>
-            <div class="info-value">4:00 Petang</div>
-            <div class="info-sub">sehingga selesai</div>
+          
+          <!-- Web Divider Line -->
+          <div class="card-divider">
+            <span class="divider-spider">🕸️</span>
+          </div>
+          
+          <!-- Details Grid -->
+          <div class="details-section">
+            <div class="detail-item">
+              <!-- Premium Calendar SVG -->
+              <svg class="info-svg" viewBox="0 0 24 24" width="24" height="24">
+                <path fill="#fce68a" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                <circle cx="12" cy="14" r="2.5" fill="#e74c3c"/>
+                <path d="M12 11.5v5M9.5 14h5M10.2 12.2l3.6 3.6M10.2 15.8l3.6-3.6" stroke="#faf6ee" stroke-width="0.8"/>
+              </svg>
+              <div class="info-label">Tarikh</div>
+              <div class="info-value" style="color:#ffffff; font-weight:800; font-size:14px;">12 Sept 2026</div>
+              <div class="info-sub" style="color:rgba(255,255,255,0.6); font-size:12px;">Sabtu</div>
+            </div>
+            
+            <div class="detail-item">
+              <!-- Premium Clock SVG -->
+              <svg class="info-svg" viewBox="0 0 24 24" width="24" height="24">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="#fce68a" stroke-width="2"/>
+                <path d="M12 2a10 10 0 0 1 10 10M12 6v6l4.5 2.7" stroke="#e74c3c" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="1.5" fill="#fce68a"/>
+                <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="rgba(252,230,138,0.3)" stroke-width="1"/>
+              </svg>
+              <div class="info-label">Masa</div>
+              <div class="info-value" style="color:#ffffff; font-weight:800; font-size:14px;">4:00 Petang</div>
+              <div class="info-sub" style="color:rgba(255,255,255,0.6); font-size:12px;">sehingga selesai</div>
+            </div>
           </div>
         </div>
         
@@ -816,7 +827,7 @@
               </g>
               <!-- Head (Eren's real face, front-facing chibi style) -->
               <g class="ghead" style="transform-origin: 46px 45px;">
-                <image href="eren-front-head-final.png" x="11" y="-24" width="70" height="66"/>
+                <image href="eren-front-head-clean.png" x="11" y="-24" width="70" height="66"/>
               </g>
               <!-- Front Leg -->
               <g class="leg-front" style="transform-origin: 55px 75px;">
