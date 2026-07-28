@@ -434,34 +434,73 @@
     position: absolute;
     bottom: 12px; /* Align Spidey's feet to walk on the red street line */
     left: 0;
-    width: 180px;
-    height: auto;
+    width: 220px;
+    height: 110px;
     animation: walkLeftToRight 16s linear infinite;
   }
-  .walking-img {
-    width: 100%;
+  .spidey-char {
+    position: absolute;
+    right: 0; /* Spidey is at the front (leading) */
+    bottom: 0;
+    width: 100px;
     height: auto;
-    transform: scaleX(-1); /* Flip horizontally to face right (forward) */
+    transform: scaleX(-1);
     transform-origin: bottom center;
-    animation: walkStep 0.8s ease-in-out infinite;
+    animation: spideyWalk 0.75s ease-in-out infinite;
+    z-index: 3;
+  }
+  .goat-char {
+    position: absolute;
+    left: 0; /* Goat is behind */
+    bottom: 0;
+    width: 100px;
+    height: auto;
+    transform: scaleX(-1);
+    transform-origin: bottom center;
+    animation: goatWalk 0.85s ease-in-out infinite 0.15s; /* Phase offset! */
+    z-index: 2;
+  }
+  .spidey-leash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
   }
   @keyframes walkLeftToRight {
-    0% { transform: translateX(-190px); }
+    0% { transform: translateX(-230px); }
     100% { transform: translateX(430px); }
   }
-  /* Rhythmic walking bob, tilt, and squash/stretch for paper-craft walking style */
-  @keyframes walkStep {
+  /* Rhythmic walking: bobbing, weight-shifting skew, and squash/stretch for Spidey */
+  @keyframes spideyWalk {
     0%, 100% {
-      transform: scaleX(-1) translateY(0) rotate(0deg) scale(1, 1);
+      transform: scaleX(-1) translateY(0) skewX(-4deg) scaleY(1);
     }
     25% {
-      transform: scaleX(-1) translateY(-8px) rotate(-3deg) scale(1.03, 0.97);
+      transform: scaleX(-1) translateY(-9px) skewX(2deg) scaleY(1.04);
     }
     50% {
-      transform: scaleX(-1) translateY(0) rotate(0deg) scale(1, 1);
+      transform: scaleX(-1) translateY(0) skewX(4deg) scaleY(1);
     }
     75% {
-      transform: scaleX(-1) translateY(-8px) rotate(3deg) scale(1.03, 0.97);
+      transform: scaleX(-1) translateY(-9px) skewX(-2deg) scaleY(1.04);
+    }
+  }
+  /* Rhythmic walking: bobbing, weight-shifting skew, and squash/stretch for Goat */
+  @keyframes goatWalk {
+    0%, 100% {
+      transform: scaleX(-1) translateY(0) skewX(3deg) scaleY(1);
+    }
+    25% {
+      transform: scaleX(-1) translateY(-7px) skewX(-2deg) scaleY(1.02);
+    }
+    50% {
+      transform: scaleX(-1) translateY(0) skewX(-3deg) scaleY(1);
+    }
+    75% {
+      transform: scaleX(-1) translateY(-7px) skewX(2deg) scaleY(1.02);
     }
   }
 
@@ -619,8 +658,15 @@
         <div class="majlis-ground"></div>
         <!-- Walking Baby Spiderman & Goat Animation on Page 2 -->
         <div class="walking-spidey-container">
-          <div class="walking-spidey-wrap">
-            <img class="walking-img" src="edric-walking-nobg.png" alt="Baby Spiderman walking goat">
+          <div class="walking-spidey-wrap" id="walkingWrap">
+            <!-- Goat (Behind, x=0) -->
+            <img class="goat-char" src="goat-walking.png" alt="Baby Goat">
+            <!-- Leash (SVG line between them) -->
+            <svg class="spidey-leash" viewBox="0 0 220 110">
+              <path id="leashPath" d="M 65 72 Q 110 92 145 62" stroke="#ffffff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-dasharray="3 3"/>
+            </svg>
+            <!-- Spidey (In Front, x=120) -->
+            <img class="spidey-char" src="spidey-walking.png" alt="Baby Spiderman">
           </div>
         </div>
       </section>
@@ -934,6 +980,45 @@ SECTIONS.forEach(id => {
   btn.addEventListener('click', () => navTo(id));
   navdotsEl.appendChild(btn);
 });
+// ---------- DYNAMIC SPIDEY LEASH UPDATE ----------
+const leashPath = document.getElementById('leashPath');
+const spideyChar = document.querySelector('.spidey-char');
+const goatChar = document.querySelector('.goat-char');
+
+function updateDynamicLeash() {
+  if (leashPath && spideyChar && goatChar) {
+    // Spidey is on the right, Goat is on the left.
+    // Read their current computed bottom translateY transform values to track vertical bobbing
+    const spideyStyle = window.getComputedStyle(spideyChar);
+    const goatStyle = window.getComputedStyle(goatChar);
+    
+    // Parse the transform matrix to get translateY
+    const getTranslateY = (styleStr) => {
+      if (!styleStr || styleStr === 'none') return 0;
+      const values = styleStr.split('(')[1].split(')')[0].split(',');
+      return parseFloat(values[5] || 0); // index 5 is translateY in 2d matrix
+    };
+    
+    const sy = getTranslateY(spideyStyle.transform);
+    const gy = getTranslateY(goatStyle.transform);
+    
+    // Spidey hand is at x=145, y=62 (relative to container viewBox 220x110)
+    // Goat collar is at x=65, y=72
+    const x1 = 145;
+    const y1 = 62 + sy;
+    const x2 = 65;
+    const y2 = 72 + gy;
+    
+    // Draw a curved line that sags down like a real rope
+    const cx = (x1 + x2) / 2;
+    const cy = Math.max(y1, y2) + 18; // Control point for curve sag
+    
+    leashPath.setAttribute('d', `M ${x2} ${y2} Q ${cx} ${cy} ${x1} ${y1}`);
+  }
+  requestAnimationFrame(updateDynamicLeash);
+}
+// Start tracking leash
+requestAnimationFrame(updateDynamicLeash);
 </script>
 </body>
 </html>
