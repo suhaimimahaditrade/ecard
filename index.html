@@ -123,7 +123,7 @@
     z-index: 4;
     display: flex;
     gap: 8px;
-    margin-top: 14px;
+    margin-top: 18px;
     width: 100%;
     justify-content: center;
   }
@@ -153,11 +153,11 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(192, 57, 43, 0.5);
   }
-  .btn-open{position:relative;z-index:4;margin-top:20px;border:none;cursor:pointer;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#faf6ee;
-    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;padding:12px 30px;border-radius:999px;
+  .btn-open{position:relative;z-index:4;margin-top:24px;border:none;cursor:pointer;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#faf6ee;
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;padding:14px 34px;border-radius:999px;
     box-shadow:0 8px 24px -6px rgba(192,57,43,.7),0 0 12px rgba(231,76,60,.3);
     transition: all 0.2s ease;}
-  .btn-open:hover{background:#a5281a; transform: scale(1.03);}
+  .btn-open:hover{background:#a5281a; transform: scale(1.04);}
   .music-btn{position:absolute;top:66px;right:20px;z-index:2;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
     background:rgba(250,246,238,.9);box-shadow:0 4px 12px rgba(80,40,20,.3);display:flex;align-items:center;justify-content:center;}
   .music-dot{width:18px;height:18px;border-radius:50%;background:#8a8378;}
@@ -282,14 +282,14 @@
         <div class="title-row row2" id="title-erren"></div>
         <div class="subgreet">Aqiqah &amp; Sambutan Hari Jadi Pertama</div>
 
+        <button class="btn-open" id="openCardBtn">🕸️ Buka Jemputan</button>
+
         <div class="spidey-shortcuts">
           <button class="spidey-btn" onclick="navTo('sec-aturcara')">🕒 Aturcara</button>
           <button class="spidey-btn" onclick="navTo('sec-rsvp')">🕸️ RSVP</button>
           <button class="spidey-btn" onclick="navTo('sec-lokasi')">📍 Lokasi</button>
           <button class="spidey-btn" onclick="navTo('sec-ucapan')">💬 Ucapan</button>
         </div>
-
-        <button class="btn-open" id="openCardBtn">🕸️ Buka Jemputan</button>
         <button class="music-btn" id="musicBtn"><div class="music-dot" id="musicDot"></div></button>
       </section>
 
