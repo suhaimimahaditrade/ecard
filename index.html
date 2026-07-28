@@ -441,10 +441,28 @@
   .walking-img {
     width: 100%;
     height: auto;
+    transform: scaleX(-1); /* Flip horizontally to face right (forward) */
+    transform-origin: bottom center;
+    animation: walkStep 0.8s ease-in-out infinite;
   }
   @keyframes walkLeftToRight {
     0% { transform: translateX(-190px); }
     100% { transform: translateX(430px); }
+  }
+  /* Rhythmic walking bob, tilt, and squash/stretch for paper-craft walking style */
+  @keyframes walkStep {
+    0%, 100% {
+      transform: scaleX(-1) translateY(0) rotate(0deg) scale(1, 1);
+    }
+    25% {
+      transform: scaleX(-1) translateY(-8px) rotate(-3deg) scale(1.03, 0.97);
+    }
+    50% {
+      transform: scaleX(-1) translateY(0) rotate(0deg) scale(1, 1);
+    }
+    75% {
+      transform: scaleX(-1) translateY(-8px) rotate(3deg) scale(1.03, 0.97);
+    }
   }
 
   /* ===== ATURCARA ===== */
