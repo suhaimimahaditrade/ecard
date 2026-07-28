@@ -977,6 +977,14 @@
           </div>
           <button class="btn-submit" id="rsvpSubmit">Hantar RSVP Kehadiran</button>
         </div>
+
+        <!-- Hidden Iframe & Google Form to submit natively without CORS blocks -->
+        <iframe name="rsvp_iframe" id="rsvp_iframe" style="display:none;"></iframe>
+        <form id="rsvpGoogleForm" action="https://docs.google.com/forms/d/e/1FAIpQLSe1fJFkqecPAy5gxKfNIKkCFFjTevEFZEI7WXyA9Nc6bm5eRQ/formResponse" method="POST" target="rsvp_iframe" style="display:none;">
+          <input type="hidden" name="entry.1671918940" id="gFormName">
+          <input type="hidden" name="entry.1300777997" id="gFormAttendance">
+          <input type="hidden" name="entry.596262828" id="gFormPax">
+        </form>
       </section>
 
       <!-- UCAPAN -->
@@ -1235,44 +1243,33 @@ $('rsvpSubmit').addEventListener('click', () => {
   const attendanceValue = rsvpAttending === 'hadir' ? 'Hadir' : 'Tidak Hadir';
   const paxValue = rsvpAttending === 'hadir' ? rsvpPax.toString() : '0';
 
-  // Construct URL encoded parameters
-  const formData = new URLSearchParams();
-  formData.append(ENTRY_ID_NAME, name);
-  formData.append(ENTRY_ID_ATTENDANCE, attendanceValue);
-  formData.append(ENTRY_ID_PAX, paxValue);
+  // Inject values into the hidden form inputs
+  $('gFormName').value = name;
+  $('gFormAttendance').value = attendanceValue;
+  $('gFormPax').value = paxValue;
 
-  // Submit via fetch (no-cors prevents browser blocks on cross-origin form submissions)
-  fetch(GOOGLE_FORM_ACTION_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: formData.toString()
-  }).then(() => {
-    // Show success card
-    $('rsvpForm').style.display = 'none';
-    $('rsvpThanks').classList.add('show');
-    
-    // Confetti burst effect
-    const burstWrap = $('burstWrap');
-    burstWrap.innerHTML = '';
-    const colors = ['#c0392b','#3f6fa8','#f6dfa1','#3f9a55'];
-    for (let i = 0; i < 12; i++) {
-      const angle = (i / 12) * Math.PI * 2;
-      const dist = 70 + (i % 3) * 20;
-      const b = document.createElement('div');
-      b.className = 'burst-bit';
-      b.style.background = colors[i % colors.length];
-      b.style.setProperty('--bx', `${Math.cos(angle) * dist}px`);
-      b.style.setProperty('--by', `${Math.sin(angle) * dist}px`);
-      b.style.animation = `burstOut 0.9s ease-out ${i * 0.03}s both`;
-      burstWrap.appendChild(b);
-    }
-  }).catch((error) => {
-    console.error('RSVP submission error:', error);
-    alert('Maaf, ralat berlaku semasa menghantar RSVP. Sila cuba lagi.');
-  });
+  // Submit the hidden form natively to the Google Form Action URL targeting the hidden iframe
+  $('rsvpGoogleForm').submit();
+
+  // Show success screen immediately
+  $('rsvpForm').style.display = 'none';
+  $('rsvpThanks').classList.add('show');
+  
+  // Confetti burst effect
+  const burstWrap = $('burstWrap');
+  burstWrap.innerHTML = '';
+  const colors = ['#c0392b','#3f6fa8','#f6dfa1','#3f9a55'];
+  for (let i = 0; i < 12; i++) {
+    const angle = (i / 12) * Math.PI * 2;
+    const dist = 70 + (i % 3) * 20;
+    const b = document.createElement('div');
+    b.className = 'burst-bit';
+    b.style.background = colors[i % colors.length];
+    b.style.setProperty('--bx', `${Math.cos(angle) * dist}px`);
+    b.style.setProperty('--by', `${Math.sin(angle) * dist}px`);
+    b.style.animation = `burstOut 0.9s ease-out ${i * 0.03}s both`;
+    burstWrap.appendChild(b);
+  }
 });
 
 // ---------- UCAPAN ----------
