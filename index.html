@@ -846,7 +846,7 @@
 </head>
 <body>
 <!-- PWA Background Music -->
-<audio id="bgMusic" loop src="music.mp3" preload="auto"></audio>
+<audio id="bgMusic" loop src="music.mp3" preload="auto" autoplay></audio>
 
 <div class="stage">
   <div class="blob blob1"></div>
@@ -1237,11 +1237,7 @@ setTimeout(() => {
 const heroHang = $('heroHang');
 $('openCardBtn').addEventListener('click', () => {
   // Start background music
-  bgMusic.play().then(() => {
-    musicPlaying = true;
-    musicToggle.classList.add('playing');
-    musicToggle.textContent = '🎵';
-  }).catch(err => console.log('Music autoplay blocked:', err));
+  bgMusic.play().catch(err => console.log('Music autoplay blocked:', err));
 
   // Stop floating, trigger drop
   heroImgWrap.classList.remove('floating');
@@ -1565,29 +1561,32 @@ const bgMusic = $('bgMusic');
 const musicToggle = $('musicToggle');
 let musicPlaying = false;
 
+// Sync button UI with actual audio state
+bgMusic.addEventListener('play', () => {
+  musicPlaying = true;
+  musicToggle.classList.add('playing');
+  musicToggle.textContent = '🎵';
+});
+
+bgMusic.addEventListener('pause', () => {
+  musicPlaying = false;
+  musicToggle.classList.remove('playing');
+  musicToggle.textContent = '🔇';
+});
+
 function toggleMusic() {
-  if (musicPlaying) {
-    bgMusic.pause();
-    musicToggle.classList.remove('playing');
-    musicToggle.textContent = '🔇';
-    musicPlaying = false;
+  if (bgMusic.paused) {
+    bgMusic.play().catch(err => console.log('Music play block:', err));
   } else {
-    bgMusic.play().then(() => {
-      musicToggle.classList.add('playing');
-      musicToggle.textContent = '🎵';
-      musicPlaying = true;
-    }).catch(err => console.log('Music play block:', err));
+    bgMusic.pause();
   }
 }
 musicToggle.addEventListener('click', toggleMusic);
 
 // Autoplay bypass: Start music on the very first user interaction (click, touch, scroll)
 const startMusicOnInteraction = () => {
-  if (!musicPlaying) {
+  if (bgMusic.paused) {
     bgMusic.play().then(() => {
-      musicPlaying = true;
-      musicToggle.classList.add('playing');
-      musicToggle.textContent = '🎵';
       // Clean up event listeners so we don't trigger again
       document.removeEventListener('click', startMusicOnInteraction);
       document.removeEventListener('touchstart', startMusicOnInteraction);
@@ -1599,6 +1598,11 @@ const startMusicOnInteraction = () => {
 document.addEventListener('click', startMusicOnInteraction);
 document.addEventListener('touchstart', startMusicOnInteraction);
 document.addEventListener('scroll', startMusicOnInteraction);
+
+// Also try to autoplay immediately when window loads (if browser permits)
+window.addEventListener('load', () => {
+  bgMusic.play().catch(err => console.log('Autoplay on load blocked:', err));
+});
 
 // ---------- SPIDEY SMASHER MINI-GAME (RSVP PAGE) ----------
 let squishedScore = 0;
