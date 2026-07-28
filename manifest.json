@@ -1,0 +1,22 @@
+{
+  "name": "Jemputan Kesyukuran & Aqiqah Edric Erren",
+  "short_name": "Edric E-Card",
+  "description": "Kad Jemputan Kesyukuran, Aqiqah & Hari Jadi Pertama Edric Erren",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#12071d",
+  "theme_color": "#12071d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./eren-spidey-walk.png",
+      "sizes": "178x178",
+      "type": "image/png"
+    },
+    {
+      "src": "./edric-hero-nobg.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

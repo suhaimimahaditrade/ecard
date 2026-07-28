@@ -3,6 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Open Graph Meta Tags (WhatsApp Link Preview) -->
+<meta property="og:title" content="Jemputan Kesyukuran, Aqiqah & Hari Jadi Pertama Edric Erren 👶🎈">
+<meta property="og:description" content="Dengan segala hormatnya menjemput Datuk / Datin / Tuan / Puan / Encik / Cik untuk memeriahkan majlis kesyukuran, aqiqah & hari jadi pertama putera kami. Klik untuk maklumat majlis dan RSVP.">
+<meta property="og:image" content="https://suhaimimahaditrade.github.io/ecard/eren-spidey-walk.png">
+<meta property="og:image:width" content="300">
+<meta property="og:image:height" content="300">
+<meta property="og:url" content="https://suhaimimahaditrade.github.io/ecard/">
+<meta property="og:type" content="website">
+
+<!-- PWA (Mobile Standalone / Fullscreen) -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#12071d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Edric E-Card">
+<link rel="apple-touch-icon" href="eren-spidey-walk.png">
+
 <title>Edric Erren - Aqiqah & Hari Jadi Pertama</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
@@ -1467,6 +1484,15 @@ function updateDynamicLeash() {
 }
 // Start tracking leash
 requestAnimationFrame(updateDynamicLeash);
+
+// Register Service Worker for PWA support
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+      .catch(err => console.log('Service Worker registration failed:', err));
+  });
+}
 </script>
 </body>
 </html>
