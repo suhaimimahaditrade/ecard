@@ -167,53 +167,70 @@
   .hero-img-wrap.dropping{animation:heroDrop 1.1s cubic-bezier(.55,.06,.68,.19) forwards;}
   .hero-img{width:180px;height:auto;filter:drop-shadow(0 6px 18px rgba(0,0,0,.55));pointer-events:none;}
   .web-string.snapping{--web-h:100px;animation:webSnap .4s ease-out forwards;}
-  /* Spidey Shortcut Buttons */
-  .spidey-shortcuts {
-    position: relative;
-    z-index: 4;
+  /* Persistent Bottom Navigation Bar */
+  .spidey-nav-bar {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
     display: flex;
     gap: 8px;
-    margin-top: 18px;
-    width: 100%;
-    justify-content: center;
-  }
-  .spidey-btn {
+    background: rgba(15, 8, 24, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 2px solid #c0392b;
-    background: rgba(30, 20, 50, 0.4);
-    color: #fce68a;
+    border-radius: 999px;
+    padding: 6px 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    width: max-content;
+    max-width: 90%;
+  }
+  .spidey-nav-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(255,255,255,0.75);
     font-family: 'Baloo 2', sans-serif;
     font-weight: 700;
-    font-size: 12px;
-    padding: 8px 14px;
+    font-size: 11px;
+    padding: 6px 12px;
     border-radius: 999px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    gap: 4px;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
   }
-  .spidey-btn:hover {
-    background: #c0392b;
-    color: #faf6ee;
-    border-color: #fce68a;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(192, 57, 43, 0.5);
+  .spidey-nav-btn:hover {
+    background: rgba(192, 57, 43, 0.3);
+    color: #fce68a;
+    border-color: rgba(252, 230, 138, 0.3);
   }
   .btn-open{position:relative;z-index:4;margin-top:24px;border:none;cursor:pointer;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#faf6ee;
     font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;padding:14px 34px;border-radius:999px;
     box-shadow:0 8px 24px -6px rgba(192,57,43,.7),0 0 12px rgba(231,76,60,.3);
     transition: all 0.2s ease;}
   .btn-open:hover{background:#a5281a; transform: scale(1.04);}
-  .music-btn{position:absolute;top:66px;right:20px;z-index:2;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
+  .music-btn{position:absolute;top:66px;right:20px;z-index:11;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
     background:rgba(250,246,238,.9);box-shadow:0 4px 12px rgba(80,40,20,.3);display:flex;align-items:center;justify-content:center;}
   .music-dot{width:18px;height:18px;border-radius:50%;background:#8a8378;}
   .music-dot.on{background:#c0392b;animation:spin 3s linear infinite;}
 
-  /* ===== MAJLIS — PREMIUM 3D SPIDERMAN THEME ===== */
+  /* ===== WELCOME SECTION PADDING ADJUSTMENT ===== */
+  #sec-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(180deg,#1a0a2e 0%,#2d1b4e 15%,#6b2c3e 30%,#c0543a 50%,#e8996b 70%,#f0c489 90%,#fce4a8 100%);
+    padding: 48px 28px 40px; /* Reduced bottom padding since Spidey is moved to Page 2 */
+    perspective: 800px;
+    position: relative;
+  }
+
+  /* ===== MAJLIS — CCO PREMIUM SLANTED COMIC & WEB SUSPENSION ===== */
   #sec-majlis {
     display: flex;
     flex-direction: column;
@@ -222,7 +239,7 @@
     text-align: center;
     background: linear-gradient(180deg, #180a29 0%, #0d0516 100%);
     overflow: hidden;
-    padding: 36px 26px;
+    padding: 40px 26px 110px; /* Extra bottom padding for Spidey and fixed navbar */
     position: relative;
   }
   #sec-majlis::before {
@@ -234,9 +251,22 @@
     pointer-events: none;
     z-index: 0;
   }
+  
+  /* Web lines for hanging cards */
+  .web-line {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .wl-parents { top: 0; left: 50%; transform: translateX(-50%); height: 50px; }
+  .wl-date { top: 160px; left: 26%; height: 75px; }
+  .wl-time { top: 160px; right: 26%; height: 75px; }
+
   .section-title {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     font-family: 'Baloo 2', sans-serif;
     font-weight: 800;
     font-size: 26px;
@@ -247,24 +277,27 @@
   }
   .section-subtitle {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 22px;
     letter-spacing: .06em;
   }
+  
+  /* CCO: Slanted Comic Book Frame */
   .parents-card {
     position: relative;
     z-index: 1;
     background: radial-gradient(circle at center, #c0392b 0%, #7e1616 100%);
     border: 2px solid #e74c3c;
-    border-radius: 20px;
-    padding: 24px 20px;
+    border-radius: 12px;
+    padding: 22px 18px;
     width: 100%;
-    box-shadow: 0 10px 30px rgba(192, 57, 43, 0.45), inset 0 0 20px rgba(255,255,255,0.15);
+    box-shadow: 0 10px 25px rgba(192, 57, 43, 0.4), inset 0 0 20px rgba(255,255,255,0.15);
     overflow: hidden;
+    transform: rotate(-1.5deg) skewX(-2deg); /* Dynamic Slanted Style */
+    margin-top: 10px;
   }
-  /* Web overlay on parents card */
   .parents-card::after {
     content: '';
     position: absolute;
@@ -282,12 +315,12 @@
   .parents-label {
     position: relative;
     z-index: 2;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
     letter-spacing: .12em;
     text-transform: uppercase;
     color: #fce68a;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     text-shadow: 0 1px 2px rgba(0,0,0,0.5);
   }
   .parent-name {
@@ -295,7 +328,7 @@
     z-index: 2;
     font-family: 'Baloo 2', sans-serif;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 17px;
     color: #ffffff;
     margin-bottom: 2px;
     line-height: 1.3;
@@ -306,7 +339,7 @@
     z-index: 2;
     font-size: 20px;
     color: #fce68a;
-    margin: 4px 0;
+    margin: 2px 0;
     font-family: 'Caveat', cursive;
     font-weight: 800;
     text-shadow: 0 2px 4px rgba(0,0,0,0.6);
@@ -315,14 +348,14 @@
     position: relative;
     z-index: 1;
     display: flex;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
-    margin-top: 14px;
+    margin-top: 18px;
   }
   .info-card {
     position: relative;
     z-index: 1;
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 14px 10px;
     text-align: center;
     backdrop-filter: blur(8px);
@@ -330,20 +363,29 @@
     transition: transform 0.2s ease;
   }
   .info-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.02);
   }
+  
+  /* CCO: Slanted Info Cards */
   .info-card.ic-date {
-    background: rgba(192, 57, 43, 0.18);
-    border: 1px solid rgba(192, 57, 43, 0.45);
-    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.25);
+    background: rgba(192, 57, 43, 0.2);
+    border: 1.5px solid rgba(192, 57, 43, 0.5);
+    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
+    transform: rotate(2deg); /* Dynamic Slanted Style */
   }
   .info-card.ic-time {
-    background: rgba(41, 128, 185, 0.18);
-    border: 1px solid rgba(41, 128, 185, 0.45);
-    box-shadow: 0 6px 20px rgba(41, 128, 185, 0.25);
-  .info-icon {
-    font-size: 20px;
-    margin-bottom: 4px;
+    background: rgba(41, 128, 185, 0.2);
+    border: 1.5px solid rgba(41, 128, 185, 0.5);
+    box-shadow: 0 6px 20px rgba(41, 128, 185, 0.3);
+    transform: rotate(-2deg); /* Dynamic Slanted Style */
+  }
+  
+  /* SVG Custom Icons */
+  .info-svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
   }
   .info-label {
     font-size: 10px;
@@ -365,8 +407,9 @@
     color: rgba(255, 255, 255, 0.5);
     margin-top: 2px;
   }
-  /* Walking Baby Spiderman & Goat Animation */
-  .welcome-ground {
+  
+  /* Walking Baby Spiderman & Goat Animation on Page 2 */
+  .majlis-ground {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -508,25 +551,16 @@
 
         <button class="btn-open" id="openCardBtn">🕸️ Buka Jemputan</button>
 
-        <div class="spidey-shortcuts">
-          <button class="spidey-btn" onclick="navTo('sec-aturcara')">🕒 Aturcara</button>
-          <button class="spidey-btn" onclick="navTo('sec-rsvp')">🕸️ RSVP</button>
-          <button class="spidey-btn" onclick="navTo('sec-lokasi')">📍 Lokasi</button>
-          <button class="spidey-btn" onclick="navTo('sec-ucapan')">💬 Ucapan</button>
-        </div>
-        <!-- Ground/Street for Spidey to walk on -->
-        <div class="welcome-ground"></div>
-        <!-- Walking Baby Spiderman & Goat Animation -->
-        <div class="walking-spidey-container">
-          <div class="walking-spidey-wrap">
-            <img class="walking-img" src="edric-walking-nobg.png" alt="Baby Spiderman walking goat">
-          </div>
-        </div>
         <button class="music-btn" id="musicBtn"><div class="music-dot" id="musicDot"></div></button>
       </section>
 
       <!-- MAJLIS -->
       <section id="sec-majlis">
+        <!-- Hanging Web Lines -->
+        <div class="web-line wl-parents"></div>
+        <div class="web-line wl-date"></div>
+        <div class="web-line wl-time"></div>
+
         <div class="spider" id="spider1"><div class="spider-legs"></div><div class="spider-body"></div></div>
         <div class="section-title">Majlis Kami 🕌</div>
         <div class="section-subtitle">Dengan segala hormatnya kami menjemput</div>
@@ -538,15 +572,37 @@
         </div>
         <div class="info-row">
           <div class="info-card ic-date">
-            <div class="info-icon">📅</div>
+            <!-- Premium Spider-themed Calendar SVG -->
+            <svg class="info-svg" viewBox="0 0 24 24" width="24" height="24">
+              <path fill="#fce68a" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+              <circle cx="12" cy="14" r="2.5" fill="#e74c3c"/>
+              <path d="M12 11.5v5M9.5 14h5M10.2 12.2l3.6 3.6M10.2 15.8l3.6-3.6" stroke="#faf6ee" stroke-width="0.8"/>
+            </svg>
             <div class="info-label">Tarikh</div>
             <div class="info-value">12 Sept 2026</div>
             <div class="info-sub">Sabtu</div>
           </div>
           <div class="info-card ic-time">
-            <div class="info-icon">🕓</div>
+            <!-- Premium Web-themed Clock SVG -->
+            <svg class="info-svg" viewBox="0 0 24 24" width="24" height="24">
+              <circle cx="12" cy="12" r="10" fill="none" stroke="#fce68a" stroke-width="2"/>
+              <path d="M12 2a10 10 0 0 1 10 10M12 6v6l4.5 2.7" stroke="#e74c3c" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" fill="#fce68a"/>
+              <!-- Spider web rays -->
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="rgba(252,230,138,0.4)" stroke-width="1"/>
+            </svg>
             <div class="info-label">Masa</div>
             <div class="info-value">4:00 Petang</div>
+            <div class="info-sub">sehingga selesai</div>
+          </div>
+        </div>
+        
+        <!-- Ground/Street for Spidey to walk on -->
+        <div class="majlis-ground"></div>
+        <!-- Walking Baby Spiderman & Goat Animation on Page 2 -->
+        <div class="walking-spidey-container">
+          <div class="walking-spidey-wrap">
+            <img class="walking-img" src="edric-walking-nobg.png" alt="Baby Spiderman walking goat">
           </div>
         </div>
       </section>
@@ -624,6 +680,12 @@
         <div class="signoff">Dengan penuh kasih sayang,<br>Keluarga Ilmi &amp; Nayli 💛</div>
       </section>
 
+    <!-- Persistent Bottom Navigation Bar -->
+    <div class="spidey-nav-bar">
+      <button class="spidey-nav-btn" onclick="navTo('sec-aturcara')">🕒 Aturcara</button>
+      <button class="spidey-nav-btn" onclick="navTo('sec-rsvp')">🕸️ RSVP</button>
+      <button class="spidey-nav-btn" onclick="navTo('sec-lokasi')">📍 Lokasi</button>
+      <button class="spidey-nav-btn" onclick="navTo('sec-ucapan')">💬 Ucapan</button>
     </div>
 
     <div class="navdots" id="navdots"></div>
