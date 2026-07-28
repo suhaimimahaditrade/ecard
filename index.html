@@ -854,7 +854,7 @@
   <div class="blob blob3"></div>
 
   <div class="card">
-    <button id="musicToggle" class="music-toggle-btn">🔇</button>
+    <button id="musicToggle" class="music-toggle-btn playing">🎵</button>
     <div class="scrollwrap" id="scrollwrap">
 
       <!-- WELCOME -->
@@ -1559,33 +1559,27 @@ requestAnimationFrame(updateDynamicLeash);
 // ---------- BACKGROUND MUSIC & CRAWLING SPIDER ----------
 const bgMusic = $('bgMusic');
 const musicToggle = $('musicToggle');
-let musicPlaying = false;
-
-// Sync button UI with actual audio state
-bgMusic.addEventListener('play', () => {
-  musicPlaying = true;
-  musicToggle.classList.add('playing');
-  musicToggle.textContent = '🎵';
-});
-
-bgMusic.addEventListener('pause', () => {
-  musicPlaying = false;
-  musicToggle.classList.remove('playing');
-  musicToggle.textContent = '🔇';
-});
+let musicPlaying = true; // Assume music is active/playing from start
 
 function toggleMusic() {
-  if (bgMusic.paused) {
-    bgMusic.play().catch(err => console.log('Music play block:', err));
-  } else {
+  if (musicPlaying) {
     bgMusic.pause();
+    musicToggle.classList.remove('playing');
+    musicToggle.textContent = '🔇';
+    musicPlaying = false;
+  } else {
+    bgMusic.play().then(() => {
+      musicToggle.classList.add('playing');
+      musicToggle.textContent = '🎵';
+      musicPlaying = true;
+    }).catch(err => console.log('Music play block:', err));
   }
 }
 musicToggle.addEventListener('click', toggleMusic);
 
 // Autoplay bypass: Start music on the very first user interaction (click, touch, scroll)
 const startMusicOnInteraction = () => {
-  if (bgMusic.paused) {
+  if (musicPlaying && bgMusic.paused) {
     bgMusic.play().then(() => {
       // Clean up event listeners so we don't trigger again
       document.removeEventListener('click', startMusicOnInteraction);
@@ -1601,7 +1595,9 @@ document.addEventListener('scroll', startMusicOnInteraction);
 
 // Also try to autoplay immediately when window loads (if browser permits)
 window.addEventListener('load', () => {
-  bgMusic.play().catch(err => console.log('Autoplay on load blocked:', err));
+  if (musicPlaying) {
+    bgMusic.play().catch(err => console.log('Autoplay on load blocked:', err));
+  }
 });
 
 // ---------- SPIDEY SMASHER MINI-GAME (RSVP PAGE) ----------
