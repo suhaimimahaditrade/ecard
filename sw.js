@@ -1,4 +1,4 @@
-const CACHE_NAME = 'edric-ecard-v1';
+const CACHE_NAME = 'edric-ecard-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -34,6 +34,9 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   // Only cache GET requests (Google Form POSTs are bypassed)
   if (e.request.method !== 'GET') return;
+  
+  // Bypass audio files from SW interception to prevent Range request issues
+  if (e.request.url.includes('music.mp3')) return;
   
   e.respondWith(
     fetch(e.request).catch(() => {
